@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "changelog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "published", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
