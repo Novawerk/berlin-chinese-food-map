@@ -4,18 +4,42 @@
 
 An open-source, community-driven guide to Chinese restaurants in Berlin. Built with Kotlin Multiplatform and Compose Multiplatform for Android and iOS.
 
+**No login required. Pure browsing experience.**
+
 **By [Novawerk](https://github.com/Novawerk)** — Open-source apps, made with care.
 
 ## Features
 
-- **Restaurant Map** — Interactive map showing Chinese restaurants across Berlin
-- **Restaurant Profiles** — Detailed info: cuisine type, price range, hours, photos, and reviews
-- **Community Reviews** — Ratings and reviews from the Chinese community in Berlin
-- **Search & Filter** — Find by cuisine style (Sichuan, Cantonese, Hotpot, BBQ, etc.), district, price range
-- **Favorites** — Save your go-to spots for quick access
-- **Offline Support** — Browse saved restaurants without internet
+### Dual View Modes
+
+- **Map Mode** (default) — Interactive map with restaurant pins colored by cuisine type. Tap a pin to preview, tap again for full details.
+- **List Mode** — Scrollable restaurant cards sorted by distance, rating, or name. Switch seamlessly between map and list.
+
+### Smart Filtering
+
+Filter restaurants by any combination of:
+
+| Filter | Description |
+|--------|-------------|
+| Name | Search by restaurant name (Chinese & English) |
+| Cuisine Type | Sichuan, Cantonese, Hotpot, BBQ, Dim Sum, Noodles, etc. |
+| District | Mitte, Charlottenburg, Prenzlauer Berg, Neukölln, etc. |
+| Distance | Sort or filter by proximity to your current location |
+
+### Restaurant Details
+
+- **Basic Info** — Address, phone, opening hours, price range
+- **Cuisine & Tags** — Cuisine style, dietary options, specialties
+- **Dish Menu** — Featured dishes with photos, descriptions, and prices
+- **Photos** — Restaurant interior, exterior, and food photos
+- **Community Reviews** — Ratings and reviews from the Berlin Chinese community
+
+### More
+
+- **Favorites** — Save restaurants for quick access (stored locally)
+- **Offline Support** — Browse cached restaurants without internet
 - **Bilingual** — Full English and Chinese (简体中文) support
-- **Privacy-First** — No tracking, no ads, open source
+- **Privacy-First** — No login, no tracking, no ads, open source
 
 ## Tech Stack
 
@@ -39,20 +63,20 @@ Single module (`:composeApp`) with clean separation:
 composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
 ├── App.kt                          # NavHost + startup logic
 ├── domain/
-│   ├── restaurant/                  # Restaurant models, repository
+│   ├── restaurant/                  # Restaurant & Dish models, repository
 │   ├── review/                      # Review models
 │   └── search/                      # Search/filter logic
 ├── data/
 │   ├── local/                       # Local database, favorites
-│   └── remote/                      # API client (if applicable)
+│   └── remote/                      # API client
 └── ui/
     ├── theme/                       # M3 theme
     ├── navigation/                  # Type-safe routes
-    ├── components/                  # Shared composables
+    ├── components/                  # Shared composables (filter bar, cards)
     └── pages/
         ├── map/                     # Map view with restaurant pins
         ├── list/                    # Restaurant list view
-        ├── detail/                  # Restaurant detail page
+        ├── detail/                  # Restaurant detail + dish menu
         ├── search/                  # Search & filter
         ├── favorites/               # Saved restaurants
         └── settings/                # Language, about

@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">柏林中餐地图</string>
+
+    <!-- Navigation -->
+    <string name="nav_map">地图</string>
+    <string name="nav_list">列表</string>
+    <string name="settings">设置</string>
+    <string name="back">返回</string>
+
+    <!-- Placeholder screens -->
+    <string name="map_coming_soon">地图视图</string>
+    <string name="list_coming_soon">列表视图</string>
+    <string name="detail_coming_soon">餐厅详情</string>
+
+    <!-- Settings -->
+    <string name="dark_mode">外观</string>
+    <string name="language">语言</string>
+    <string name="system_default">自动</string>
+    <string name="light">浅色</string>
+    <string name="dark">深色</string>
+    <string name="english">English</string>
+    <string name="chinese">中文</string>
+
+    <!-- Filters -->
+    <string name="filter_name">名称</string>
+    <string name="filter_cuisine">菜系</string>
+    <string name="filter_district">街区</string>
+    <string name="filter_distance">距离</string>
+
+    <!-- Cuisine types -->
+    <string name="cuisine_sichuan">川菜</string>
+    <string name="cuisine_cantonese">粤菜</string>
+    <string name="cuisine_hotpot">火锅</string>
+    <string name="cuisine_bbq">烧烤</string>
+    <string name="cuisine_dim_sum">点心</string>
+    <string name="cuisine_noodles">面食</string>
+    <string name="cuisine_general">中餐</string>
+    <string name="cuisine_other">其他</string>
+</resources>
