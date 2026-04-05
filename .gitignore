@@ -15,6 +15,7 @@ GoogleService-Info.plist
 *.log
 hs_err_pid*.log
 .claude/settings.local.json
+.claude/launch.json
 iosApp/Configuration/Config.xcconfig
 admin/node_modules
 scripts/**/node_modules
