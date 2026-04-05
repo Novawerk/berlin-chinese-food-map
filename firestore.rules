@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /restaurants/{restaurantId} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+
+      match /visits/{uid} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /views/{uid} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}

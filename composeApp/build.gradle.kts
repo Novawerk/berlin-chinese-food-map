@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.googleServices)
 }
 
 kotlin {
@@ -19,7 +20,7 @@ kotlin {
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_11)
+                    jvmTarget.set(JvmTarget.JVM_17)
                 }
             }
         }
@@ -56,6 +57,8 @@ kotlin {
             implementation(libs.datastore.preferences)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.navigation.compose)
+            implementation(libs.gitlive.firebase.auth)
+            implementation(libs.gitlive.firebase.firestore)
         }
     }
 }
@@ -94,8 +97,8 @@ android {
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

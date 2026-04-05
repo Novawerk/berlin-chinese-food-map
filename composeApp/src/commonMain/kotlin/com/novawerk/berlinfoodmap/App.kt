@@ -31,6 +31,8 @@ import berlinfoodmap.composeapp.generated.resources.settings
 @Composable
 fun App(component: AppComponent) {
     val settings = component.settingsRepository
+    val authService = component.authService
+    val restaurantRepository = component.restaurantRepository
     val scope = rememberCoroutineScope()
 
     var darkMode by remember { mutableStateOf("system") }
@@ -40,6 +42,10 @@ fun App(component: AppComponent) {
     LaunchedEffect(Unit) {
         darkMode = settings.getDarkMode()
         language = settings.getLanguage()
+        // Anonymous sign-in
+        if (authService.getCurrentUid() == null) {
+            authService.signInAnonymously()
+        }
         ready = true
     }
 
@@ -99,6 +105,7 @@ fun App(component: AppComponent) {
                     ) {
                         composable<MapRoute> {
                             MapScreen(
+                                repository = restaurantRepository,
                                 onNavigateSettings = { navController.navigate(SettingsRoute) },
                                 onNavigateList = {
                                     navController.navigate(ListRoute) {
@@ -111,6 +118,7 @@ fun App(component: AppComponent) {
 
                         composable<ListRoute> {
                             ListScreen(
+                                repository = restaurantRepository,
                                 onNavigateSettings = { navController.navigate(SettingsRoute) },
                                 onNavigateMap = {
                                     navController.navigate(MapRoute) {
@@ -125,6 +133,8 @@ fun App(component: AppComponent) {
                             val route = backStackEntry.toRoute<DetailRoute>()
                             DetailScreen(
                                 restaurantId = route.restaurantId,
+                                repository = restaurantRepository,
+                                authService = authService,
                                 onBack = { navController.popBackStack() },
                             )
                         }
