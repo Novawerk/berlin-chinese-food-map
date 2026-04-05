@@ -17,6 +17,7 @@ hs_err_pid*.log
 .claude/settings.local.json
 .claude/launch.json
 iosApp/Configuration/Config.xcconfig
+node_modules/
 admin/node_modules
 scripts/**/node_modules
 admin/dist
