@@ -31,6 +31,11 @@ export function Navbar() {
               {t("Home", "首页")}
             </Button>
           </Link>
+          <a href="/#roadmap">
+            <Button variant="ghost" size="sm">
+              {t("Roadmap", "路线图")}
+            </Button>
+          </a>
           <Link href="/changelog">
             <Button variant="ghost" size="sm">
               {t("Changelog", "更新日志")}

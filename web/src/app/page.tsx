@@ -8,49 +8,116 @@ const features = [
     icon: "🗺️",
     title: { en: "Map Mode", zh: "地图模式" },
     desc: {
-      en: "Explore Chinese restaurants across Berlin with an interactive map. Pins are color-coded by cuisine type.",
-      zh: "通过交互式地图探索柏林各地的中餐厅。标记按菜系类型颜色编码。",
+      en: "Explore Chinese restaurants across Berlin with an interactive Google Map. Pins mark every restaurant, tap to preview details instantly.",
+      zh: "通过交互式 Google 地图探索柏林各地的中餐厅。标记标注每家餐厅，点击即可预览详情。",
     },
   },
   {
     icon: "📋",
     title: { en: "List Mode", zh: "列表模式" },
     desc: {
-      en: "Browse all restaurants in a clean, sortable list. See ratings, distance, and opening hours at a glance.",
-      zh: "在简洁、可排序的列表中浏览所有餐厅。一目了然地查看评分、距离和营业时间。",
+      en: "Browse all restaurants in a clean, scrollable list. Sort by visit count or name, filter by cuisine type with quick-tap chips.",
+      zh: "在简洁的可滚动列表中浏览所有餐厅。按到访次数或名称排序，通过标签快速筛选菜系。",
     },
   },
   {
     icon: "🔍",
-    title: { en: "Smart Filters", zh: "智能筛选" },
+    title: { en: "Smart Search", zh: "智能搜索" },
     desc: {
-      en: "Filter by cuisine type, price range, distance, and more. Find exactly what you're craving.",
-      zh: "按菜系类型、价格范围、距离等筛选。找到你想吃的。",
+      en: "Search in Chinese, English, or German. Stack filters by cuisine type and district to find exactly what you're craving.",
+      zh: "支持中文、英文、德文搜索。叠加菜系和城区筛选，精准找到你想吃的。",
     },
   },
   {
     icon: "✅",
     title: { en: "Visit Tracking", zh: "到访记录" },
     desc: {
-      en: "Mark restaurants as visited, save your favorites, and build your personal food diary.",
-      zh: "标记已去过的餐厅，收藏你的最爱，建立你的美食日记。",
+      en: "Mark restaurants as visited and save your favorites. Build your personal Chinese food diary across Berlin.",
+      zh: "标记已去过的餐厅，收藏你的最爱。建立属于你的柏林中餐探索日记。",
     },
   },
   {
-    icon: "📱",
-    title: { en: "Offline Support", zh: "离线支持" },
+    icon: "🌙",
+    title: { en: "Dark Mode", zh: "深色模式" },
     desc: {
-      en: "Access saved restaurants and favorites even without an internet connection.",
-      zh: "即使没有网络连接，也可以访问已保存的餐厅和收藏。",
+      en: "Switch between light, dark, or system-default themes. Material Design 3 Expressive theming throughout.",
+      zh: "在浅色、深色或跟随系统之间切换。全局采用 Material Design 3 Expressive 主题。",
     },
   },
   {
     icon: "🌐",
     title: { en: "Bilingual", zh: "双语支持" },
     desc: {
-      en: "Full support for both English and Chinese. Search restaurant names in either language.",
-      zh: "完整支持中英双语。可用任意一种语言搜索餐厅名称。",
+      en: "Full English and Chinese UI. Restaurant names also support German. Switch language anytime in settings.",
+      zh: "完整中英双语界面。餐厅名称还支持德文。随时在设置中切换语言。",
     },
+  },
+];
+
+const roadmapWeeks = [
+  {
+    week: 1,
+    title: {
+      en: "Data & Design",
+      zh: "数据与设计",
+    },
+    desc: {
+      en: "Restaurant data collection and community sourcing. UI/UX design finalization. Core data pipeline setup with Firebase sync.",
+      zh: "餐厅数据整理与社区征集。UI/UX 设计定稿。搭建核心数据管线并完成 Firebase 同步。",
+    },
+    tags: {
+      en: ["Data Collection", "Community Sourcing", "UI Design"],
+      zh: ["数据整理", "社区征集", "UI 设计"],
+    },
+    status: "done" as const,
+  },
+  {
+    week: 2,
+    title: {
+      en: "MVP & Platform",
+      zh: "MVP 与平台搭建",
+    },
+    desc: {
+      en: "Mobile app MVP running on both Android and iOS. Admin panel and landing page fully completed. All backend services operational.",
+      zh: "移动应用 MVP 在 Android 和 iOS 双端跑通。管理后台和官网着陆页全部完成。所有后端服务上线运行。",
+    },
+    tags: {
+      en: ["Mobile MVP", "Admin Panel", "Landing Page"],
+      zh: ["移动端 MVP", "管理后台", "着陆页"],
+    },
+    status: "current" as const,
+  },
+  {
+    week: 3,
+    title: {
+      en: "Beta & Marketing",
+      zh: "内测与市场推广",
+    },
+    desc: {
+      en: "Internal beta testing and community feedback. Marketing materials, App Store assets, and promotional content preparation.",
+      zh: "内测与社区反馈收集。制作市场推广材料、应用商店素材和宣传内容。",
+    },
+    tags: {
+      en: ["Beta Testing", "Feedback", "Marketing Assets"],
+      zh: ["内测", "反馈收集", "市场素材"],
+    },
+    status: "upcoming" as const,
+  },
+  {
+    week: 4,
+    title: {
+      en: "Launch",
+      zh: "正式上线",
+    },
+    desc: {
+      en: "Official launch on both App Store and Google Play. Production deployment, monitoring, and community onboarding.",
+      zh: "App Store 和 Google Play 双端正式上线。生产环境部署、监控和社区运营启动。",
+    },
+    tags: {
+      en: ["App Store", "Google Play", "Go Live"],
+      zh: ["App Store", "Google Play", "正式发布"],
+    },
+    status: "upcoming" as const,
   },
 ];
 
@@ -77,8 +144,8 @@ export default function HomePage() {
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
             {t(
-              "Discover the best Chinese restaurants in Berlin. Community-curated, always up to date, beautifully designed.",
-              "发现柏林最好的中餐厅。由社区策划，始终保持更新，设计精美。"
+              "Discover the best Chinese restaurants in Berlin. Community-curated, bilingual, privacy-first. Available on Android and iOS.",
+              "发现柏林最好的中餐厅。社区策划、双语支持、隐私优先。支持 Android 和 iOS。"
             )}
           </p>
 
@@ -129,8 +196,117 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Roadmap */}
+      <section id="roadmap" className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              {t("Roadmap", "开发路线图")}
+            </h2>
+            <p className="mt-3 text-lg text-muted-foreground">
+              {t(
+                "Phase 1 — From idea to launch in 4 weeks",
+                "第一阶段 — 4 周从创意到上线"
+              )}
+            </p>
+          </div>
+
+          <div className="relative mt-14">
+            {/* Timeline line */}
+            <div className="absolute left-[23px] top-0 hidden h-full w-px bg-border sm:block" />
+
+            <div className="space-y-8">
+              {roadmapWeeks.map((item) => (
+                <div key={item.week} className="relative flex gap-6">
+                  {/* Timeline dot */}
+                  <div className="relative z-10 hidden shrink-0 sm:block">
+                    <div
+                      className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-bold ${
+                        item.status === "done"
+                          ? "border-green-500 bg-green-500/10 text-green-600 dark:text-green-400"
+                          : item.status === "current"
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {item.status === "done" ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        `W${item.week}`
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card */}
+                  <div
+                    className={`flex-1 rounded-xl border p-6 ${
+                      item.status === "current"
+                        ? "border-primary/50 bg-primary/5"
+                        : item.status === "done"
+                          ? "border-green-500/30 bg-green-500/5"
+                          : "border-border bg-card"
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:hidden">
+                        {t(`Week ${item.week}`, `第 ${item.week} 周`)}
+                      </span>
+                      <h3 className="text-lg font-semibold">
+                        {t(`Week ${item.week}`, `第 ${item.week} 周`)}
+                        <span className="mx-2 text-muted-foreground">—</span>
+                        {tObj(item.title)}
+                      </h3>
+                      {item.status === "done" && (
+                        <span className="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
+                          {t("Completed", "已完成")}
+                        </span>
+                      )}
+                      {item.status === "current" && (
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                          {t("In Progress", "进行中")}
+                        </span>
+                      )}
+                      {item.status === "upcoming" && (
+                        <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                          {t("Upcoming", "即将开始")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {tObj(item.desc)}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {(tObj(item.tags) as string[]).map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center rounded-md border border-border bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Download */}
-      <section id="download" className="border-t border-border">
+      <section id="download" className="border-t border-border bg-muted/20">
         <div className="mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 sm:py-28">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {t("Get the App", "获取应用")}
