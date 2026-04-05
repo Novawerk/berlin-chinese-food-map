@@ -1,0 +1,17 @@
+*.iml
+.gradle
+**/build/
+local.properties
+.idea
+.DS_Store
+xcuserdata
+*.jks
+*.keystore
+*.p12
+google-services.json
+GoogleService-Info.plist
+.env
+*.log
+hs_err_pid*.log
+.claude/settings.local.json
+iosApp/Configuration/Config.xcconfig
