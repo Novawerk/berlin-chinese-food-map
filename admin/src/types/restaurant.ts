@@ -43,6 +43,7 @@ export interface Restaurant {
   galleries: string[];
   visitCount: number;
   viewCount: number;
+  hidden?: boolean;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 }

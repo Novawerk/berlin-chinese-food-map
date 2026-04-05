@@ -49,7 +49,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="data-[slot=sidebar-menu-button]:!p-1.5" render={<Link to="/" />}><Shell className="!size-5" /><span className="text-base font-semibold">Acme Inc.</span></SidebarMenuButton>
+            <SidebarMenuButton className="data-[slot=sidebar-menu-button]:!p-1.5" render={<Link to="/" />}><span className="text-lg">🥢</span><span className="text-base font-semibold">柏林中餐地图</span></SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

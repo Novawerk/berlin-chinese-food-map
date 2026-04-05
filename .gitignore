@@ -17,6 +17,7 @@ hs_err_pid*.log
 .claude/settings.local.json
 iosApp/Configuration/Config.xcconfig
 admin/node_modules
+scripts/**/node_modules
 admin/dist
 admin/.env
 .vercel

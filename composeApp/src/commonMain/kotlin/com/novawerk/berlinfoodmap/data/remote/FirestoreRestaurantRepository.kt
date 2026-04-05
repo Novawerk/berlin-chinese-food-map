@@ -16,7 +16,7 @@ class FirestoreRestaurantRepository : RestaurantRepository {
 
     override suspend fun getAll(): List<Restaurant> {
         val snapshot = restaurantsRef.get()
-        return snapshot.documents.map { it.toRestaurant() }
+        return snapshot.documents.map { it.toRestaurant() }.filter { !it.hidden }
     }
 
     override suspend fun getById(id: String): Restaurant? {
@@ -164,5 +164,6 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
         galleries = try { get<List<String>>("galleries") } catch (_: Exception) { emptyList() },
         visitCount = try { get<Int>("visitCount") } catch (_: Exception) { 0 },
         viewCount = try { get<Int>("viewCount") } catch (_: Exception) { 0 },
+        hidden = try { get<Boolean>("hidden") } catch (_: Exception) { false },
     )
 }

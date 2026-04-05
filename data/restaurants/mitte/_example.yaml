@@ -1,0 +1,22 @@
+name:
+  en: "Sichuan Folk"
+  zh: "川味坊"
+
+cuisineType: SICHUAN
+
+address:
+  addressLine1: "Leipziger Str. 110"
+  postalCode: "10117"
+  district: "Mitte"
+
+latitude: 52.5095
+longitude: 13.3924
+
+phone: "+49 30 12345678"
+priceRange: "€€"
+
+description:
+  en: "Authentic Sichuan cuisine in the heart of Berlin"
+  zh: "柏林市中心的正宗川菜"
+
+hidden: false

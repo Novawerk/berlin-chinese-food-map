@@ -1,0 +1,41 @@
+# Restaurant YAML Schema Reference
+# Each restaurant is a single YAML file in a district folder.
+# Filename convention: {id}.yaml (id must be unique across all districts)
+#
+# Directory structure:
+#   data/restaurants/{district}/{id}.yaml
+#
+# Example: data/restaurants/mitte/sichuan-folk.yaml
+
+# --- Required fields ---
+name:
+  en: "English Name"
+  zh: "中文名"
+  de: "German Name"            # optional
+
+cuisineType: SICHUAN           # SICHUAN | CANTONESE | HOTPOT | BBQ | DIM_SUM | NOODLES | GENERAL | OTHER
+
+address:
+  addressLine1: "Street 123"
+  addressLine2: ""             # optional
+  note: ""                     # optional
+  postalCode: "10115"
+  district: "Mitte"            # must match the folder name (display form)
+  city: "Berlin"               # default: Berlin
+  country: "Germany"           # default: Germany
+
+latitude: 52.520008
+longitude: 13.404954
+
+# --- Optional fields ---
+phone: "+49 30 12345678"
+priceRange: "€€"              # €, €€, €€€
+description:
+  en: "English description"
+  zh: "中文描述"
+  de: "German description"     # optional
+logoUrl: "https://example.com/logo.png"
+galleries:
+  - "https://example.com/photo1.jpg"
+  - "https://example.com/photo2.jpg"
+hidden: false                  # true = soft-deleted, hidden from public

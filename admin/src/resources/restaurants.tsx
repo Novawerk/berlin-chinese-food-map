@@ -11,7 +11,14 @@ import {
   SimpleShowLayout,
   TextField,
   NumberField,
+  BooleanInput,
+  BooleanField,
 } from "@/components/admin";
+import { useUpdate, useRecordContext, useRefresh } from "ra-core";
+import { Button } from "@/components/ui/button";
+import { Download, EyeOff, Eye } from "lucide-react";
+import { downloadYamlZip } from "@/lib/export-yaml";
+import { useState } from "react";
 
 const CUISINE_CHOICES = [
   { id: "SICHUAN", name: "Sichuan" },
@@ -24,15 +31,62 @@ const CUISINE_CHOICES = [
   { id: "OTHER", name: "Other" },
 ];
 
+const ExportYamlButton = () => {
+  const [loading, setLoading] = useState(false);
+  const handleExport = async () => {
+    setLoading(true);
+    try {
+      await downloadYamlZip();
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Button variant="outline" size="sm" onClick={handleExport} disabled={loading}>
+      <Download className="mr-2 h-4 w-4" />
+      {loading ? "Exporting..." : "Export YAML"}
+    </Button>
+  );
+};
+
+const ToggleHiddenButton = () => {
+  const record = useRecordContext();
+  const [update, { isPending }] = useUpdate();
+  const refresh = useRefresh();
+  if (!record) return null;
+  const isHidden = record.hidden === true;
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      disabled={isPending}
+      onClick={(e) => {
+        e.stopPropagation();
+        update(
+          "restaurants",
+          { id: record.id, data: { hidden: !isHidden }, previousData: record },
+          { onSuccess: () => refresh() },
+        );
+      }}
+    >
+      {isHidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+    </Button>
+  );
+};
+
 export const RestaurantList = () => (
-  <List>
+  <List actions={<ExportYamlButton />}>
     <DataTable>
       <DataTable.Col source="name.zh" label="Name (ZH)" />
       <DataTable.Col source="name.en" label="Name (EN)" />
       <DataTable.Col source="cuisineType" label="Cuisine" />
       <DataTable.Col source="address.district" label="District" />
+      <DataTable.Col source="hidden" label="Hidden" />
       <DataTable.Col source="visitCount" label="Visits" />
       <DataTable.Col source="viewCount" label="Views" />
+      <DataTable.Col label="" disableSort>
+        <ToggleHiddenButton />
+      </DataTable.Col>
     </DataTable>
   </List>
 );
@@ -67,6 +121,8 @@ const RestaurantForm = () => (
     <TextInput source="description.en" label="Description (English)" multiline />
     <TextInput source="description.zh" label="Description (Chinese)" multiline />
     <TextInput source="description.de" label="Description (German)" multiline />
+
+    <BooleanInput source="hidden" label="Hidden (soft-delete)" defaultValue={false} />
   </SimpleForm>
 );
 
@@ -94,6 +150,7 @@ export const RestaurantShow = () => (
       <TextField source="priceRange" />
       <NumberField source="visitCount" />
       <NumberField source="viewCount" />
+      <BooleanField source="hidden" />
     </SimpleShowLayout>
   </Show>
 );

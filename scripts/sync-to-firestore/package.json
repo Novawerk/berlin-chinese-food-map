@@ -1,0 +1,14 @@
+{
+  "name": "sync-to-firestore",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "js-yaml": "^4.1.0",
+    "glob": "^11.0.0"
+  }
+}

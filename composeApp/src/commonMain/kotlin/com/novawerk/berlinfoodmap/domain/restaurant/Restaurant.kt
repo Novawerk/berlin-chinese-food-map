@@ -16,4 +16,5 @@ data class Restaurant(
     val galleries: List<String> = emptyList(),
     val visitCount: Int = 0,
     val viewCount: Int = 0,
+    val hidden: Boolean = false,
 )
