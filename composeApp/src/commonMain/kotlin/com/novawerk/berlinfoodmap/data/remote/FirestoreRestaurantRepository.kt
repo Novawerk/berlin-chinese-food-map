@@ -70,10 +70,8 @@ class FirestoreRestaurantRepository : RestaurantRepository {
                 "visitedAt" to Timestamp.now().seconds,
             )
             visitRef.set(data)
-            // Increment visit count atomically
-            restaurantsRef.document(restaurantId).update(
-                "visitCount" to FieldValue.increment(1)
-            )
+            // Count is tracked via sub-collection; no direct restaurant doc update
+            // to avoid PERMISSION_DENIED for anonymous users
         }
     }
 
@@ -100,10 +98,8 @@ class FirestoreRestaurantRepository : RestaurantRepository {
             )
             viewRef.set(data)
         }
-        // Increment total view count
-        restaurantsRef.document(restaurantId).update(
-            "viewCount" to FieldValue.increment(1)
-        )
+        // Count is tracked via sub-collection; no direct restaurant doc update
+        // to avoid PERMISSION_DENIED for anonymous users
     }
 
     private fun haversineDistance(

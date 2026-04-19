@@ -36,4 +36,21 @@
     <string name="cuisine_noodles">面食</string>
     <string name="cuisine_general">中餐</string>
     <string name="cuisine_other">其他</string>
+
+    <!-- Favorites & Search -->
+    <string name="nav_favorites">收藏</string>
+    <string name="search_hint">搜索餐厅...</string>
+    <string name="sort_most_visited">最多到访</string>
+    <string name="sort_name">名称</string>
+    <string name="all">全部</string>
+    <string name="no_results">未找到餐厅</string>
+    <string name="no_favorites">暂无收藏</string>
+    <string name="no_favorites_hint">点击心形图标收藏餐厅</string>
+    <string name="visited_button">我去过</string>
+    <string name="already_visited">已到访</string>
+    <string name="call_phone">拨打电话</string>
+    <string name="about">关于</string>
+    <string name="version">版本</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="clear_favorites">清除收藏</string>
 </resources>

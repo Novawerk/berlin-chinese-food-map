@@ -10,12 +10,14 @@ xcuserdata
 *.keystore
 *.p12
 google-services.json
+secrets.properties
 GoogleService-Info.plist
 .env
 *.log
 hs_err_pid*.log
 .claude/settings.local.json
 .claude/launch.json
+.claude/worktrees/
 iosApp/Configuration/Config.xcconfig
 node_modules/
 admin/node_modules

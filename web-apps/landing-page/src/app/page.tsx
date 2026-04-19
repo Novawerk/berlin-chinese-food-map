@@ -6,123 +6,144 @@ import { Button } from "@/components/ui/button";
 const features = [
   {
     icon: "🗺️",
-    title: { en: "Map Mode", zh: "地图模式" },
+    title: { en: "Interactive Map", zh: "交互式地图" },
     desc: {
-      en: "Explore Chinese restaurants across Berlin with an interactive Google Map. Pins mark every restaurant, tap to preview details instantly.",
-      zh: "通过交互式 Google 地图探索柏林各地的中餐厅。标记标注每家餐厅，点击即可预览详情。",
-    },
-  },
-  {
-    icon: "📋",
-    title: { en: "List Mode", zh: "列表模式" },
-    desc: {
-      en: "Browse all restaurants in a clean, scrollable list. Sort by visit count or name, filter by cuisine type with quick-tap chips.",
-      zh: "在简洁的可滚动列表中浏览所有餐厅。按到访次数或名称排序，通过标签快速筛选菜系。",
+      en: "Explore Chinese restaurants across all Berlin districts with cuisine-colored pins. Tap to preview, tap again for full details.",
+      zh: "通过按菜系着色的标记探索柏林各区中餐厅。点击预览，再点进入详情。",
     },
   },
   {
     icon: "🔍",
-    title: { en: "Smart Search", zh: "智能搜索" },
+    title: { en: "Trilingual Search", zh: "三语搜索" },
     desc: {
       en: "Search in Chinese, English, or German. Stack filters by cuisine type and district to find exactly what you're craving.",
       zh: "支持中文、英文、德文搜索。叠加菜系和城区筛选，精准找到你想吃的。",
     },
   },
   {
-    icon: "✅",
-    title: { en: "Visit Tracking", zh: "到访记录" },
+    icon: "📋",
+    title: { en: "Restaurant Profiles", zh: "餐厅画像" },
     desc: {
-      en: "Mark restaurants as visited and save your favorites. Build your personal Chinese food diary across Berlin.",
-      zh: "标记已去过的餐厅，收藏你的最爱。建立属于你的柏林中餐探索日记。",
+      en: "Detailed restaurant profiles with photos, contact info, price range, and multilingual descriptions.",
+      zh: "详尽的餐厅画像，包含照片、联系方式、价格区间及多语言描述。",
+    },
+  },
+  {
+    icon: "❤️",
+    title: { en: "Favorites & Visits", zh: "收藏与足迹" },
+    desc: {
+      en: "Save favorites and mark visited restaurants locally. Privacy-first — no personal data collected.",
+      zh: "本地收藏和标记已去过的餐厅。隐私优先——不收集任何个人数据。",
+    },
+  },
+  {
+    icon: "🌐",
+    title: { en: "Bilingual UI", zh: "双语界面" },
+    desc: {
+      en: "Full English and Chinese interface. Restaurant names also support German. Switch language anytime.",
+      zh: "完整中英双语界面。餐厅名称还支持德文。随时切换语言。",
     },
   },
   {
     icon: "🌙",
     title: { en: "Dark Mode", zh: "深色模式" },
     desc: {
-      en: "Switch between light, dark, or system-default themes. Material Design 3 Expressive theming throughout.",
-      zh: "在浅色、深色或跟随系统之间切换。全局采用 Material Design 3 Expressive 主题。",
-    },
-  },
-  {
-    icon: "🌐",
-    title: { en: "Bilingual", zh: "双语支持" },
-    desc: {
-      en: "Full English and Chinese UI. Restaurant names also support German. Switch language anytime in settings.",
-      zh: "完整中英双语界面。餐厅名称还支持德文。随时在设置中切换语言。",
+      en: "Light, dark, or system-default themes. Material Design 3 Expressive theming throughout.",
+      zh: "浅色、深色或跟随系统主题。全局采用 Material Design 3 Expressive 主题。",
     },
   },
 ];
 
-const roadmapWeeks = [
+const roadmapPhases = [
   {
-    week: 1,
-    title: {
-      en: "Data & Design",
-      zh: "数据与设计",
-    },
+    phase: 1,
+    title: { en: "Kick-off", zh: "项目启动" },
     desc: {
-      en: "Restaurant data collection and community sourcing. UI/UX design finalization. Core data pipeline setup with Firebase sync.",
-      zh: "餐厅数据整理与社区征集。UI/UX 设计定稿。搭建核心数据管线并完成 Firebase 同步。",
+      en: "Data handoff from physical map to structured digital schema. Visual direction alignment, cuisine category standards, and interaction design finalization.",
+      zh: "将纸质地图数据转化为结构化数字 Schema。对齐视觉方向、统一菜系分类标准、敲定交互逻辑。",
     },
     tags: {
-      en: ["Data Collection", "Community Sourcing", "UI Design"],
-      zh: ["数据整理", "社区征集", "UI 设计"],
+      en: ["Data Handoff", "Visual Direction", "Schema Design"],
+      zh: ["数据交接", "视觉方向", "Schema 设计"],
     },
-    status: "done" as const,
+    status: "current" as const as "done" | "current" | "upcoming",
   },
   {
-    week: 2,
-    title: {
-      en: "MVP & Platform",
-      zh: "MVP 与平台搭建",
-    },
+    phase: 2,
+    title: { en: "MVP Development", zh: "MVP 核心开发" },
+    subtitle: { en: "Week 1", zh: "第 1 周" },
     desc: {
-      en: "Mobile app MVP running on both Android and iOS. Admin panel and landing page fully completed. All backend services operational.",
-      zh: "移动应用 MVP 在 Android 和 iOS 双端跑通。管理后台和官网着陆页全部完成。所有后端服务上线运行。",
+      en: "Polished map UI with district filtering and cuisine-colored pins. Restaurant profiles, trilingual search, privacy-first favorites & visit tracking. Internal beta via TestFlight and APK.",
+      zh: "精致地图 UI，支持按行政区筛选及菜系色彩标注。餐厅画像、三语搜索、隐私优先的收藏与足迹。通过 TestFlight 和 APK 进行内部测试。",
     },
     tags: {
-      en: ["Mobile MVP", "Admin Panel", "Landing Page"],
-      zh: ["移动端 MVP", "管理后台", "着陆页"],
-    },
-    status: "current" as const,
-  },
-  {
-    week: 3,
-    title: {
-      en: "Beta & Marketing",
-      zh: "内测与市场推广",
-    },
-    desc: {
-      en: "Internal beta testing and community feedback. Marketing materials, App Store assets, and promotional content preparation.",
-      zh: "内测与社区反馈收集。制作市场推广材料、应用商店素材和宣传内容。",
-    },
-    tags: {
-      en: ["Beta Testing", "Feedback", "Marketing Assets"],
-      zh: ["内测", "反馈收集", "市场素材"],
+      en: ["Map UI", "Search", "Favorites", "Internal Beta"],
+      zh: ["地图 UI", "搜索", "收藏", "内部测试"],
     },
     status: "upcoming" as const,
   },
   {
-    week: 4,
-    title: {
-      en: "Launch",
-      zh: "正式上线",
-    },
+    phase: 3,
+    title: { en: "Beta & Launch Prep", zh: "内测与发布筹备" },
+    subtitle: { en: "Week 2", zh: "第 2 周" },
     desc: {
-      en: "Official launch on both App Store and Google Play. Production deployment, monitoring, and community onboarding.",
-      zh: "App Store 和 Google Play 双端正式上线。生产环境部署、监控和社区运营启动。",
+      en: "Community beta via WeChat and Xiaohongshu channels. App Store Optimization (ASO) with multilingual descriptions, screenshots, and keywords. GTM coordination with partners.",
+      zh: "通过微信、小红书等社区渠道进行封闭测试。准备应用商店多语言描述、截图及关键词 (ASO)。与合作伙伴协同市场预热 (GTM)。",
     },
     tags: {
-      en: ["App Store", "Google Play", "Go Live"],
-      zh: ["App Store", "Google Play", "正式发布"],
+      en: ["Community Beta", "ASO", "GTM"],
+      zh: ["社区内测", "ASO 优化", "市场预热"],
     },
     status: "upcoming" as const,
+  },
+  {
+    phase: 4,
+    title: { en: "Launch & Growth", zh: "正式发布与增长" },
+    desc: {
+      en: "Official submission to App Store and Google Play. Continuous iteration based on user feedback. Community content submission (UGC) pipeline and curated collections.",
+      zh: "正式提交 App Store 和 Play Store。根据用户反馈持续迭代。建立社区内容提交 (UGC) 机制，推出编辑精选及主题美食路线。",
+    },
+    tags: {
+      en: ["App Store", "Google Play", "UGC", "Curated Content"],
+      zh: ["App Store", "Google Play", "社区提交", "精品策划"],
+    },
+    status: "upcoming" as const,
+  },
+];
+
+const pocItems = [
+  {
+    title: { en: "Mobile App", zh: "移动端应用" },
+    desc: {
+      en: "Cross-platform (iOS/Android) map & search, custom markers, Google Maps compliance",
+      zh: "跨平台（iOS/Android）地图与搜索、自定义 Marker、谷歌地图合规性检查",
+    },
+  },
+  {
+    title: { en: "Data Pipeline", zh: "数据流水线" },
+    desc: {
+      en: "YAML → Firestore automated sync & deployment via GitHub",
+      zh: "通过 GitHub 实现 YAML → Firestore 的自动同步与部署",
+    },
+  },
+  {
+    title: { en: "Landing Page", zh: "项目落地页" },
+    desc: {
+      en: "Bilingual UI framework with feature showcase",
+      zh: "具备双语 UI 框架及功能展示",
+    },
+  },
+  {
+    title: { en: "Admin Panel", zh: "管理后台" },
+    desc: {
+      en: "Full CRUD management for restaurant data",
+      zh: "餐厅数据增删改查 (CRUD) 全套管理功能",
+    },
   },
 ];
 
 export default function HomePage() {
-  const { t, tObj } = useLanguage();
+  const { lang, t, tObj } = useLanguage();
 
   return (
     <div>
@@ -132,7 +153,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6 sm:py-32 lg:py-40">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-sm text-muted-foreground">
             <span>🍜</span>
-            <span>{t("Community-driven food guide", "社区驱动的美食指南")}</span>
+            <span>{t("Community-driven digital food guide", "社区驱动的数字美食指南")}</span>
           </div>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
@@ -144,8 +165,8 @@ export default function HomePage() {
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
             {t(
-              "Discover the best Chinese restaurants in Berlin. Community-curated, bilingual, privacy-first. Available on Android and iOS.",
-              "发现柏林最好的中餐厅。社区策划、双语支持、隐私优先。支持 Android 和 iOS。"
+              "A non-profit, community-driven guide to Chinese restaurants in Berlin. Bilingual, privacy-first, open source. Available on Android and iOS.",
+              "非营利的社区驱动柏林中餐馆指南。双语支持、隐私优先、完全开源。支持 Android 和 iOS。"
             )}
           </p>
 
@@ -164,8 +185,72 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* POC Status */}
+      <section className="border-t border-border bg-muted/20">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+          <div className="text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-green-500/10 px-4 py-1.5 text-sm font-medium text-green-600 dark:text-green-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>{t("POC Complete", "POC 已完成")}</span>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              {t("Technical Foundation Validated", "技术架构已就绪")}
+            </h2>
+            <p className="mt-3 text-lg text-muted-foreground">
+              {t(
+                "All four pillars have been validated on staging",
+                "四个核心方向已在 Staging 环境全部通过验证"
+              )}
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 sm:grid-cols-2">
+            {pocItems.map((item) => (
+              <div
+                key={item.title.en}
+                className="flex items-start gap-4 rounded-xl border border-green-500/20 bg-green-500/5 p-5"
+              >
+                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/20 text-green-600 dark:text-green-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold">{tObj(item.title)}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {tObj(item.desc)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
-      <section id="features" className="border-t border-border bg-muted/20">
+      <section id="features" className="border-t border-border">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -197,16 +282,16 @@ export default function HomePage() {
       </section>
 
       {/* Roadmap */}
-      <section id="roadmap" className="border-t border-border">
+      <section id="roadmap" className="border-t border-border bg-muted/20">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              {t("Roadmap", "开发路线图")}
+              {t("Roadmap", "实施路线图")}
             </h2>
             <p className="mt-3 text-lg text-muted-foreground">
               {t(
-                "Phase 1 — From idea to launch in 4 weeks",
-                "第一阶段 — 4 周从创意到上线"
+                "From POC to production — 4 phases to launch",
+                "从 POC 到产品 — 4 个阶段走向上线"
               )}
             </p>
           </div>
@@ -216,8 +301,8 @@ export default function HomePage() {
             <div className="absolute left-[23px] top-0 hidden h-full w-px bg-border sm:block" />
 
             <div className="space-y-8">
-              {roadmapWeeks.map((item) => (
-                <div key={item.week} className="relative flex gap-6">
+              {roadmapPhases.map((item) => (
+                <div key={item.phase} className="relative flex gap-6">
                   {/* Timeline dot */}
                   <div className="relative z-10 hidden shrink-0 sm:block">
                     <div
@@ -244,7 +329,7 @@ export default function HomePage() {
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
                       ) : (
-                        `W${item.week}`
+                        `P${item.phase}`
                       )}
                     </div>
                   </div>
@@ -261,12 +346,17 @@ export default function HomePage() {
                   >
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:hidden">
-                        {t(`Week ${item.week}`, `第 ${item.week} 周`)}
+                        {t(`Phase ${item.phase}`, `第 ${item.phase} 阶段`)}
                       </span>
                       <h3 className="text-lg font-semibold">
-                        {t(`Week ${item.week}`, `第 ${item.week} 周`)}
+                        {t(`Phase ${item.phase}`, `第 ${item.phase} 阶段`)}
                         <span className="mx-2 text-muted-foreground">—</span>
                         {tObj(item.title)}
+                        {item.subtitle && (
+                          <span className="ml-2 text-sm font-normal text-muted-foreground">
+                            ({tObj(item.subtitle)})
+                          </span>
+                        )}
                       </h3>
                       {item.status === "done" && (
                         <span className="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
@@ -288,7 +378,7 @@ export default function HomePage() {
                       {tObj(item.desc)}
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {(tObj(item.tags) as string[]).map((tag: string) => (
+                      {(lang === "zh" ? item.tags.zh : item.tags.en).map((tag: string) => (
                         <span
                           key={tag}
                           className="inline-flex items-center rounded-md border border-border bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground"
@@ -306,7 +396,7 @@ export default function HomePage() {
       </section>
 
       {/* Download */}
-      <section id="download" className="border-t border-border bg-muted/20">
+      <section id="download" className="border-t border-border">
         <div className="mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 sm:py-28">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {t("Get the App", "获取应用")}

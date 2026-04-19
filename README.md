@@ -1,18 +1,47 @@
 # Berlin Chinese Food Map | 柏林中餐地图
 
-[中文版本](README_ZH.md)
+[中文版本](README_ZH.md) | [Project Proposal](PROPOSAL.md)
 
-An open-source, community-driven guide to Chinese restaurants in Berlin. Built with Kotlin Multiplatform and Compose Multiplatform for Android and iOS.
+A community-driven, non-profit digital guide to Chinese restaurants in Berlin. Built with Kotlin Multiplatform and Compose Multiplatform for Android and iOS.
 
-**No login required. Pure browsing experience.**
+**No login required. Privacy-first. Open source.**
 
 **By [Novawerk](https://github.com/Novawerk)** — Open-source apps, made with care.
+
+## Project Status
+
+**POC Complete** — The proof of concept has been validated across all four pillars:
+
+| Component | Status | What was validated |
+|-----------|--------|--------------------|
+| Mobile App (iOS + Android) | POC Ready | Cross-platform map & search, custom markers, Google Maps compliance |
+| Data Pipeline (GitHub sync) | Automated | YAML → Firestore auto-sync & deployment |
+| Landing Page | Live | Bilingual UI framework with feature showcase |
+| Admin Panel (Control Center) | Running | Full CRUD management for restaurant data |
+
+## Roadmap
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1: Kick-off | Data handoff, visual direction, schema & interaction design alignment | Upcoming |
+| Phase 2: MVP Development (Week 1) | Polished map UI, restaurant profiles, trilingual search, favorites & visit tracking, internal beta | Upcoming |
+| Phase 3: Beta & Launch Prep (Week 2) | Community beta (WeChat, Xiaohongshu), ASO prep, GTM coordination | Upcoming |
+| Phase 4: Launch & Growth | App Store + Play Store submission, feedback loop, UGC pipeline, curated collections | Upcoming |
+
+**Kick-off target: Week of April 14, 2026**
+
+## Deliverables
+
+- **Native Mobile App** (iOS + Android) — High-performance cross-platform app built with Kotlin Multiplatform
+- **Landing Page** (https://berlinfoodmap.novawerk.io/) — SEO-optimized bilingual page for product showcase and app distribution
+- **Control Center** — User-friendly admin panel designed for non-technical team members
+- **Data Pipeline** — GitHub-based workflow with automated validation and sync for community-contributed content
 
 ## Features
 
 ### Dual View Modes
 
-- **Map Mode** (default) — Interactive Google Map centered on Berlin with restaurant pins. Tap a pin to preview, tap again for full details.
+- **Map Mode** (default) — Interactive Google Map centered on Berlin with cuisine-colored restaurant pins. Tap a pin to preview, tap again for full details.
 - **List Mode** — Scrollable restaurant cards sorted by visit count or name, with cuisine-type chip filters.
 
 ### Smart Search & Filtering
@@ -44,13 +73,14 @@ An open-source, community-driven guide to Chinese restaurants in Berlin. Built w
 
 ## Project Structure
 
-This is a multi-platform project with three components:
+This is a multi-platform project with four components:
 
 | Component | Tech | Location |
 |-----------|------|----------|
 | Mobile App | Kotlin Multiplatform + Compose | `composeApp/` |
-| Landing Page | Next.js 16 + Tailwind CSS 4 | `web/` |
-| Admin Panel | React + Vite | `admin/` |
+| Landing Page | Next.js + Tailwind CSS | `web-apps/landing-page/` |
+| Admin Panel | React + Vite | `web-apps/admin/` |
+| Data Pipeline | YAML + GitHub CI → Firestore | `data/` |
 
 ### App Architecture
 
@@ -79,6 +109,24 @@ composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
         ├── favorites/               # Saved restaurants
         └── settings/                # Theme, language, about
 ```
+
+### Data Pipeline
+
+Restaurant data is community-contributed via YAML files:
+
+```
+data/restaurants/{district}/{restaurant-id}.yaml
+```
+
+| Field | Required | Example |
+|-------|----------|---------|
+| Name (ZH/EN) | Yes | 川味坊 / Sichuan Folk |
+| Cuisine Type | Yes | Sichuan, Cantonese, Hotpot, BBQ, etc. |
+| Street Address | Yes | Street name + number |
+| GPS Coordinates | Recommended | Lat/Lng for precise map pins |
+| Photos | Nice to have | 1-3 high-quality photos |
+
+Data can be submitted via CSV, Excel, or Google Sheets. The dev team handles conversion to YAML. CI validates schema and syncs to Firestore on merge.
 
 ## Tech Stack
 
@@ -113,12 +161,8 @@ For iOS, open `iosApp/` in Xcode and build normally.
 For the landing page:
 
 ```bash
-cd web && npm install && npm run dev
+cd web-apps/landing-page && npm install && npm run dev
 ```
-
-## Data Sources
-
-Restaurant data is community-contributed via JSON files in `data/restaurants/` and synced to Firebase Firestore. If you know a great Chinese restaurant in Berlin, please open an issue or submit a PR!
 
 ## Contributing
 

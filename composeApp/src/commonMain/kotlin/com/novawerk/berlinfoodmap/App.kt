@@ -3,6 +3,7 @@ package com.novawerk.berlinfoodmap
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -17,8 +18,10 @@ import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.navigation.*
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
+import com.novawerk.berlinfoodmap.ui.pages.favorites.FavoritesScreen
 import com.novawerk.berlinfoodmap.ui.pages.list.ListScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
+import com.novawerk.berlinfoodmap.ui.pages.search.SearchScreen
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
 import com.novawerk.berlinfoodmap.ui.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -26,6 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.nav_map
 import berlinfoodmap.composeapp.generated.resources.nav_list
+import berlinfoodmap.composeapp.generated.resources.nav_favorites
 import berlinfoodmap.composeapp.generated.resources.settings
 
 @Composable
@@ -33,6 +37,7 @@ fun App(component: AppComponent) {
     val settings = component.settingsRepository
     val authService = component.authService
     val restaurantRepository = component.restaurantRepository
+    val favoritesRepository = component.favoritesRepository
     val scope = rememberCoroutineScope()
 
     var darkMode by remember { mutableStateOf("system") }
@@ -61,7 +66,10 @@ fun App(component: AppComponent) {
                 val currentRoute = currentEntry?.destination?.route
 
                 val showBottomBar = currentRoute?.let {
-                    it.contains("MapRoute") || it.contains("ListRoute")
+                    it.contains("MapRoute") ||
+                        it.contains("ListRoute") ||
+                        it.contains("FavoritesRoute") ||
+                        it.contains("SettingsRoute")
                 } ?: true
 
                 Scaffold(
@@ -89,8 +97,22 @@ fun App(component: AppComponent) {
                                     label = { Text(stringResource(Res.string.nav_list)) },
                                 )
                                 NavigationBarItem(
+                                    selected = currentRoute?.contains("FavoritesRoute") == true,
+                                    onClick = {
+                                        navController.navigate(FavoritesRoute) {
+                                            popUpTo(MapRoute)
+                                        }
+                                    },
+                                    icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                                    label = { Text(stringResource(Res.string.nav_favorites)) },
+                                )
+                                NavigationBarItem(
                                     selected = currentRoute?.contains("SettingsRoute") == true,
-                                    onClick = { navController.navigate(SettingsRoute) },
+                                    onClick = {
+                                        navController.navigate(SettingsRoute) {
+                                            popUpTo(MapRoute)
+                                        }
+                                    },
                                     icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
                                     label = { Text(stringResource(Res.string.settings)) },
                                 )
@@ -106,25 +128,23 @@ fun App(component: AppComponent) {
                         composable<MapRoute> {
                             MapScreen(
                                 repository = restaurantRepository,
-                                onNavigateSettings = { navController.navigate(SettingsRoute) },
-                                onNavigateList = {
-                                    navController.navigate(ListRoute) {
-                                        popUpTo(MapRoute)
-                                    }
-                                },
                                 onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
+                                onNavigateSearch = { navController.navigate(SearchRoute()) },
                             )
                         }
 
                         composable<ListRoute> {
                             ListScreen(
                                 repository = restaurantRepository,
-                                onNavigateSettings = { navController.navigate(SettingsRoute) },
-                                onNavigateMap = {
-                                    navController.navigate(MapRoute) {
-                                        popUpTo(MapRoute) { inclusive = true }
-                                    }
-                                },
+                                onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
+                                onNavigateSearch = { navController.navigate(SearchRoute()) },
+                            )
+                        }
+
+                        composable<FavoritesRoute> {
+                            FavoritesScreen(
+                                repository = restaurantRepository,
+                                favoritesRepository = favoritesRepository,
                                 onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
                             )
                         }
@@ -135,6 +155,18 @@ fun App(component: AppComponent) {
                                 restaurantId = route.restaurantId,
                                 repository = restaurantRepository,
                                 authService = authService,
+                                favoritesRepository = favoritesRepository,
+                                onBack = { navController.popBackStack() },
+                            )
+                        }
+
+                        composable<SearchRoute> { backStackEntry ->
+                            val route = backStackEntry.toRoute<SearchRoute>()
+                            SearchScreen(
+                                repository = restaurantRepository,
+                                initialCuisine = route.initialCuisine,
+                                initialDistrict = route.initialDistrict,
+                                onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
                                 onBack = { navController.popBackStack() },
                             )
                         }
@@ -151,6 +183,7 @@ fun App(component: AppComponent) {
                                     language = newLang
                                     scope.launch { settings.setLanguage(newLang) }
                                 },
+                                favoritesRepository = favoritesRepository,
                                 onBack = { navController.popBackStack() },
                             )
                         }

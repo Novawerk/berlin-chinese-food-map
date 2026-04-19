@@ -1,18 +1,47 @@
 # 柏林中餐地图 | Berlin Chinese Food Map
 
-[English Version](README.md)
+[English Version](README.md) | [项目协作提案](PROPOSAL.md)
 
-一款开源的、社区驱动的柏林中餐馆指南。基于 Kotlin Multiplatform 和 Compose Multiplatform 构建，支持 Android 和 iOS。
+一款社区驱动的非营利性质柏林中餐馆数字指南。基于 Kotlin Multiplatform 和 Compose Multiplatform 构建，支持 Android 和 iOS。
 
-**无需登录，纯展示体验。**
+**无需登录。隐私优先。完全开源。**
 
 **由 [Novawerk](https://github.com/Novawerk) 打造** — 开源应用，用心制作。
+
+## 项目状态
+
+**POC 已完成** — 原型验证已在四个核心方向全部通过：
+
+| 组件 | 状态 | 验证内容 |
+|------|------|---------|
+| 移动端应用 (iOS + Android) | POC 就绪 | 跨平台地图与搜索逻辑、自定义 Marker、谷歌地图合规性检查 |
+| 数据流水线 (GitHub 同步) | 自动化 | YAML → Firestore 自动同步与部署 |
+| 项目落地页 | 已上线 | 双语 UI 框架及功能展示 |
+| 管理后台（控制中心） | 正常运行 | 餐厅数据增删改查 (CRUD) 全套管理功能 |
+
+## 实施路线图
+
+| 阶段 | 描述 | 状态 |
+|------|------|------|
+| 第一阶段：Kick-off | 数据交接、视觉方向对齐、Schema 与交互逻辑敲定 | 即将开始 |
+| 第二阶段：MVP 核心开发（第 1 周） | 精致地图 UI、餐厅画像、三语搜索、收藏与足迹、内部测试 | 即将开始 |
+| 第三阶段：内测与发布筹备（第 2 周） | 社区内测（微信、小红书）、ASO 准备、GTM 协同 | 即将开始 |
+| 第四阶段：正式发布与增长 | App Store + Play Store 上架、反馈迭代、UGC 机制、精品策划 | 即将开始 |
+
+**Kick-off 目标：2026年4月14日当周**
+
+## 核心交付产物
+
+- **移动端原生应用** (iOS + Android) — 基于 Kotlin Multiplatform 开发的高性能跨平台原生应用
+- **落地页** (https://berlinfoodmap.novawerk.io/) — 经过 SEO 优化的双语落地页，用于产品展示及应用分发
+- **控制中心** — 为非技术背景团队成员设计的用户友好型管理后台
+- **数据流水线** — 基于 GitHub 的工作流，支持社区贡献内容的自动校验与同步
 
 ## 功能特色
 
 ### 双视图模式
 
-- **地图模式**（默认）— 以柏林为中心的交互式 Google 地图，显示餐厅标记。点击标记预览信息，再次点击查看完整详情。
+- **地图模式**（默认）— 以柏林为中心的交互式 Google 地图，显示按菜系类型着色的餐厅标记。点击标记预览信息，再次点击查看完整详情。
 - **列表模式** — 可滚动的餐厅卡片，支持按到访次数或名称排序，带有菜系类型筛选标签。
 
 ### 智能搜索与筛选
@@ -44,13 +73,14 @@
 
 ## 项目结构
 
-这是一个多平台项目，包含三个组件：
+这是一个多平台项目，包含四个组件：
 
 | 组件 | 技术 | 目录 |
 |------|------|------|
 | 移动应用 | Kotlin Multiplatform + Compose | `composeApp/` |
-| 官网着陆页 | Next.js 16 + Tailwind CSS 4 | `web/` |
-| 管理面板 | React + Vite | `admin/` |
+| 落地页 | Next.js + Tailwind CSS | `web-apps/landing-page/` |
+| 管理面板 | React + Vite | `web-apps/admin/` |
+| 数据流水线 | YAML + GitHub CI → Firestore | `data/` |
 
 ### 应用架构
 
@@ -79,6 +109,24 @@ composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
         ├── favorites/               # 收藏的餐厅
         └── settings/                # 主题、语言、关于
 ```
+
+### 数据流水线
+
+餐厅数据由社区通过 YAML 文件贡献：
+
+```
+data/restaurants/{district}/{restaurant-id}.yaml
+```
+
+| 字段 | 属性 | 备注 |
+|------|------|------|
+| 名称 (中/英) | 必填 | 例如：川味坊 / Sichuan Folk |
+| 菜系分类 | 必填 | 细化分类（如：火锅、烧烤、粤菜等） |
+| 街道地址 | 必填 | 包含街名和门牌号 |
+| 地理坐标 | 建议提供 | GPS 经纬度（确保地图标记精准） |
+| 视觉素材 | 能有最好 | 1-3 张高质量照片（环境或招牌菜） |
+
+数据可通过 CSV、Excel 或 Google Sheets 形式交付。开发团队负责转换为 YAML 格式。CI 自动校验 Schema 并在合并时同步到 Firestore。
 
 ## 技术栈
 
@@ -110,15 +158,11 @@ composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
 
 iOS 端请在 Xcode 中打开 `iosApp/` 并正常构建。
 
-着陆页：
+落地页：
 
 ```bash
-cd web && npm install && npm run dev
+cd web-apps/landing-page && npm install && npm run dev
 ```
-
-## 数据来源
-
-餐厅数据由社区贡献，通过 `data/restaurants/` 中的 JSON 文件管理，并同步到 Firebase Firestore。如果你知道柏林有好吃的中餐馆，欢迎提交 Issue 或 PR！
 
 ## 参与贡献
 

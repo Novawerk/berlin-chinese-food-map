@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,106 +14,103 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
+import com.novawerk.berlinfoodmap.ui.components.EmptyState
+import com.novawerk.berlinfoodmap.ui.components.RestaurantCard
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.list_coming_soon
+import berlinfoodmap.composeapp.generated.resources.search_hint
+import berlinfoodmap.composeapp.generated.resources.sort_most_visited
+import berlinfoodmap.composeapp.generated.resources.sort_name
+import berlinfoodmap.composeapp.generated.resources.no_results
 
+private enum class SortMode { MOST_VISITED, NAME }
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
     repository: RestaurantRepository,
-    onNavigateSettings: () -> Unit,
-    onNavigateMap: () -> Unit,
     onNavigateDetail: (String) -> Unit,
+    onNavigateSearch: () -> Unit,
 ) {
     var restaurants by remember { mutableStateOf<List<Restaurant>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
+    var sortMode by remember { mutableStateOf(SortMode.MOST_VISITED) }
 
     LaunchedEffect(Unit) {
         restaurants = repository.getAll()
         loading = false
     }
 
-    if (loading) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    if (restaurants.isEmpty()) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(Res.string.list_coming_soon),
-                style = MaterialTheme.typography.headlineMedium,
-            )
-        }
-        return
-    }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        items(restaurants, key = { it.id }) { restaurant ->
-            RestaurantCard(
-                restaurant = restaurant,
-                onClick = { onNavigateDetail(restaurant.id) },
-            )
+    val sortedRestaurants = remember(restaurants, sortMode) {
+        when (sortMode) {
+            SortMode.MOST_VISITED -> restaurants.sortedByDescending { it.visitCount }
+            SortMode.NAME -> restaurants.sortedBy { it.name.en.lowercase() }
         }
     }
-}
 
-@Composable
-private fun RestaurantCard(
-    restaurant: Restaurant,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = restaurant.name.zh,
-                style = MaterialTheme.typography.titleMedium,
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Clickable search bar
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            readOnly = true,
+            enabled = false,
+            placeholder = { Text(stringResource(Res.string.search_hint)) },
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .clickable { onNavigateSearch() },
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledContainerColor = MaterialTheme.colorScheme.surface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        )
+
+        // Sort chips
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            FilterChip(
+                selected = sortMode == SortMode.MOST_VISITED,
+                onClick = { sortMode = SortMode.MOST_VISITED },
+                label = { Text(stringResource(Res.string.sort_most_visited)) },
             )
-            Text(
-                text = restaurant.name.en,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            FilterChip(
+                selected = sortMode == SortMode.NAME,
+                onClick = { sortMode = SortMode.NAME },
+                label = { Text(stringResource(Res.string.sort_name)) },
             )
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Place,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = restaurant.address.district,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(16.dp))
-                Icon(
-                    Icons.Filled.Visibility,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "${restaurant.viewCount}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(16.dp))
-                Text(
-                    text = "${restaurant.visitCount} visited",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+        }
+
+        if (loading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return
+        }
+
+        if (sortedRestaurants.isEmpty()) {
+            EmptyState(
+                icon = Icons.Filled.SearchOff,
+                title = stringResource(Res.string.no_results),
+                subtitle = "",
+            )
+            return
+        }
+
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            items(sortedRestaurants, key = { it.id }) { restaurant ->
+                RestaurantCard(
+                    restaurant = restaurant,
+                    onClick = { onNavigateDetail(restaurant.id) },
                 )
             }
         }
