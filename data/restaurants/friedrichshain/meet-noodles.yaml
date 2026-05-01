@@ -1,0 +1,10 @@
+name:
+  en: Meet Noodles
+  zh: 见一面
+cuisineType: NOODLES
+address:
+  addressLine1: Boxhagener Str. 104
+  postalCode: '10245'
+  district: Friedrichshain
+latitude: 52.5126429
+longitude: 13.4592514
