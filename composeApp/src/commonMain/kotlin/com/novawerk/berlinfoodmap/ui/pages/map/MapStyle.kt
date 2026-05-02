@@ -6,9 +6,9 @@ package com.novawerk.berlinfoodmap.ui.pages.map
  */
 val BERLIN_MAP_STYLE_JSON = """
 [
-  { "elementType": "geometry", "stylers": [{ "color": "#f9f9e8" }] },
+  { "elementType": "geometry", "stylers": [{ "color": "#f8f1de" }] },
   { "elementType": "labels.text.fill", "stylers": [{ "color": "#514646" }] },
-  { "elementType": "labels.text.stroke", "stylers": [{ "color": "#f9f9e8" }] },
+  { "elementType": "labels.text.stroke", "stylers": [{ "color": "#f8f1de" }] },
   { "featureType": "poi.business", "stylers": [{ "visibility": "off" }] },
   { "featureType": "poi.attraction", "stylers": [{ "visibility": "off" }] },
   { "featureType": "poi.government", "stylers": [{ "visibility": "off" }] },
@@ -25,9 +25,9 @@ val BERLIN_MAP_STYLE_JSON = """
   { "featureType": "road.local", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }] },
   { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#d6e0e8" }] },
   { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#7a8aa0" }] },
-  { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{ "color": "#f5efd8" }] },
-  { "featureType": "landscape.man_made", "elementType": "geometry", "stylers": [{ "color": "#f5efe2" }] },
-  { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#e2e0c4" }] },
+  { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{ "color": "#f3ead5" }] },
+  { "featureType": "landscape.man_made", "elementType": "geometry", "stylers": [{ "color": "#f8f1de" }] },
+  { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#ebdfc6" }] },
   { "featureType": "poi.park", "elementType": "labels", "stylers": [{ "visibility": "simplified" }] },
   { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [{ "color": "#c6c2bd" }] }
 ]
