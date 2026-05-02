@@ -34,6 +34,10 @@ const RESOLVE_DRY_RUN = process.argv.includes("--resolve-dry-run");
 // --refresh-photos to force a re-upload (e.g. if a restaurant's photos are
 // stale or you want to refresh galleries).
 const REFRESH_PHOTOS = process.argv.includes("--refresh-photos");
+// Bypass the 14-day Place Details cache — useful when recovering from a
+// failed batch (e.g. Storage was disabled) or when a schema change requires
+// re-reading every place.
+const FORCE_REFRESH = process.argv.includes("--force-refresh");
 const RESTAURANT_ID_FILTER = (() => {
   const idx = process.argv.findIndex((a) => a === "--ids");
   if (idx >= 0 && process.argv[idx + 1]) {
@@ -373,8 +377,12 @@ async function uploadPhotos(placeId, photoRefs) {
 }
 
 function shouldRefreshPlace(existingGoogleData, placeId) {
+  if (FORCE_REFRESH) return true;
   if (!existingGoogleData) return true;
   if (existingGoogleData.placeId !== placeId) return true;
+  // Recover from a failed photo batch: if we have Place Details cached but
+  // no photo URLs, refresh so we retry the upload.
+  if ((existingGoogleData.photoUrls?.length ?? 0) === 0) return true;
   const fetchedAt = existingGoogleData.fetchedAt;
   if (!fetchedAt || typeof fetchedAt.toMillis !== "function") return true;
   const age = Date.now() - fetchedAt.toMillis();

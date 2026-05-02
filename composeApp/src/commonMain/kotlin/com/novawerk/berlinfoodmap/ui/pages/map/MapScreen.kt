@@ -592,6 +592,8 @@ private fun MiniRestaurantCard(restaurant: Restaurant, selected: Boolean) {
     else MaterialTheme.colorScheme.onSurface
     val border = if (selected) MaterialTheme.colorScheme.primary
     else MaterialTheme.colorScheme.outlineVariant
+    val iconBg = if (selected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f)
+    else MaterialTheme.colorScheme.primaryContainer
     Box(
         modifier = Modifier
             .background(container, RoundedCornerShape(10.dp))
@@ -599,13 +601,20 @@ private fun MiniRestaurantCard(restaurant: Restaurant, selected: Boolean) {
             .padding(horizontal = 8.dp, vertical = 5.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(Modifier.width(6.dp))
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .background(iconBg, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Spacer(Modifier.width(8.dp))
             Column {
                 Text(
                     text = restaurant.name.zh,
@@ -663,12 +672,19 @@ private fun NearbyCard(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(36.dp),
-            )
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(34.dp),
+                )
+            }
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
