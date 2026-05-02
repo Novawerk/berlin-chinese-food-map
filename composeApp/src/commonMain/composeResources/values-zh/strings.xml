@@ -53,4 +53,6 @@
     <string name="version">版本</string>
     <string name="privacy_policy">隐私政策</string>
     <string name="clear_favorites">清除收藏</string>
+    <string name="icon_credits">图标致谢</string>
+    <string name="icon_credits_value">菜系图标由 Freepik 提供 — Flaticon</string>
 </resources>

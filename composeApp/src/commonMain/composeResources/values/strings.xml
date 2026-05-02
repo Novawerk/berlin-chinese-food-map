@@ -53,4 +53,6 @@
     <string name="version">Version</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="clear_favorites">Clear Favorites</string>
+    <string name="icon_credits">Icon credits</string>
+    <string name="icon_credits_value">Cuisine icons by Freepik — Flaticon</string>
 </resources>

@@ -26,6 +26,8 @@ import berlinfoodmap.composeapp.generated.resources.about
 import berlinfoodmap.composeapp.generated.resources.version
 import berlinfoodmap.composeapp.generated.resources.clear_favorites
 import berlinfoodmap.composeapp.generated.resources.privacy_policy
+import berlinfoodmap.composeapp.generated.resources.icon_credits
+import berlinfoodmap.composeapp.generated.resources.icon_credits_value
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,6 +154,21 @@ fun SettingsScreen(
                     text = stringResource(Res.string.privacy_policy),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
+                )
+            }
+
+            // Icon credits (Flaticon attribution)
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            ) {
+                Text(
+                    text = stringResource(Res.string.icon_credits),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = stringResource(Res.string.icon_credits_value),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
