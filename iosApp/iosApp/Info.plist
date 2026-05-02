@@ -4,5 +4,7 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Show your location on the Berlin Chinese Food Map so we can recommend nearby restaurants.</string>
 </dict>
 </plist>

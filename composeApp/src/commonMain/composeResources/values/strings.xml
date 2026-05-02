@@ -26,6 +26,14 @@
     <string name="filter_cuisine">Cuisine</string>
     <string name="filter_district">District</string>
     <string name="filter_distance">Distance</string>
+    <string name="filter_title">Filters</string>
+    <string name="filter_reset">Reset</string>
+
+    <!-- Detail page -->
+    <string name="open_in_maps">Open in Google Maps</string>
+    <string name="open_website">Website</string>
+    <string name="opening_hours">Opening hours</string>
+    <string name="rating_count">%1$d reviews</string>
 
     <!-- Cuisine types -->
     <string name="cuisine_sichuan">Sichuan</string>

@@ -26,6 +26,14 @@
     <string name="filter_cuisine">菜系</string>
     <string name="filter_district">街区</string>
     <string name="filter_distance">距离</string>
+    <string name="filter_title">筛选</string>
+    <string name="filter_reset">重置</string>
+
+    <!-- Detail page -->
+    <string name="open_in_maps">在谷歌地图打开</string>
+    <string name="open_website">官方网站</string>
+    <string name="opening_hours">营业时间</string>
+    <string name="rating_count">%1$d 条评价</string>
 
     <!-- Cuisine types -->
     <string name="cuisine_sichuan">川菜</string>

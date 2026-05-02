@@ -2,7 +2,6 @@ package com.novawerk.berlinfoodmap
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
@@ -14,12 +13,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.request.crossfade
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.navigation.*
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
 import com.novawerk.berlinfoodmap.ui.pages.favorites.FavoritesScreen
-import com.novawerk.berlinfoodmap.ui.pages.list.ListScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
 import com.novawerk.berlinfoodmap.ui.pages.search.SearchScreen
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
@@ -28,7 +30,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.nav_map
-import berlinfoodmap.composeapp.generated.resources.nav_list
 import berlinfoodmap.composeapp.generated.resources.nav_favorites
 import berlinfoodmap.composeapp.generated.resources.settings
 
@@ -56,6 +57,13 @@ fun App(component: AppComponent) {
 
     if (!ready) return
 
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .components { add(KtorNetworkFetcherFactory()) }
+            .crossfade(true)
+            .build()
+    }
+
     CompositionLocalProvider(
         LocalAppLocale provides language,
     ) {
@@ -67,7 +75,6 @@ fun App(component: AppComponent) {
 
                 val showBottomBar = currentRoute?.let {
                     it.contains("MapRoute") ||
-                        it.contains("ListRoute") ||
                         it.contains("FavoritesRoute") ||
                         it.contains("SettingsRoute")
                 } ?: true
@@ -85,16 +92,6 @@ fun App(component: AppComponent) {
                                     },
                                     icon = { Icon(Icons.Filled.Map, contentDescription = null) },
                                     label = { Text(stringResource(Res.string.nav_map)) },
-                                )
-                                NavigationBarItem(
-                                    selected = currentRoute?.contains("ListRoute") == true,
-                                    onClick = {
-                                        navController.navigate(ListRoute) {
-                                            popUpTo(MapRoute)
-                                        }
-                                    },
-                                    icon = { Icon(Icons.AutoMirrored.Filled.FormatListBulleted, contentDescription = null) },
-                                    label = { Text(stringResource(Res.string.nav_list)) },
                                 )
                                 NavigationBarItem(
                                     selected = currentRoute?.contains("FavoritesRoute") == true,
@@ -127,14 +124,6 @@ fun App(component: AppComponent) {
                     ) {
                         composable<MapRoute> {
                             MapScreen(
-                                repository = restaurantRepository,
-                                onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
-                                onNavigateSearch = { navController.navigate(SearchRoute()) },
-                            )
-                        }
-
-                        composable<ListRoute> {
-                            ListScreen(
                                 repository = restaurantRepository,
                                 onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
                                 onNavigateSearch = { navController.navigate(SearchRoute()) },

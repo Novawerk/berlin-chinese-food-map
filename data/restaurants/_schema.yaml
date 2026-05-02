@@ -39,3 +39,10 @@ galleries:
   - "https://example.com/photo1.jpg"
   - "https://example.com/photo2.jpg"
 hidden: false                  # true = soft-deleted, hidden from public
+
+# --- Google Places enrichment (optional) ---
+# When set, the sync pipeline pulls live data from Google Places (rating,
+# weekly hours, website, deep link). Find the placeId at:
+#   https://developers.google.com/maps/documentation/places/web-service/place-id
+# The pipeline caches results for 7 days; bump _placeRefreshedAt to force re-fetch.
+placeId: "ChIJN1t_tDeuEmsRUsoyG83frY4"

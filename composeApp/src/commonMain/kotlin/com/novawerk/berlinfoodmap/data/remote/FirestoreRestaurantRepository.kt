@@ -161,5 +161,33 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
         visitCount = try { get<Int>("visitCount") } catch (_: Exception) { 0 },
         viewCount = try { get<Int>("viewCount") } catch (_: Exception) { 0 },
         hidden = try { get<Boolean>("hidden") } catch (_: Exception) { false },
+        googleData = try {
+            get<Map<String, Any?>?>("googleData")?.toGooglePlaceData()
+        } catch (_: Exception) {
+            null
+        },
+    )
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun Map<String, Any?>.toGooglePlaceData(): GooglePlaceData? {
+    val placeId = this["placeId"] as? String ?: return null
+    val fetchedAt = this["fetchedAt"]
+    return GooglePlaceData(
+        placeId = placeId,
+        rating = (this["rating"] as? Number)?.toDouble(),
+        userRatingsTotal = (this["userRatingsTotal"] as? Number)?.toInt(),
+        weekdayText = (this["weekdayText"] as? List<String>) ?: emptyList(),
+        website = this["website"] as? String,
+        googleMapsUrl = this["googleMapsUrl"] as? String,
+        formattedPhoneNumber = this["formattedPhoneNumber"] as? String,
+        formattedAddress = this["formattedAddress"] as? String,
+        photoUrls = (this["photoUrls"] as? List<String>) ?: emptyList(),
+        coverPhotoUrl = this["coverPhotoUrl"] as? String,
+        fetchedAtEpochSeconds = when (fetchedAt) {
+            is Timestamp -> fetchedAt.seconds
+            is Number -> fetchedAt.toLong()
+            else -> null
+        },
     )
 }

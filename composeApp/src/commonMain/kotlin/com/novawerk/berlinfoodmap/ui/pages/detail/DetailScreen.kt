@@ -1,16 +1,24 @@
 package com.novawerk.berlinfoodmap.ui.pages.detail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -22,9 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
 import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
+import com.novawerk.berlinfoodmap.domain.restaurant.GooglePlaceData
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.ui.components.cuisineDisplayName
+import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
@@ -32,6 +42,10 @@ import berlinfoodmap.composeapp.generated.resources.back
 import berlinfoodmap.composeapp.generated.resources.visited_button
 import berlinfoodmap.composeapp.generated.resources.already_visited
 import berlinfoodmap.composeapp.generated.resources.call_phone
+import berlinfoodmap.composeapp.generated.resources.open_in_maps
+import berlinfoodmap.composeapp.generated.resources.open_website
+import berlinfoodmap.composeapp.generated.resources.opening_hours
+import berlinfoodmap.composeapp.generated.resources.rating_count
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +61,7 @@ fun DetailScreen(
     var hasVisited by remember { mutableStateOf(false) }
     var isFavorite by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val urlLauncher = rememberUrlLauncher()
 
     // Collect favorite state
     LaunchedEffect(restaurantId) {
@@ -125,32 +140,46 @@ fun DetailScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState()),
         ) {
-            // Gallery pager
-            if (r.galleries.isNotEmpty()) {
-                val pagerState = rememberPagerState(pageCount = { r.galleries.size })
+            // Photos — admin-uploaded gallery first, then Google Places photos.
+            // The cover image is the first one in this combined list.
+            val photos = remember(r.galleries, r.googleData?.photoUrls) {
+                buildList {
+                    addAll(r.galleries)
+                    r.googleData?.photoUrls?.let { addAll(it) }
+                }.distinct()
+            }
+            if (photos.isNotEmpty()) {
+                val pagerState = rememberPagerState(pageCount = { photos.size })
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxWidth().height(220.dp),
+                    modifier = Modifier.fillMaxWidth().height(240.dp),
                 ) { page ->
-                    // Placeholder for gallery images (AsyncImage would go here)
-                    Box(
+                    AsyncImage(
+                        model = photos[page],
+                        contentDescription = r.name.zh,
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+                if (photos.size > 1) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                        ) {
+                        repeat(photos.size) { i ->
+                            val active = pagerState.currentPage == i
                             Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = "${page + 1}/${r.galleries.size}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
+                                modifier = Modifier
+                                    .padding(horizontal = 3.dp)
+                                    .size(if (active) 8.dp else 6.dp)
+                                    .background(
+                                        color = if (active) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.outlineVariant,
+                                        shape = CircleShape,
+                                    ),
+                            )
                         }
                     }
                 }
@@ -216,8 +245,9 @@ fun DetailScreen(
                     }
                 }
 
-                // Phone
-                r.phone?.let { phone ->
+                // Phone — fall back to the Google-fetched number if YAML is empty.
+                val phoneNumber = r.phone ?: r.googleData?.formattedPhoneNumber
+                phoneNumber?.let { phone ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Filled.Phone,
@@ -228,6 +258,12 @@ fun DetailScreen(
                         Spacer(Modifier.width(8.dp))
                         Text(phone, style = MaterialTheme.typography.bodyMedium)
                     }
+                }
+
+                // Google Places enrichment — rating + hours + website
+                r.googleData?.let { gd ->
+                    HorizontalDivider()
+                    GoogleDataSection(gd = gd, onOpenUrl = urlLauncher::open)
                 }
 
                 // Description
@@ -268,6 +304,22 @@ fun DetailScreen(
 
                 Spacer(Modifier.height(8.dp))
 
+                // Open in Google Maps — uses the Google-fetched URL when available,
+                // otherwise falls back to a placeId / lat-lng search URL.
+                val mapsUrl = r.googleData?.googleMapsUrl
+                    ?: r.googleData?.placeId?.let { id ->
+                        "https://www.google.com/maps/place/?q=place_id:$id"
+                    }
+                    ?: "https://www.google.com/maps/search/?api=1&query=${r.latitude},${r.longitude}"
+                OutlinedButton(
+                    onClick = { urlLauncher.open(mapsUrl) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(Icons.Filled.Map, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(Res.string.open_in_maps))
+                }
+
                 // Visit button
                 Button(
                     onClick = {
@@ -299,4 +351,88 @@ fun DetailScreen(
             }
         }
     }
+}
+
+@Composable
+private fun GoogleDataSection(
+    gd: GooglePlaceData,
+    onOpenUrl: (String) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Rating row
+        gd.rating?.let { rating ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Filled.Star,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = rating.toFormattedRating(),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                gd.userRatingsTotal?.let { count ->
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(Res.string.rating_count, count),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+
+        // Weekly hours
+        if (gd.weekdayText.isNotEmpty()) {
+            Row(verticalAlignment = Alignment.Top) {
+                Icon(
+                    Icons.Filled.Schedule,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = stringResource(Res.string.opening_hours),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    gd.weekdayText.forEach { line ->
+                        Text(line, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
+
+        // Website link
+        gd.website?.let { website ->
+            TextButton(
+                onClick = { onOpenUrl(website) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.OpenInNew,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = stringResource(Res.string.open_website),
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Start,
+                )
+            }
+        }
+    }
+}
+
+private fun Double.toFormattedRating(): String {
+    val rounded = (this * 10).toInt() / 10.0
+    val whole = rounded.toInt()
+    val tenth = ((rounded - whole) * 10 + 0.5).toInt()
+    return if (tenth == 0) "$whole.0" else "$whole.$tenth"
 }

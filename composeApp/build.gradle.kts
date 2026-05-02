@@ -47,6 +47,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.play.services.location)
+            implementation(libs.kotlinx.coroutines.play.services)
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -66,6 +72,8 @@ kotlin {
             implementation(libs.gitlive.firebase.auth)
             implementation(libs.gitlive.firebase.firestore)
             implementation(libs.kmp.maps.compose)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
         }
     }
 }

@@ -17,4 +17,5 @@ data class Restaurant(
     val visitCount: Int = 0,
     val viewCount: Int = 0,
     val hidden: Boolean = false,
+    val googleData: GooglePlaceData? = null,
 )
