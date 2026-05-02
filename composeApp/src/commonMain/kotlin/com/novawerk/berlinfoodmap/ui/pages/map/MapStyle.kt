@@ -25,9 +25,9 @@ val BERLIN_MAP_STYLE_JSON = """
   { "featureType": "road.local", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }] },
   { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#d6e0e8" }] },
   { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#7a8aa0" }] },
-  { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{ "color": "#eef0d8" }] },
-  { "featureType": "landscape.man_made", "elementType": "geometry", "stylers": [{ "color": "#f3eee2" }] },
-  { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#d5e0b8" }] },
+  { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{ "color": "#f5efd8" }] },
+  { "featureType": "landscape.man_made", "elementType": "geometry", "stylers": [{ "color": "#f5efe2" }] },
+  { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#e2e0c4" }] },
   { "featureType": "poi.park", "elementType": "labels", "stylers": [{ "visibility": "simplified" }] },
   { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [{ "color": "#c6c2bd" }] }
 ]

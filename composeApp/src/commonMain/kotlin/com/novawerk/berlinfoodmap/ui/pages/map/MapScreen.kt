@@ -28,6 +28,8 @@ import com.novawerk.berlinfoodmap.domain.restaurant.CuisineType
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.ui.components.cuisineDisplayName
+import com.novawerk.berlinfoodmap.ui.components.cuisineIconResource
+import org.jetbrains.compose.resources.painterResource
 import eu.buney.maps.GoogleMap
 import eu.buney.maps.LatLng
 import eu.buney.maps.LatLngBounds
@@ -588,8 +590,6 @@ private fun MiniRestaurantCard(restaurant: Restaurant, selected: Boolean) {
     else MaterialTheme.colorScheme.surface
     val onContainer = if (selected) MaterialTheme.colorScheme.onPrimary
     else MaterialTheme.colorScheme.onSurface
-    val accent = if (selected) MaterialTheme.colorScheme.onPrimary
-    else MaterialTheme.colorScheme.primary
     val border = if (selected) MaterialTheme.colorScheme.primary
     else MaterialTheme.colorScheme.outlineVariant
     Box(
@@ -599,10 +599,11 @@ private fun MiniRestaurantCard(restaurant: Restaurant, selected: Boolean) {
             .padding(horizontal = 8.dp, vertical = 5.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(accent, CircleShape),
+            Icon(
+                painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(20.dp),
             )
             Spacer(Modifier.width(6.dp))
             Column {
@@ -658,46 +659,59 @@ private fun NearbyCard(
         colors = CardDefaults.cardColors(containerColor = container),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = restaurant.name.zh,
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(36.dp),
             )
-            Text(
-                text = restaurant.name.en,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-            )
-            Spacer(Modifier.height(6.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Place,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(Modifier.width(4.dp))
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "${restaurant.address.district} · ${cuisineDisplayName(restaurant.cuisineType)}",
+                    text = restaurant.name.zh,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                )
+                Text(
+                    text = restaurant.name.en,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                 )
-                Spacer(Modifier.weight(1f))
-                Icon(
-                    Icons.Filled.Visibility,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "${restaurant.viewCount}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Place,
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Text(
+                        text = "${restaurant.address.district} · ${cuisineDisplayName(restaurant.cuisineType)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        Icons.Filled.Visibility,
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Text(
+                        text = "${restaurant.viewCount}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
     }

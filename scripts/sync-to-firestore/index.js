@@ -59,9 +59,10 @@ if (!serviceAccount && NEEDS_FIRESTORE) {
   process.exit(1);
 }
 
-const STORAGE_BUCKET =
-  process.env.FIREBASE_STORAGE_BUCKET ||
-  (serviceAccount?.project_id ? `${serviceAccount.project_id}.appspot.com` : null);
+// Newer Firebase projects ship `${projectId}.firebasestorage.app`; legacy
+// ones used `${projectId}.appspot.com`. We require the explicit env var to
+// avoid silently uploading to a bucket that doesn't exist.
+const STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET || null;
 
 let db = null;
 let storageBucket = null;

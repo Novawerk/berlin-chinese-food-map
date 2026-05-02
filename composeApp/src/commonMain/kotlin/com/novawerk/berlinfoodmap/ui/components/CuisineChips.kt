@@ -59,7 +59,7 @@ fun CuisineChips(
     }
 }
 
-private fun cuisineIconResource(cuisine: CuisineType): DrawableResource = when (cuisine) {
+fun cuisineIconResource(cuisine: CuisineType): DrawableResource = when (cuisine) {
     CuisineType.SICHUAN -> Res.drawable.cuisine_sichuan
     CuisineType.CANTONESE -> Res.drawable.cuisine_cantonese
     CuisineType.HOTPOT -> Res.drawable.cuisine_hotpot
