@@ -593,7 +593,7 @@ private fun MiniRestaurantCard(restaurant: Restaurant, selected: Boolean) {
     val border = if (selected) MaterialTheme.colorScheme.primary
     else MaterialTheme.colorScheme.outlineVariant
     val iconBg = if (selected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f)
-    else MaterialTheme.colorScheme.primaryContainer
+    else MaterialTheme.colorScheme.surfaceVariant
     Box(
         modifier = Modifier
             .background(container, RoundedCornerShape(10.dp))
@@ -675,7 +675,7 @@ private fun NearbyCard(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
