@@ -22,7 +22,15 @@ export function Footer() {
             {t("Changelog", "更新日志")}
           </Link>
           <a
-            href="https://github.com/nickolasburr/berlin-chinese-food-map"
+            href="https://github.com/Novawerk/berlin-chinese-food-map/issues/new?template=restaurant-submission.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-foreground"
+          >
+            {t("Submit a restaurant", "提交餐厅")}
+          </a>
+          <a
+            href="https://github.com/Novawerk/berlin-chinese-food-map"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-foreground"

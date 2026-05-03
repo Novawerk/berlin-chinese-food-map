@@ -31,20 +31,30 @@ export function Navbar() {
               {t("Home", "首页")}
             </Button>
           </Link>
-          <a href="/#roadmap">
+          <a href="/#roadmap" className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">
               {t("Roadmap", "路线图")}
             </Button>
           </a>
-          <Link href="/changelog">
+          <Link href="/changelog" className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">
               {t("Changelog", "更新日志")}
             </Button>
           </Link>
           <a
-            href="https://github.com/nickolasburr/berlin-chinese-food-map"
+            href="https://github.com/Novawerk/berlin-chinese-food-map/issues/new?template=restaurant-submission.yml"
             target="_blank"
             rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="sm">
+              {t("Submit a restaurant", "提交餐厅")}
+            </Button>
+          </a>
+          <a
+            href="https://github.com/Novawerk/berlin-chinese-food-map"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex"
           >
             <Button variant="ghost" size="sm">
               GitHub
