@@ -75,4 +75,39 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="icon_credits">Icon credits</string>
     <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
+
+    <!-- Contribute section -->
+    <string name="contribute_title">How to contribute data</string>
+    <string name="contribute_intro">Berlin Food Map is a non-profit project, kept alive by the people who eat here. New places open every month, old favourites move or close, and no single team can keep up alone. If you\'ve spotted a noodle shop we\'re missing, an address that has gone stale, or a phone number nobody picks up — we\'d love a hand.</string>
+
+    <string name="contribute_what_title">What you can share</string>
+    <string name="contribute_what_1">•  A restaurant we don\'t have yet — the name, address, and anything you remember.</string>
+    <string name="contribute_what_2">•  Corrections — closed places, renamed shops, wrong opening hours, bad coordinates.</string>
+    <string name="contribute_what_3">•  Cuisine and dish tags — Sichuan, Cantonese, Northeastern home-style; whatever helps the next person find their match.</string>
+    <string name="contribute_what_4">•  Photos, a personal note, or a one-line recommendation we can quote.</string>
+
+    <string name="contribute_how_title">How to send it</string>
+    <string name="contribute_step_1">1. The easy way — send a CSV, Excel, or Google Sheet to our team. One row per restaurant, columns however you like; we\'ll clean it up on our side.</string>
+    <string name="contribute_step_2">2. The hands-on way — open a pull request on GitHub. Restaurant data lives as YAML files in data/restaurants. Edit one, propose a change, and the CI pipeline syncs it live.</string>
+    <string name="contribute_step_3">3. The casual way — drop a message in the WeChat community group or tag us on Xiaohongshu. We\'ll add the tip to the review queue.</string>
+
+    <string name="contribute_after_title">What happens next</string>
+    <string name="contribute_after">Every submission is reviewed by a real person, cross-checked with Google Places for hours and coordinates, and goes live on the next data sync — usually within a few days. Contributions are anonymous by default; if you\'d like a credit on the contributors list, just say so.</string>
+
+    <string name="contribute_action">Open the GitHub repository</string>
+
+    <!-- Team section -->
+    <string name="team_title">The team behind</string>
+    <string name="team_description">Berlin Food Map is a collaboration between a Berlin product studio and a community of Chinese-speaking food lovers in the city. One writes the code, the other knows where to eat.</string>
+
+    <string name="team_novawerk_name">Novawerk.io</string>
+    <string name="team_novawerk_role">Product · Design · Engineering</string>
+    <string name="team_novawerk_bio">A small Berlin-based product studio. We build the app, the data pipeline, and the admin tools — making sure the engineering side is solid so the editorial team can focus on the food rather than the plumbing.</string>
+
+    <string name="team_manmanyou_name">柏林慢慢游 · Berlin Manmanyou</string>
+    <string name="team_manmanyou_role">Community · Content · Curation</string>
+    <string name="team_manmanyou_bio">A grassroots collective of Berlin\'s Chinese-speaking food lovers — the editors, scouts, and tasters who walk into the restaurants, vet the data, and write the recommendations you read inside the app.</string>
+
+    <string name="team_thanks_title">And everyone else</string>
+    <string name="team_thanks">This map exists because hundreds of eaters have shared a tip, corrected an address, or pointed us at a place we had never heard of. Thank you. If you\'d like to join in, start with the contribute section above.</string>
 </resources>

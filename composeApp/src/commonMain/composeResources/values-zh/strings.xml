@@ -75,4 +75,39 @@
     <string name="privacy_policy">隐私政策</string>
     <string name="icon_credits">图标致谢</string>
     <string name="icon_credits_value">地图图标由 Freepik 提供 — Flaticon</string>
+
+    <!-- Contribute section -->
+    <string name="contribute_title">如何贡献数据</string>
+    <string name="contribute_intro">柏林中餐地图是一个非盈利的社区项目，全靠在这里吃饭的人一起维护。每个月都有新店开业，也有老馆子搬走或关门，仅靠几个人的力量永远跟不上节奏。如果你发现一家我们还没收录的小店、一处过时的地址，或者一个再也没人接听的电话——欢迎一起把它补上。</string>
+
+    <string name="contribute_what_title">你可以分享什么</string>
+    <string name="contribute_what_1">•  还没收录的新餐厅——店名、地址，以及你记得的任何细节。</string>
+    <string name="contribute_what_2">•  需要更正的信息——已关门、改名、营业时间不对、地图坐标偏差。</string>
+    <string name="contribute_what_3">•  菜系和招牌菜的标签——川菜、粤菜、东北家常……让下一个人更快找到对口味的店。</string>
+    <string name="contribute_what_4">•  照片、一段私人笔记，或者一句可以被引用的推荐语。</string>
+
+    <string name="contribute_how_title">怎么提交</string>
+    <string name="contribute_step_1">1. 最省事——把 CSV、Excel 或 Google Sheets 发给我们，每家餐厅一行，列名随你定，剩下的整理工作我们来做。</string>
+    <string name="contribute_step_2">2. 上手版——直接到 GitHub 提 PR。餐厅数据以 YAML 文件存放在 data/restaurants 目录下，改动一个文件、发起一次变更，CI 流水线会自动同步上线。</string>
+    <string name="contribute_step_3">3. 随手版——在微信社区群里留言，或者在小红书上 @ 我们。所有线索都会被收入审核队列。</string>
+
+    <string name="contribute_after_title">提交之后</string>
+    <string name="contribute_after">每一条投稿都会经过真人审核，再用 Google Places 复核营业时间和坐标，下一次数据同步时正式上线，一般几天内可见。投稿默认匿名；如果希望出现在贡献者名单里，提交时告诉我们就好。</string>
+
+    <string name="contribute_action">前往 GitHub 项目</string>
+
+    <!-- Team section -->
+    <string name="team_title">幕后团队</string>
+    <string name="team_description">柏林中餐地图由一家柏林的产品工作室和一群华语美食爱好者共同打造——一边写代码，一边带你找到真正值得排队的那家店。</string>
+
+    <string name="team_novawerk_name">Novawerk.io</string>
+    <string name="team_novawerk_role">产品 · 设计 · 开发</string>
+    <string name="team_novawerk_bio">一家扎根柏林的小型产品工作室。我们负责 App、数据流水线和管理后台的搭建，把工程的事做扎实，让编辑团队可以专心琢磨那些餐桌上的事。</string>
+
+    <string name="team_manmanyou_name">柏林慢慢游</string>
+    <string name="team_manmanyou_role">社区 · 内容 · 策划</string>
+    <string name="team_manmanyou_bio">一群活跃在柏林的华语美食爱好者，是这份地图真正的编辑、探店人和味觉把关人。他们用脚步丈量每一家餐厅、校对每一条数据，也写下你在 App 里读到的每一段推荐。</string>
+
+    <string name="team_thanks_title">还有同桌的你们</string>
+    <string name="team_thanks">这份地图能存在，是因为数百位食客分享过线索、更正过地址，或者把我们带到了从未听过的小馆子。谢谢你们。如果你也想加入，从上方「如何贡献数据」开始就好。</string>
 </resources>
