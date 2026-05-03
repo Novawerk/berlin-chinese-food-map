@@ -42,6 +42,8 @@ import coil3.request.allowHardware
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
+import com.novawerk.berlinfoodmap.domain.restaurant.TagFamily
+import com.novawerk.berlinfoodmap.domain.restaurant.family
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
 import com.novawerk.berlinfoodmap.ui.components.TagChipsGroup
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
@@ -86,6 +88,17 @@ private val BERLIN_CENTER = LatLng(52.52, 13.405)
 // downsamples on decode, so passing these saves memory + CPU per marker.
 private const val MARKER_COVER_PX = 128   // MiniRestaurantCard at 32 dp
 private const val NEARBY_COVER_PX = 192   // NearbyCard at 44 dp
+
+/**
+ * Tags to surface on the map cards: regional only when at least one
+ * regional tag exists, otherwise the format tags. Avoids the noisy
+ * "川菜·火锅·麻辣烫·面食" line that 4-tagged restaurants were producing
+ * while still labelling format-only places (street-food / BBQ-only).
+ */
+private fun Restaurant.cardTags(): List<Tag> {
+    val regional = tags.filter { it.family() == TagFamily.REGIONAL }
+    return regional.ifEmpty { tags }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -224,53 +237,61 @@ fun MapScreen(
             clusters.forEach { cluster ->
                 if (cluster.items.size == 1) {
                     val restaurant = cluster.items.first()
-                    val state = rememberUpdatedMarkerState(
-                        position = LatLng(restaurant.latitude, restaurant.longitude),
-                    )
-                    // Preload the cover thumb. The marker is rasterised once
-                    // per `keys` change, so we feed `coverReady` as a key —
-                    // when the image arrives the marker re-rasterises with
-                    // the loaded photo.
-                    //
-                    // `allowHardware(false)`: MarkerComposable rasterises
-                    // onto a software canvas; coil's default hardware bitmap
-                    // crashes that path.
-                    //
-                    // `size(MARKER_COVER_PX)`: marker thumbnail is 32dp.
-                    // Decoding the source 1600px JPEG at full size is
-                    // hundreds of KB of memory per marker; 128px covers
-                    // 4× density screens and downsamples on decode.
-                    val coverUrl = restaurant.previewImageUrl()
-                    val platformContext = LocalPlatformContext.current
-                    val coverPainter = coverUrl?.let {
-                        rememberAsyncImagePainter(
-                            ImageRequest.Builder(platformContext)
-                                .data(it)
-                                .allowHardware(false)
-                                .size(MARKER_COVER_PX, MARKER_COVER_PX)
-                                .build(),
+                    // `key(restaurant.id)`: stabilise positional memoisation
+                    // across cluster recomputes. Without this, `forEach` slots
+                    // shift on every camera move and `rememberAsyncImagePainter`
+                    // gets reset before its load can finish — so most marker
+                    // covers got stuck loading forever (some happened to load
+                    // when the cluster set didn't shuffle around them).
+                    androidx.compose.runtime.key(restaurant.id) {
+                        val state = rememberUpdatedMarkerState(
+                            position = LatLng(restaurant.latitude, restaurant.longitude),
                         )
-                    }
-                    val coverReady = coverPainter
-                        ?.state
-                        ?.collectAsState()
-                        ?.value is AsyncImagePainter.State.Success
-                    MarkerComposable(
-                        keys = arrayOf<Any>(restaurant.id, coverReady),
-                        state = state,
-                        title = restaurant.name.zh,
-                        snippet = restaurant.name.en,
-                        anchor = Offset(0.5f, 1f),
-                        onClick = {
-                            onNavigateDetail(restaurant.id)
-                            true
-                        },
-                    ) {
-                        MiniRestaurantCard(
-                            restaurant = restaurant,
-                            coverPainter = coverPainter.takeIf { coverReady },
-                            hasCoverUrl = coverUrl != null,
-                        )
+                        // Preload the cover thumb. MarkerComposable rasterises
+                        // its content once per `keys` change; we feed
+                        // `coverReady` as a key so the marker re-rasterises
+                        // with the photo once it lands.
+                        //
+                        // `allowHardware(false)`: MarkerComposable rasterises
+                        // onto a software canvas; coil's default hardware
+                        // bitmap crashes that path.
+                        //
+                        // `size(MARKER_COVER_PX)`: 32 dp marker, decoding the
+                        // 1600 px source JPEG at full size eats hundreds of KB
+                        // per marker. 128 px covers 4× density and downsamples
+                        // on decode.
+                        val coverUrl = restaurant.previewImageUrl()
+                        val platformContext = LocalPlatformContext.current
+                        val coverPainter = coverUrl?.let {
+                            rememberAsyncImagePainter(
+                                ImageRequest.Builder(platformContext)
+                                    .data(it)
+                                    .allowHardware(false)
+                                    .size(MARKER_COVER_PX, MARKER_COVER_PX)
+                                    .build(),
+                            )
+                        }
+                        val coverReady = coverPainter
+                            ?.state
+                            ?.collectAsState()
+                            ?.value is AsyncImagePainter.State.Success
+                        MarkerComposable(
+                            keys = arrayOf<Any>(restaurant.id, coverReady),
+                            state = state,
+                            title = restaurant.name.zh,
+                            snippet = restaurant.name.en,
+                            anchor = Offset(0.5f, 1f),
+                            onClick = {
+                                onNavigateDetail(restaurant.id)
+                                true
+                            },
+                        ) {
+                            MiniRestaurantCard(
+                                restaurant = restaurant,
+                                coverPainter = coverPainter.takeIf { coverReady },
+                                hasCoverUrl = coverUrl != null,
+                            )
+                        }
                     }
                 } else {
                     val currentZoom = cameraPositionState.position.zoom
@@ -735,8 +756,9 @@ private fun MiniRestaurantCard(
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
-                if (restaurant.tags.isNotEmpty()) {
-                    val labels = restaurant.tags.map { tagDisplayName(it) }
+                val displayTags = restaurant.cardTags()
+                if (displayTags.isNotEmpty()) {
+                    val labels = displayTags.map { tagDisplayName(it) }
                     Text(
                         text = labels.joinToString(" · "),
                         style = MaterialTheme.typography.labelSmall,
@@ -843,9 +865,10 @@ private fun NearbyCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                 )
-                if (restaurant.tags.isNotEmpty()) {
+                val displayTags = restaurant.cardTags()
+                if (displayTags.isNotEmpty()) {
                     Spacer(Modifier.height(2.dp))
-                    val tagLine = restaurant.tags.map { tagDisplayName(it) }.joinToString(" · ")
+                    val tagLine = displayTags.map { tagDisplayName(it) }.joinToString(" · ")
                     Text(
                         text = tagLine,
                         style = MaterialTheme.typography.labelSmall,
