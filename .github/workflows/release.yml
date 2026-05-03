@@ -1,0 +1,293 @@
+# Release Workflow
+#
+# Triggered on push to the release branch (typically a PR merge from main)
+# or manually via workflow_dispatch.
+#
+# Why push and not pull_request:closed?
+#   pull_request:closed has proven flaky on similar repos — merges of
+#   main → release sometimes did not fire any workflow runs at all.
+#   push is reliable. The merge-commit guard in `if:` ensures we only
+#   release on actual PR merges.
+#
+# What it does:
+#   1. Determines version bump from PR label (looked up via merge commit SHA)
+#   2. Computes next semver
+#   3. Updates app-versionName in gradle/libs.versions.toml + Config.xcconfig
+#   4. Commits version bump to release branch
+#   5. Creates git tag + GitHub Release with categorized notes
+#   6. Dispatches google-play-release.yml to upload to Play Store
+#   7. Opens backport PR to sync the version-name change to main
+#
+# Required PR labels: exactly one of `version:patch`, `version:minor`,
+# `version:major`. Create them once in GitHub repo Settings → Labels if
+# they don't exist yet.
+
+name: Release
+
+on:
+  push:
+    branches: [release]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    # Run on:
+    #   - manual workflow_dispatch
+    #   - push events whose head commit is a PR merge ("Merge pull request #N ...")
+    # Skip self-pushes from this workflow (chore: bump version, [skip ci])
+    # to avoid loops.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (
+        github.event_name == 'push'
+        && startsWith(github.event.head_commit.message, 'Merge pull request')
+        && !contains(github.event.head_commit.message, '[skip ci]')
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_code: ${{ steps.version.outputs.version_code }}
+      tag: ${{ steps.version.outputs.tag }}
+      prev_tag: ${{ steps.version.outputs.prev_tag }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: release
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine version bump
+        id: bump
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "bump=${{ inputs.bump }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # push event: extract PR number from merge commit message and read its labels
+          FIRST_LINE=$(printf '%s\n' "$COMMIT_MSG" | head -1)
+          PR_NUM=$(printf '%s\n' "$FIRST_LINE" | grep -oE '#[0-9]+' | head -1 | tr -d '#')
+          if [ -z "$PR_NUM" ]; then
+            echo "::error::Could not extract PR number from commit message: $FIRST_LINE"
+            exit 1
+          fi
+          echo "Found PR #$PR_NUM from commit message"
+
+          LABELS=$(gh pr view "$PR_NUM" --repo "$REPO" --json labels --jq '[.labels[].name]')
+          echo "Labels: $LABELS"
+          PATCH=$(echo "$LABELS" | jq -r 'map(select(. == "version:patch")) | length')
+          MINOR=$(echo "$LABELS" | jq -r 'map(select(. == "version:minor")) | length')
+          MAJOR=$(echo "$LABELS" | jq -r 'map(select(. == "version:major")) | length')
+
+          COUNT=$((PATCH + MINOR + MAJOR))
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::error::No version label on PR #$PR_NUM. Add exactly one of: version:patch, version:minor, version:major"
+            exit 1
+          fi
+          if [ "$COUNT" -gt 1 ]; then
+            echo "::error::Multiple version labels on PR #$PR_NUM. Use exactly one of: version:patch, version:minor, version:major"
+            exit 1
+          fi
+
+          if [ "$MAJOR" -eq 1 ]; then
+            echo "bump=major" >> $GITHUB_OUTPUT
+          elif [ "$MINOR" -eq 1 ]; then
+            echo "bump=minor" >> $GITHUB_OUTPUT
+          else
+            echo "bump=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compute next version
+        id: version
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG="v0.0.0"
+          fi
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+
+          VERSION="${PREV_TAG#v}"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          BUMP="${{ steps.bump.outputs.bump }}"
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
+          esac
+
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+          # Read current version code (auto-incremented by bump-version on main).
+          # Release just snapshots whatever the latest counter is.
+          VERSION_CODE=$(grep '^app-versionCode' gradle/libs.versions.toml | sed 's/.*= *"\(.*\)"/\1/')
+
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Bumping $BUMP: $PREV_TAG → v$NEW_VERSION (code: $VERSION_CODE)"
+
+      - name: Bump version name in libs.versions.toml
+        run: |
+          TOML="gradle/libs.versions.toml"
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Only update version name — version code is managed by bump-version on main.
+          sed -i "s/^app-versionName = \".*\"/app-versionName = \"$VERSION\"/" "$TOML"
+
+          echo "Updated $TOML:"
+          grep "^app-" "$TOML"
+
+      - name: Sync version name to iOS Config.xcconfig
+        run: |
+          XCCONFIG="iosApp/Configuration/Config.xcconfig"
+          VERSION="${{ steps.version.outputs.version }}"
+
+          if [ ! -f "$XCCONFIG" ]; then
+            echo "Skipped: $XCCONFIG not committed."
+            exit 0
+          fi
+
+          # Only update marketing version — project version (Android versionCode
+          # equivalent) is synced by bump-version on main.
+          sed -i "s/MARKETING_VERSION=.*/MARKETING_VERSION=$VERSION/" "$XCCONFIG"
+
+          echo "Updated $XCCONFIG:"
+          cat "$XCCONFIG"
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gradle/libs.versions.toml
+          [ -f iosApp/Configuration/Config.xcconfig ] && git add iosApp/Configuration/Config.xcconfig || true
+          git diff --cached --quiet && echo "No changes to commit" || {
+            git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
+            git push origin release
+          }
+
+      - name: Create and push tag
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          PREV_TAG="${{ steps.version.outputs.prev_tag }}"
+          TAG="${{ steps.version.outputs.tag }}"
+
+          # Commits between previous tag and the version-bump commit (HEAD~1 = before bump)
+          COMMITS=$(git log "${PREV_TAG}..HEAD~1" --oneline --no-merges 2>/dev/null || echo "")
+
+          FEATURES=""
+          FIXES=""
+          CI_TESTING=""
+          DOCS=""
+          OTHER=""
+
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            MSG=$(echo "$line" | sed 's/^[a-f0-9]* //')
+            LOWER=$(echo "$MSG" | tr '[:upper:]' '[:lower:]')
+
+            if echo "$LOWER" | grep -qE '(^feat|add |implement|introduce)'; then
+              FEATURES="${FEATURES}- ${MSG}\n"
+            elif echo "$LOWER" | grep -qE '(^fix|patch |resolve|correct)'; then
+              FIXES="${FIXES}- ${MSG}\n"
+            elif echo "$LOWER" | grep -qE '(ci|test|workflow|build)'; then
+              CI_TESTING="${CI_TESTING}- ${MSG}\n"
+            elif echo "$LOWER" | grep -qE '(doc|readme|comment)'; then
+              DOCS="${DOCS}- ${MSG}\n"
+            else
+              OTHER="${OTHER}- ${MSG}\n"
+            fi
+          done <<< "$COMMITS"
+
+          BODY="## What's Changed\n"
+          [ -n "$FEATURES" ] && BODY="${BODY}\n### Features\n${FEATURES}"
+          [ -n "$FIXES" ] && BODY="${BODY}\n### Fixes\n${FIXES}"
+          [ -n "$CI_TESTING" ] && BODY="${BODY}\n### CI/Build\n${CI_TESTING}"
+          [ -n "$DOCS" ] && BODY="${BODY}\n### Docs\n${DOCS}"
+          [ -n "$OTHER" ] && BODY="${BODY}\n### Other\n${OTHER}"
+          BODY="${BODY}\n**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${TAG}"
+
+          echo -e "$BODY" > release_notes.md
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --target release \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes-file release_notes.md
+
+      # GitHub Actions limitation: pushes made with GITHUB_TOKEN do not trigger
+      # other workflows (anti-loop guard). The v* tag we just pushed therefore
+      # does NOT auto-fire google-play-release.yml. Dispatch it explicitly.
+      # workflow_dispatch IS allowed to be triggered by GITHUB_TOKEN.
+      - name: Trigger Google Play Release for new tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          gh workflow run google-play-release.yml --ref "$TAG" -f track=internal
+          echo "Dispatched google-play-release.yml for $TAG (internal track)"
+
+      - name: Backport version bump to main
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BRANCH="backport/version-${VERSION}"
+
+          git checkout -b "$BRANCH" origin/main
+
+          # Only sync version name — version code is auto-managed by bump-version on main.
+          TOML="gradle/libs.versions.toml"
+          sed -i "s/^app-versionName = \".*\"/app-versionName = \"$VERSION\"/" "$TOML"
+
+          if [ -f iosApp/Configuration/Config.xcconfig ]; then
+            sed -i "s/MARKETING_VERSION=.*/MARKETING_VERSION=$VERSION/" iosApp/Configuration/Config.xcconfig
+            git add iosApp/Configuration/Config.xcconfig
+          fi
+          git add "$TOML"
+          git diff --cached --quiet && { echo "No changes needed"; exit 0; }
+          git commit -m "chore: sync version ${VERSION} to main"
+          git push origin "$BRANCH"
+
+          # NOTE: gh pr create may fail with
+          #   "GitHub Actions is not permitted to create or approve pull requests"
+          # if the org has "Allow GitHub Actions to create and approve pull
+          # requests" disabled. In that case the backport branch is still
+          # pushed; open the PR manually from the URL printed below.
+          if ! gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore: sync version ${VERSION} to main" \
+            --body "Auto-generated PR to sync version-name bump from release branch."; then
+            echo "::warning::Could not create backport PR automatically. Open one at:"
+            echo "::warning::https://github.com/${{ github.repository }}/compare/main...${BRANCH}?expand=1"
+          fi
