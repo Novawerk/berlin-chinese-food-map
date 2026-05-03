@@ -7,8 +7,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -67,14 +72,19 @@ fun SettingsScreen(
     onLanguageChange: (String?) -> Unit,
     onBack: () -> Unit,
 ) {
-    val urlLauncher = rememberUrlLauncher()
+    var showContributeSheet by remember { mutableStateOf(false) }
+    var showTeamSheet by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.back),
+                        )
                     }
                 },
             )
@@ -129,67 +139,7 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
-
-            // Contribute section
-            SectionTitle(Res.string.contribute_title)
-            BodyParagraph(Res.string.contribute_intro)
-
-            Spacer(Modifier.height(16.dp))
-            SubsectionTitle(Res.string.contribute_what_title)
-            BulletItem(Res.string.contribute_what_1)
-            BulletItem(Res.string.contribute_what_2)
-            BulletItem(Res.string.contribute_what_3)
-            BulletItem(Res.string.contribute_what_4)
-
-            Spacer(Modifier.height(16.dp))
-            SubsectionTitle(Res.string.contribute_how_title)
-            BulletItem(Res.string.contribute_step_1)
-            BulletItem(Res.string.contribute_step_2)
-            BulletItem(Res.string.contribute_step_3)
-
-            Spacer(Modifier.height(16.dp))
-            SubsectionTitle(Res.string.contribute_after_title)
-            BodyParagraph(Res.string.contribute_after)
-
-            Spacer(Modifier.height(16.dp))
-            FilledTonalButton(
-                onClick = { urlLauncher.open(GITHUB_REPO_URL) },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(Res.string.contribute_action))
-            }
-
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
-
-            // Team section
-            SectionTitle(Res.string.team_title)
-            BodyParagraph(Res.string.team_description)
-
-            Spacer(Modifier.height(12.dp))
-            TeamMemberCard(
-                name = stringResource(Res.string.team_novawerk_name),
-                role = stringResource(Res.string.team_novawerk_role),
-                bio = stringResource(Res.string.team_novawerk_bio),
-                onClick = { urlLauncher.open(NOVAWERK_URL) },
-            )
             Spacer(Modifier.height(8.dp))
-            TeamMemberCard(
-                name = stringResource(Res.string.team_manmanyou_name),
-                role = stringResource(Res.string.team_manmanyou_role),
-                bio = stringResource(Res.string.team_manmanyou_bio),
-                onClick = null,
-            )
-
-            Spacer(Modifier.height(20.dp))
-            SubsectionTitle(Res.string.team_thanks_title)
-            BodyParagraph(Res.string.team_thanks)
-
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
 
             // About section
             Text(
@@ -198,6 +148,18 @@ fun SettingsScreen(
                 modifier = Modifier.padding(vertical = 12.dp),
             )
 
+            MenuRow(
+                title = stringResource(Res.string.contribute_title),
+                onClick = { showContributeSheet = true },
+            )
+            MenuRow(
+                title = stringResource(Res.string.team_title),
+                onClick = { showTeamSheet = true },
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Version row
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -214,6 +176,7 @@ fun SettingsScreen(
                 )
             }
 
+            // Privacy policy
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             ) {
@@ -224,6 +187,7 @@ fun SettingsScreen(
                 )
             }
 
+            // Icon credits (Flaticon attribution)
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             ) {
@@ -241,15 +205,132 @@ fun SettingsScreen(
             Spacer(Modifier.height(24.dp))
         }
     }
+
+    if (showContributeSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showContributeSheet = false },
+            sheetState = sheetState,
+        ) {
+            ContributeSheetContent()
+        }
+    }
+
+    if (showTeamSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showTeamSheet = false },
+            sheetState = sheetState,
+        ) {
+            TeamSheetContent()
+        }
+    }
 }
 
 @Composable
-private fun SectionTitle(res: StringResource) {
-    Text(
-        text = stringResource(res),
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(vertical = 12.dp),
-    )
+private fun MenuRow(title: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ContributeSheetContent() {
+    val urlLauncher = rememberUrlLauncher()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 32.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.contribute_title),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 12.dp),
+        )
+
+        BodyParagraph(Res.string.contribute_intro)
+
+        Spacer(Modifier.height(16.dp))
+        SubsectionTitle(Res.string.contribute_what_title)
+        BulletItem(Res.string.contribute_what_1)
+        BulletItem(Res.string.contribute_what_2)
+        BulletItem(Res.string.contribute_what_3)
+        BulletItem(Res.string.contribute_what_4)
+
+        Spacer(Modifier.height(16.dp))
+        SubsectionTitle(Res.string.contribute_how_title)
+        BulletItem(Res.string.contribute_step_1)
+        BulletItem(Res.string.contribute_step_2)
+        BulletItem(Res.string.contribute_step_3)
+
+        Spacer(Modifier.height(16.dp))
+        SubsectionTitle(Res.string.contribute_after_title)
+        BodyParagraph(Res.string.contribute_after)
+
+        Spacer(Modifier.height(20.dp))
+        FilledTonalButton(
+            onClick = { urlLauncher.open(GITHUB_REPO_URL) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(Res.string.contribute_action))
+        }
+    }
+}
+
+@Composable
+private fun TeamSheetContent() {
+    val urlLauncher = rememberUrlLauncher()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 32.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.team_title),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 12.dp),
+        )
+
+        BodyParagraph(Res.string.team_description)
+
+        Spacer(Modifier.height(12.dp))
+        TeamMemberCard(
+            name = stringResource(Res.string.team_novawerk_name),
+            role = stringResource(Res.string.team_novawerk_role),
+            bio = stringResource(Res.string.team_novawerk_bio),
+            onClick = { urlLauncher.open(NOVAWERK_URL) },
+        )
+        Spacer(Modifier.height(8.dp))
+        TeamMemberCard(
+            name = stringResource(Res.string.team_manmanyou_name),
+            role = stringResource(Res.string.team_manmanyou_role),
+            bio = stringResource(Res.string.team_manmanyou_bio),
+            onClick = null,
+        )
+
+        Spacer(Modifier.height(20.dp))
+        SubsectionTitle(Res.string.team_thanks_title)
+        BodyParagraph(Res.string.team_thanks)
+    }
 }
 
 @Composable
