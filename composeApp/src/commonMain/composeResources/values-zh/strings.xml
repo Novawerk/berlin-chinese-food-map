@@ -186,11 +186,14 @@
     <string name="all">全部</string>
     <string name="no_results">未找到餐厅</string>
     <string name="call_phone">拨打电话</string>
-    <string name="about">关于</string>
     <string name="version">版本</string>
     <string name="privacy_policy">隐私政策</string>
     <string name="icon_credits">图标致谢</string>
     <string name="icon_credits_value">地图图标由 Freepik 提供 — Flaticon</string>
+
+    <!-- About entry (opens merged story / contribute / contributors sheet) -->
+    <string name="about_title">关于这个项目</string>
+    <string name="about_subtitle">项目缘起、如何参与、数据贡献者</string>
 
     <!-- Project story section -->
     <string name="story_title">项目故事</string>
@@ -198,10 +201,9 @@
 
     <!-- Contributors section -->
     <string name="contributors_title">数据贡献者</string>
-    <string name="contributors_intro">下面的名单直接来自仓库的 git 历史——每次有人提交餐厅数据的改动时会自动刷新。如果你也贡献过却没出现在这里，欢迎提 Issue，我们会补上。</string>
+    <string name="contributors_intro">名单直接来自仓库的 git 历史，每次有人提交餐厅数据的改动都会自动刷新。如果你贡献过却被漏掉了，欢迎提 Issue，我们会补上。</string>
     <string name="contributors_count">%1$d 位贡献者</string>
     <string name="contributors_empty">还没有贡献者——欢迎成为第一位！</string>
-    <string name="contributors_thanks_manmanyou">特别感谢「柏林慢慢游」团队完成了第一轮探店走访与初始数据收集，也启发了这个项目。</string>
 
     <!-- Contribute section -->
     <string name="contribute_title">如何贡献数据</string>
