@@ -176,33 +176,35 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
             val brand = c["brand"] ?: return@let null
             Chain(brand = brand, branch = c["branch"])
         },
-        googleData = try {
-            get<Map<String, Any?>?>("googleData")?.toGooglePlaceData()
-        } catch (_: Exception) {
-            null
-        },
+        googleData = decodeGoogleData(this),
     )
 }
 
-@Suppress("UNCHECKED_CAST")
-private fun Map<String, Any?>.toGooglePlaceData(): GooglePlaceData? {
-    val placeId = this["placeId"] as? String ?: return null
-    val fetchedAt = this["fetchedAt"]
+/**
+ * Decode the nested `googleData` map field by field. The naive
+ * `get<Map<String, Any?>?>("googleData")` always threw under kotlinx.serialization
+ * because `Any?` has no serializer — every restaurant ended up with a null
+ * googleData (silently caught by a try/catch), which is why cover photos
+ * never showed up in the map cards even though they were present in
+ * Firestore.
+ *
+ * Reading each field with its concrete type (`String?`, `Double?`,
+ * `List<String>?`) bypasses the issue. Native dot-notation field paths
+ * are forwarded to the underlying Firestore SDK on every platform.
+ */
+private fun decodeGoogleData(snap: dev.gitlive.firebase.firestore.DocumentSnapshot): GooglePlaceData? {
+    val placeId: String = try { snap.get<String?>("googleData.placeId") } catch (_: Exception) { null } ?: return null
     return GooglePlaceData(
         placeId = placeId,
-        rating = (this["rating"] as? Number)?.toDouble(),
-        userRatingsTotal = (this["userRatingsTotal"] as? Number)?.toInt(),
-        weekdayText = (this["weekdayText"] as? List<String>) ?: emptyList(),
-        website = this["website"] as? String,
-        googleMapsUrl = this["googleMapsUrl"] as? String,
-        formattedPhoneNumber = this["formattedPhoneNumber"] as? String,
-        formattedAddress = this["formattedAddress"] as? String,
-        photoUrls = (this["photoUrls"] as? List<String>) ?: emptyList(),
-        coverPhotoUrl = this["coverPhotoUrl"] as? String,
-        fetchedAtEpochSeconds = when (fetchedAt) {
-            is Timestamp -> fetchedAt.seconds
-            is Number -> fetchedAt.toLong()
-            else -> null
-        },
+        rating = try { snap.get<Double?>("googleData.rating") } catch (_: Exception) { null },
+        userRatingsTotal = try { snap.get<Int?>("googleData.userRatingsTotal") } catch (_: Exception) { null },
+        weekdayText = try { snap.get<List<String>?>("googleData.weekdayText") } catch (_: Exception) { null } ?: emptyList(),
+        website = try { snap.get<String?>("googleData.website") } catch (_: Exception) { null },
+        googleMapsUrl = try { snap.get<String?>("googleData.googleMapsUrl") } catch (_: Exception) { null },
+        formattedPhoneNumber = try { snap.get<String?>("googleData.formattedPhoneNumber") } catch (_: Exception) { null },
+        formattedAddress = try { snap.get<String?>("googleData.formattedAddress") } catch (_: Exception) { null },
+        photoUrls = try { snap.get<List<String>?>("googleData.photoUrls") } catch (_: Exception) { null } ?: emptyList(),
+        coverPhotoUrl = try { snap.get<String?>("googleData.coverPhotoUrl") } catch (_: Exception) { null },
+        fetchedAtEpochSeconds = try { snap.get<Timestamp?>("googleData.fetchedAt")?.seconds } catch (_: Exception) { null },
     )
 }
