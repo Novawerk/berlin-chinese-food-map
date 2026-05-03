@@ -162,7 +162,6 @@ fun App(component: AppComponent) {
                                     language = newLang
                                     scope.launch { settings.setLanguage(newLang) }
                                 },
-                                onBack = { navController.popBackStack() },
                             )
                         }
                     }

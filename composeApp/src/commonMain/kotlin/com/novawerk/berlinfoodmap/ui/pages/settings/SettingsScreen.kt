@@ -3,8 +3,6 @@ package com.novawerk.berlinfoodmap.ui.pages.settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,8 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.ui.components.MenuRow
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.settings
-import berlinfoodmap.composeapp.generated.resources.back
 import berlinfoodmap.composeapp.generated.resources.dark_mode
 import berlinfoodmap.composeapp.generated.resources.language
 import berlinfoodmap.composeapp.generated.resources.system_default
@@ -47,7 +43,6 @@ fun SettingsScreen(
     currentLanguage: String?,
     onDarkModeChange: (String) -> Unit,
     onLanguageChange: (String?) -> Unit,
-    onBack: () -> Unit,
 ) {
     var showStorySheet by remember { mutableStateOf(false) }
     var showContributeSheet by remember { mutableStateOf(false) }
@@ -55,154 +50,143 @@ fun SettingsScreen(
     var showNovawerkSheet by remember { mutableStateOf(false) }
     var showManmanyouSheet by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.settings)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.back),
-                        )
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-        ) {
-            // Dark mode section
-            Text(
-                text = stringResource(Res.string.dark_mode),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 12.dp),
-            )
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                val options = listOf("system" to Res.string.system_default, "light" to Res.string.light, "dark" to Res.string.dark)
-                options.forEachIndexed { index, (value, labelRes) ->
-                    SegmentedButton(
-                        selected = currentDarkMode == value,
-                        onClick = { onDarkModeChange(value) },
-                        shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                    ) {
-                        Text(stringResource(labelRes))
-                    }
+    // No top app bar — Settings is a tab destination reached via the bottom
+    // navigation, not a pushed screen. The bottom-nav label already says
+    // 设置 / Settings, so a duplicate header in the body is just wasted
+    // vertical space. statusBarsPadding keeps content out from under the
+    // notch / camera cutout.
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+    ) {
+        // Dark mode section
+        Text(
+            text = stringResource(Res.string.dark_mode),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(vertical = 12.dp),
+        )
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            val options = listOf("system" to Res.string.system_default, "light" to Res.string.light, "dark" to Res.string.dark)
+            options.forEachIndexed { index, (value, labelRes) ->
+                SegmentedButton(
+                    selected = currentDarkMode == value,
+                    onClick = { onDarkModeChange(value) },
+                    shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                ) {
+                    Text(stringResource(labelRes))
                 }
             }
-
-            Spacer(Modifier.height(24.dp))
-
-            // Language section
-            Text(
-                text = stringResource(Res.string.language),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 12.dp),
-            )
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                val options = listOf(null to Res.string.system_default, "en" to Res.string.english, "zh" to Res.string.chinese)
-                options.forEachIndexed { index, (value, labelRes) ->
-                    SegmentedButton(
-                        selected = currentLanguage == value,
-                        onClick = { onLanguageChange(value) },
-                        shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                    ) {
-                        Text(stringResource(labelRes))
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider()
-
-            // About section
-            Text(
-                text = stringResource(Res.string.about),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 12.dp),
-            )
-            MenuRow(
-                title = stringResource(Res.string.story_title),
-                onClick = { showStorySheet = true },
-            )
-            MenuRow(
-                title = stringResource(Res.string.contribute_title),
-                onClick = { showContributeSheet = true },
-            )
-            MenuRow(
-                title = stringResource(Res.string.contributors_title),
-                onClick = { showContributorsSheet = true },
-            )
-
-            // Team section
-            Text(
-                text = stringResource(Res.string.team_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
-            )
-            MenuRow(
-                title = stringResource(Res.string.team_novawerk_name),
-                supportingText = stringResource(Res.string.team_novawerk_role),
-                onClick = { showNovawerkSheet = true },
-            )
-            MenuRow(
-                title = stringResource(Res.string.team_manmanyou_name),
-                supportingText = stringResource(Res.string.team_manmanyou_role),
-                onClick = { showManmanyouSheet = true },
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-
-            // Version row
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(Res.string.version),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = "1.0",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
-            // Privacy policy
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            ) {
-                Text(
-                    text = stringResource(Res.string.privacy_policy),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-
-            // Icon credits (Flaticon attribution)
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            ) {
-                Text(
-                    text = stringResource(Res.string.icon_credits),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = stringResource(Res.string.icon_credits_value),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
-            Spacer(Modifier.height(24.dp))
         }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Language section
+        Text(
+            text = stringResource(Res.string.language),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(vertical = 12.dp),
+        )
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            val options = listOf(null to Res.string.system_default, "en" to Res.string.english, "zh" to Res.string.chinese)
+            options.forEachIndexed { index, (value, labelRes) ->
+                SegmentedButton(
+                    selected = currentLanguage == value,
+                    onClick = { onLanguageChange(value) },
+                    shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                ) {
+                    Text(stringResource(labelRes))
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+        HorizontalDivider()
+
+        // About section
+        Text(
+            text = stringResource(Res.string.about),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(vertical = 12.dp),
+        )
+        MenuRow(
+            title = stringResource(Res.string.story_title),
+            onClick = { showStorySheet = true },
+        )
+        MenuRow(
+            title = stringResource(Res.string.contribute_title),
+            onClick = { showContributeSheet = true },
+        )
+        MenuRow(
+            title = stringResource(Res.string.contributors_title),
+            onClick = { showContributorsSheet = true },
+        )
+
+        // Team section
+        Text(
+            text = stringResource(Res.string.team_title),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+        )
+        MenuRow(
+            title = stringResource(Res.string.team_novawerk_name),
+            supportingText = stringResource(Res.string.team_novawerk_role),
+            onClick = { showNovawerkSheet = true },
+        )
+        MenuRow(
+            title = stringResource(Res.string.team_manmanyou_name),
+            supportingText = stringResource(Res.string.team_manmanyou_role),
+            onClick = { showManmanyouSheet = true },
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+
+        // Version row
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(Res.string.version),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = "1.0",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        // Privacy policy
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.privacy_policy),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+
+        // Icon credits (Flaticon attribution)
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.icon_credits),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = stringResource(Res.string.icon_credits_value),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+    Spacer(Modifier.height(24.dp))
     }
 
     if (showStorySheet) {
