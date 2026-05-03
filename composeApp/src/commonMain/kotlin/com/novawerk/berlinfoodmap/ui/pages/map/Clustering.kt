@@ -30,15 +30,36 @@ internal fun sameClusterGrouping(
  *
  * Must run on the main thread because the Maps SDK's projection isn't
  * documented as thread-safe. Cheap (~tens of microseconds per call) but
- * crosses JNI, so doing all projections in one tight loop here keeps the
- * total cost bounded.
+ * crosses JNI, so doing all projections in one tight loop here keeps
+ * the total cost bounded.
+ *
+ * Why the [projectionPixelScale] multiplier: the kmp-maps `Projection`
+ * doc claims the returned `ScreenPoint` is in pixels, but the iOS
+ * implementation actually returns CGPoint values which are in *points*
+ * (1pt = scale px on @2x/@3x devices). Android's implementation uses
+ * `Point` which is in pixels. We caller-side normalise iOS's coords
+ * into pixels so downstream cluster-radius math (computed via
+ * `Dp.toPx()`, also pixels) lines up across platforms — without this
+ * fix iOS clustered everything into one giant blob because the radius
+ * was effectively 3× the projected coord scale.
  */
 internal fun projectAll(
     restaurants: List<Restaurant>,
     projection: Projection,
-): List<ScreenPoint> = restaurants.map { r ->
-    projection.toScreenLocation(LatLng(r.latitude, r.longitude))
+): List<ScreenPoint> {
+    val scale = projectionPixelScale()
+    return restaurants.map { r ->
+        val pt = projection.toScreenLocation(LatLng(r.latitude, r.longitude))
+        if (scale == 1f) pt else ScreenPoint(pt.x * scale, pt.y * scale)
+    }
 }
+
+/**
+ * Multiplier to convert this platform's `Projection.toScreenLocation`
+ * output into actual pixel coordinates. Android = 1 (already pixels);
+ * iOS = `UIScreen.mainScreen.scale` (CGPoint → px).
+ */
+internal expect fun projectionPixelScale(): Float
 
 /**
  * Spatial-grid clustering on pre-projected screen coords — O(n) average.

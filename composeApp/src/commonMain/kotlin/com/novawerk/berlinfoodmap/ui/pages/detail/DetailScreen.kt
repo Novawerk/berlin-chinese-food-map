@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import berlinfoodmap.composeapp.generated.resources.Res
@@ -141,9 +142,6 @@ fun DetailScreen(
                     start = 20.dp,
                     end = 20.dp,
                     top = 24.dp,
-                    // Reserve space for the sticky bottom action bar so the
-                    // last section (footer) is fully scrollable above it.
-                    bottom = 120.dp,
                 ),
                 verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
@@ -162,17 +160,33 @@ fun DetailScreen(
                     val text = desc.preferred(LocalAppLocale.current)
                     if (text.isNotBlank()) DescriptionCard(text = text)
                 }
+            }
 
-                // Photo carousel — placed after the info sections so the hero
-                // stays clean and users discover the full gallery once they've
-                // scanned the basics.
-                if (photos.size > 1) {
-                    PhotoCarousel(
-                        photos = photos,
-                        onTap = { fullscreenIndex = it },
-                    )
-                }
+            // Photo carousel breaks out of the padded info column so it can
+            // use the full screen width — Material 3's MultiBrowseCarousel
+            // computes peek widths off its outer bounds, and a 40dp-shrunk
+            // container collapses the items on narrow iPhones.
+            // Internal padding is applied to the title row + carousel
+            // contentPadding instead.
+            if (photos.size > 1) {
+                Spacer(Modifier.height(24.dp))
+                PhotoCarousel(
+                    photos = photos,
+                    horizontalPadding = 20.dp,
+                    onTap = { fullscreenIndex = it },
+                )
+            }
 
+            // Reserve space for the sticky bottom action bar so the last
+            // visible section is fully scrollable above it.
+            Column(
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 120.dp,
+                ),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
                 Footer(restaurant = r)
             }
         }
@@ -239,12 +253,16 @@ private fun HeroCover(photos: List<String>, onTap: () -> Unit) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PhotoCarousel(photos: List<String>, onTap: (Int) -> Unit) {
+private fun PhotoCarousel(
+    photos: List<String>,
+    horizontalPadding: Dp,
+    onTap: (Int) -> Unit,
+) {
     val state = rememberCarouselState { photos.size }
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 4.dp, bottom = 12.dp),
+            modifier = Modifier.padding(start = horizontalPadding + 4.dp, bottom = 12.dp),
         ) {
             Text(
                 text = stringResource(Res.string.photos_label),
@@ -262,6 +280,11 @@ private fun PhotoCarousel(photos: List<String>, onTap: (Int) -> Unit) {
             state = state,
             preferredItemWidth = 240.dp,
             itemSpacing = 8.dp,
+            // Inner padding so first / last items breathe the same as the
+            // sections above; the carousel itself takes the full screen
+            // width to give M3's MultiBrowse algorithm enough room to
+            // compute peek widths correctly (especially on narrow iPhones).
+            contentPadding = PaddingValues(horizontal = horizontalPadding),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp),
