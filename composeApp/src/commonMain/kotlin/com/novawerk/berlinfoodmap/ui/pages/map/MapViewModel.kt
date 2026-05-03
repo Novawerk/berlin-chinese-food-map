@@ -12,7 +12,6 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
-import coil3.request.allowHardware
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
@@ -142,7 +141,7 @@ internal class MapViewModel(
             viewModelScope.launch {
                 val request = ImageRequest.Builder(context)
                     .data(url)
-                    .allowHardware(false)
+                    .disableHardwareBitmap()
                     .size(MARKER_COVER_PX, MARKER_COVER_PX)
                     .build()
                 markerCovers[r.id] = when (val result = imageLoader.execute(request)) {
