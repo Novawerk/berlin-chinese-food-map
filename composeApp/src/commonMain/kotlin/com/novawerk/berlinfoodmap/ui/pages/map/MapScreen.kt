@@ -16,7 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import berlinfoodmap.composeapp.generated.resources.Res
@@ -73,9 +75,10 @@ fun MapScreen(
     // not via composable painters) — survives configuration changes and
     // cluster regroupings.
     val markerCovers = viewModel.markerCovers
-    // Descriptor cache stays in composition: rendering goes through a
+    // Descriptor caches stay in composition: rendering goes through a
     // hidden `ComposeView` (Android) that needs a live composition context.
     val descriptorCache = rememberMarkerDescriptorCache()
+    val clusterDescriptorCache = rememberClusterDescriptorCache()
     LaunchedEffect(restaurantsFiltered) {
         // Drop entries for restaurants no longer in the filter — otherwise
         // descriptors leak bitmap memory until MapScreen disposes.
@@ -88,15 +91,41 @@ fun MapScreen(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val haptics = LocalHapticFeedback.current
+
+    // Reset the nearby-row scroll position whenever the user pans/zooms the
+    // map by gesture. Programmatic camera moves (card click, FAB, district
+    // tap) report API_ANIMATION, so they don't trigger this — only direct
+    // user input does. Without this, the row would keep its old scroll
+    // offset against a freshly-rebuilt list, which is disorienting.
+    LaunchedEffect(listState) {
+        snapshotFlow { cameraPositionState.isMoving }
+            .filter { it && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE }
+            .collect {
+                if (listState.firstVisibleItemIndex != 0 ||
+                    listState.firstVisibleItemScrollOffset != 0
+                ) {
+                    listState.animateScrollToItem(0)
+                }
+            }
+    }
 
     val density = LocalDensity.current
     val clusterRadiusPx = with(density) { 72.dp.toPx() }
 
-    // Push viewport bounds into the data VM so it can derive
-    // `visibleRestaurants` itself — composable's only job here is to
-    // forward the (composable-bound) camera state.
+    // Push viewport bounds into the data VM only when the camera settles.
+    // The bottom LazyRow reads `visibleRestaurants` derived from these
+    // bounds; updating per-frame during a pinch/pan turns into 60 fps of
+    // list rebuilds, which is the dominant source of jank on big zoom
+    // changes. Idle-only updates give visible cards a one-gesture lag,
+    // which is the standard mobile pattern.
     LaunchedEffect(Unit) {
-        snapshotFlow { cameraPositionState.projection?.visibleBounds }
+        snapshotFlow {
+            cameraPositionState.isMoving to cameraPositionState.projection?.visibleBounds
+        }
+            .filter { (isMoving, _) -> !isMoving }
+            .map { (_, bounds) -> bounds }
+            .distinctUntilChanged()
             .collect { viewModel.updateVisibleBounds(it) }
     }
 
@@ -139,6 +168,7 @@ fun MapScreen(
                 } else {
                     ClusterMarker(
                         cluster = cluster,
+                        descriptorCache = clusterDescriptorCache,
                         onClick = {
                             scope.launch {
                                 val targetZoom = (cameraPositionState.position.zoom + 2f)
@@ -209,7 +239,18 @@ fun MapScreen(
                 items(viewModel.visibleRestaurants, key = { it.id }) { restaurant ->
                     NearbyCard(
                         restaurant = restaurant,
-                        onClick = { onNavigateDetail(restaurant.id) },
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scope.launch {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        LatLng(restaurant.latitude, restaurant.longitude),
+                                        16f,
+                                    ),
+                                )
+                            }
+                        },
+                        onLongClick = { onNavigateDetail(restaurant.id) },
                     )
                 }
             }

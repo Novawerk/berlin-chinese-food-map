@@ -1,7 +1,8 @@
 package com.novawerk.berlinfoodmap.ui.pages.map
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,15 +43,20 @@ import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 // 1600 px JPEG when 30+ NearbyCards scroll past in the viewport row.
 private const val NEARBY_COVER_PX = 192
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun NearbyCard(
     restaurant: Restaurant,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .width(220.dp)
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
