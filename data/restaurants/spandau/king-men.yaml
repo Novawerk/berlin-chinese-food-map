@@ -1,10 +1,10 @@
 name:
   en: King-Men
   zh: King-Men
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Falkenseer Chaussee 217
-  postalCode: '13583'
+  postalCode: "13583"
   district: Spandau
 latitude: 52.5498369
 longitude: 13.1706083

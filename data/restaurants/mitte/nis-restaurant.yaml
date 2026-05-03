@@ -1,14 +1,19 @@
 name:
   en: Ni’s Restaurant
   zh: 倪记
-cuisineType: GENERAL
+tags:
+  - SHANGHAINESE
 address:
   addressLine1: Kleine Präsidentenstraße 3
-  postalCode: '10178'
+  postalCode: "10178"
   district: Mitte
 latitude: 52.5227272
 longitude: 13.400342
 description:
   en: 江南菜系｜小笼招牌｜精致家常
   zh: 江南菜系｜小笼招牌｜精致家常
+featured: true
+editorialNote:
+  zh: 江南菜系｜小笼招牌｜精致家常
+  en: ""
 placeId: ChIJ3W_JaKBRqEcRzHmo_Fd9yn8

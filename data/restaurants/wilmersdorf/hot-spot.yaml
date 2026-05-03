@@ -1,10 +1,10 @@
 name:
   en: Hot Spot
   zh: 聚友阁
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Eisenzahnstraße 66
-  postalCode: '10709'
+  postalCode: "10709"
   district: Wilmersdorf
 latitude: 52.4992174
 longitude: 13.3056796

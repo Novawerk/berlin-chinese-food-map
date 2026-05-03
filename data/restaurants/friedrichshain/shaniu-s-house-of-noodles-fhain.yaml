@@ -1,11 +1,15 @@
 name:
   en: Shaniu‘s House of Noodles (Fhain)
   zh: 傻妞面馆
-cuisineType: NOODLES
+tags:
+  - NOODLES
 address:
   addressLine1: Niederbarnimstraße 12
-  postalCode: '10247'
+  postalCode: "10247"
   district: Friedrichshain
 latitude: 52.5133845
 longitude: 13.4576435
+chain:
+  brand: Shaniu‘s House of Noodles
+  branch: Fhain
 placeId: ChIJ_YSORDhPqEcR8fVGp0zu94o

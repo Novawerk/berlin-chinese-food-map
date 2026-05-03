@@ -1,10 +1,11 @@
 name:
   en: Wen’s Küche
   zh: 文厨房
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
 address:
   addressLine1: Mariendorfer Damm 175
-  postalCode: '12107'
+  postalCode: "12107"
   district: Mariendorf
 latitude: 52.4361437
 longitude: 13.3893681

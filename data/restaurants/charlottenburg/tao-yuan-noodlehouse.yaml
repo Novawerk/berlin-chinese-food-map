@@ -1,10 +1,11 @@
 name:
   en: Tao Yuan Noodlehouse
   zh: 桃园面馆
-cuisineType: NOODLES
+tags:
+  - NOODLES
 address:
   addressLine1: Wilmersdorfer Str. 26
-  postalCode: '10585'
+  postalCode: "10585"
   district: Charlottenburg
 latitude: 52.5139777
 longitude: 13.3047276

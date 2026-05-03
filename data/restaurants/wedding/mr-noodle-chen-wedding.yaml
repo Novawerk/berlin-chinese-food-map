@@ -1,14 +1,23 @@
 name:
   en: Mr. Noodle Chen (Wedding)
   zh: 陈香贵
-cuisineType: NOODLES
+tags:
+  - MUSLIM
+  - NOODLES
 address:
   addressLine1: Willdenowstraße 12
-  postalCode: '13353'
+  postalCode: "13353"
   district: Wedding
 latitude: 52.5440752
 longitude: 13.3603957
 description:
   en: 兰州拉面｜现拉现煮｜连锁首店
   zh: 兰州拉面｜现拉现煮｜连锁首店
+featured: true
+editorialNote:
+  zh: 兰州拉面｜现拉现煮｜连锁首店
+  en: ""
+chain:
+  brand: Mr. Noodle Chen
+  branch: Wedding
 placeId: ChIJeZMhTQBRqEcRfR0MMY8c8w4

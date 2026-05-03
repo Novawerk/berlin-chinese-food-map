@@ -1,10 +1,12 @@
 name:
   en: Chen‘s Teehaus
   zh: 陈氏茶缘
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
+  - TEA_HOUSE
 address:
   addressLine1: Uhlandstraße 150
-  postalCode: '10719'
+  postalCode: "10719"
   district: Wilmersdorf
 latitude: 52.4971948
 longitude: 13.3245015

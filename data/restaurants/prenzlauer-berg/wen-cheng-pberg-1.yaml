@@ -1,11 +1,15 @@
 name:
   en: Wen Cheng (PBerg 1)
   zh: Wen Cheng (PBerg 1)
-cuisineType: NOODLES
+tags:
+  - NOODLES
 address:
   addressLine1: Schönhauser Allee 65
-  postalCode: '10437'
+  postalCode: "10437"
   district: Prenzlauer Berg
 latitude: 52.5462139
 longitude: 13.4134258
+chain:
+  brand: Wen Cheng
+  branch: PBerg 1
 placeId: ChIJERiRhihTqEcRVxtp2hHUr3E

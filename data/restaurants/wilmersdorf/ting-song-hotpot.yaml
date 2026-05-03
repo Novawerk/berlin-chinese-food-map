@@ -1,10 +1,11 @@
 name:
   en: Ting Song Hotpot
   zh: 随园·听松
-cuisineType: HOTPOT
+tags:
+  - HOTPOT
 address:
   addressLine1: Eisenzahnstraße 14
-  postalCode: '10709'
+  postalCode: "10709"
   district: Wilmersdorf
 latitude: 52.4952282
 longitude: 13.304781

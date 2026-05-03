@@ -1,10 +1,11 @@
 name:
   en: Shanxi Nudelhaus
   zh: 山西面馆
-cuisineType: NOODLES
+tags:
+  - NOODLES
 address:
   addressLine1: Samariterstraße 28
-  postalCode: '10247'
+  postalCode: "10247"
   district: Friedrichshain
 latitude: 52.5184477
 longitude: 13.4659424

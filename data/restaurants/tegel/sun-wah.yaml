@@ -1,10 +1,10 @@
 name:
   en: Sun Wah
   zh: 新华
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Alt-Tegel 4
-  postalCode: '13507'
+  postalCode: "13507"
   district: Tegel
 latitude: 52.5897935
 longitude: 13.2820416

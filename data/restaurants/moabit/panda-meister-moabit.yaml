@@ -1,11 +1,15 @@
 name:
   en: Panda Meister (Moabit)
   zh: 熊猫师傅
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
 address:
   addressLine1: Alt-Moabit 73A
-  postalCode: '10555'
+  postalCode: "10555"
   district: Moabit
 latitude: 52.5236239
 longitude: 13.3326428
+chain:
+  brand: Panda Meister
+  branch: Moabit
 placeId: ChIJCf731Z5RqEcRyoZk9lFhKKw

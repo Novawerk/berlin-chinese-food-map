@@ -1,10 +1,10 @@
 name:
   en: HuaTing
   zh: 华亭酒家
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Strausberger Pl. 13
-  postalCode: '10243'
+  postalCode: "10243"
   district: Friedrichshain
 latitude: 52.5177617
 longitude: 13.4287324

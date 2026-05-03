@@ -1,11 +1,13 @@
 name:
   en: Jian Bing Town
   zh: 煎饼堂
-cuisineType: OTHER
+tags:
+  - BAKERY
+  - STREET_FOOD
 address:
   addressLine1: Potsdamer Str. 4
   note: Kerb Food Hall
-  postalCode: '10785'
+  postalCode: "10785"
   district: Tiergarten
 latitude: 52.5097141
 longitude: 13.3725831

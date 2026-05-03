@@ -1,10 +1,11 @@
 name:
   en: Tianfuzius
   zh: 天府子
-cuisineType: OTHER
+tags:
+  - VEGETARIAN
 address:
   addressLine1: Regensburger Str. 1
-  postalCode: '10777'
+  postalCode: "10777"
   district: Schöneberg
 latitude: 52.4959209
 longitude: 13.3404775

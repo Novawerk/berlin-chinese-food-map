@@ -1,10 +1,10 @@
 name:
   en: Feng Yuan
   zh: 丰源饭店
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Kaiser-Wilhelm-Straße 8
-  postalCode: '12247'
+  postalCode: "12247"
   district: Lankwitz
 latitude: 52.4304432
 longitude: 13.3344393

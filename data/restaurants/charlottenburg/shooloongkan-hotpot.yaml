@@ -1,10 +1,11 @@
 name:
   en: ShooLoongKan Hotpot
   zh: 小龙坎
-cuisineType: HOTPOT
+tags:
+  - HOTPOT
 address:
   addressLine1: Meinekestraße 22
-  postalCode: '10719'
+  postalCode: "10719"
   district: Charlottenburg
 latitude: 52.5015419
 longitude: 13.3292051

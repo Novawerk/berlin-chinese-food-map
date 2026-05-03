@@ -1,10 +1,10 @@
 name:
   en: Guoguoxiang
   zh: 锅锅香
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Breitenbachpl. 8
-  postalCode: '14195'
+  postalCode: "14195"
   district: Dahlem
 latitude: 52.4673234
 longitude: 13.3083345

@@ -1,10 +1,11 @@
 name:
   en: Kamala Vegan
   zh: 莲花阁素食
-cuisineType: OTHER
+tags:
+  - VEGETARIAN
 address:
   addressLine1: Boxhagener Str. 85
-  postalCode: '10245'
+  postalCode: "10245"
   district: Friedrichshain
 latitude: 52.5092826
 longitude: 13.4656222

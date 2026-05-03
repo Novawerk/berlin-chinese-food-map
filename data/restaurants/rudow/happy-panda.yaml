@@ -1,10 +1,10 @@
 name:
   en: Happy Panda
   zh: Happy Panda
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Johannisthaler Ch 261
-  postalCode: '12351'
+  postalCode: "12351"
   district: Rudow
 latitude: 52.4322129
 longitude: 13.4615989

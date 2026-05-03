@@ -1,10 +1,10 @@
 name:
   en: Royal Garden
   zh: 帝苑
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Osdorfer Str. 26
-  postalCode: '12207'
+  postalCode: "12207"
   district: Lichterfelde
 latitude: 52.416193
 longitude: 13.3152407

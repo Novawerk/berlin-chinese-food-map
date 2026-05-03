@@ -1,11 +1,16 @@
 name:
   en: Sanku Maots'ai (Fhain)
   zh: 三顾冒菜
-cuisineType: OTHER
+tags:
+  - SICHUAN
+  - MALATANG
 address:
   addressLine1: Warschauer Str. 81a
-  postalCode: '10241'
+  postalCode: "10241"
   district: Friedrichshain
 latitude: 52.5138835
 longitude: 13.4536171
+chain:
+  brand: Sanku Maots'ai
+  branch: Fhain
 placeId: ChIJ8baDUjJPqEcRzDNSspACa-c

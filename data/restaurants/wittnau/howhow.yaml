@@ -1,10 +1,10 @@
 name:
   en: HowHow
   zh: 好好酒楼
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Oranienburger Str. 168
-  postalCode: '13437'
+  postalCode: "13437"
   district: Wittnau
 latitude: 52.6009151
 longitude: 13.3305922

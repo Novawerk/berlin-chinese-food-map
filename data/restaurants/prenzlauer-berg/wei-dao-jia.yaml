@@ -1,10 +1,10 @@
 name:
   en: Wei Dao Jia
   zh: 味道佳
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Oderberger Str. 27
-  postalCode: '10435'
+  postalCode: "10435"
   district: Prenzlauer Berg
 latitude: 52.5402877
 longitude: 13.4063041

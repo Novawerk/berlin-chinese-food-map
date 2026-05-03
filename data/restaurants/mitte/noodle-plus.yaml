@@ -1,10 +1,11 @@
 name:
   en: Noodle Plus
   zh: 宾临城下
-cuisineType: NOODLES
+tags:
+  - NOODLES
 address:
   addressLine1: Hannah-Arendt-Straße 1
-  postalCode: '10117'
+  postalCode: "10117"
   district: Mitte
 latitude: 52.5136262
 longitude: 13.3813749

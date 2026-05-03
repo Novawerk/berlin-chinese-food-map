@@ -1,10 +1,10 @@
 name:
   en: Phönix Buffet
   zh: 凤凰酒楼
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Greifswalder Str. 90
-  postalCode: '10409'
+  postalCode: "10409"
   district: Prenzlauer Berg
 latitude: 52.5434771
 longitude: 13.4425543

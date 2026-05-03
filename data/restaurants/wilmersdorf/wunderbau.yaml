@@ -1,10 +1,10 @@
 name:
   en: Wunderbau
   zh: 恩典之家
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Bernhardstraße 12
-  postalCode: '10715'
+  postalCode: "10715"
   district: Wilmersdorf
 latitude: 52.4783439
 longitude: 13.3301547

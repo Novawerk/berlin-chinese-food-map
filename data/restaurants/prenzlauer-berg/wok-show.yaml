@@ -1,10 +1,11 @@
 name:
   en: Wok Show
   zh: 北方水饺
-cuisineType: GENERAL
+tags:
+  - DUMPLINGS
 address:
   addressLine1: Greifenhagener Str. 31
-  postalCode: '10437'
+  postalCode: "10437"
   district: Prenzlauer Berg
 latitude: 52.5519591
 longitude: 13.4192116

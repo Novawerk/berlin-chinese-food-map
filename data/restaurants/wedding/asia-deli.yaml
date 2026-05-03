@@ -1,10 +1,11 @@
 name:
   en: Asia Deli
   zh: 美食家
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
 address:
   addressLine1: Seestraße 41
-  postalCode: '13353'
+  postalCode: "13353"
   district: Wedding
 latitude: 52.5496636
 longitude: 13.3512456

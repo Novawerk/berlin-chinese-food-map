@@ -1,10 +1,11 @@
 name:
   en: Chuan Garden
   zh: 川园
-cuisineType: GENERAL
+tags:
+  - SICHUAN
 address:
   addressLine1: Torstraße 189
-  postalCode: '10115'
+  postalCode: "10115"
   district: Mitte
 latitude: 52.5284483
 longitude: 13.3926767

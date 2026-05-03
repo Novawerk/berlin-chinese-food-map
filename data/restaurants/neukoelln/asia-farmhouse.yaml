@@ -1,10 +1,11 @@
 name:
   en: Asia Farmhouse
   zh: 农夫乐
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
 address:
   addressLine1: Pannierstraße 54
-  postalCode: '12047'
+  postalCode: "12047"
   district: Neukölln
 latitude: 52.4877026
 longitude: 13.4315386

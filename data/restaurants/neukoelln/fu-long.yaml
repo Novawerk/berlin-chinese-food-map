@@ -1,10 +1,10 @@
 name:
   en: Fu-Long
   zh: 富隆酒楼
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Britzer Damm 18
-  postalCode: '12347'
+  postalCode: "12347"
   district: Neukölln
 latitude: 52.4614966
 longitude: 13.4346352

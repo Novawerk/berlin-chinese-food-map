@@ -1,10 +1,10 @@
 name:
   en: En Lee Cai
   zh: 恩李菜
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Kurfürstendamm 218
-  postalCode: '10719'
+  postalCode: "10719"
   district: Charlottenburg
 latitude: 52.5027787
 longitude: 13.32812

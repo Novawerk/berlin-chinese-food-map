@@ -1,11 +1,13 @@
 name:
   en: JuJu's Dumplings
   zh: JuJu's Dumplings
-cuisineType: OTHER
+tags:
+  - DUMPLINGS
+  - STREET_FOOD
 address:
   addressLine1: Arminiusstraße 2-4
   note: Arminiusmarkethalle
-  postalCode: '10551'
+  postalCode: "10551"
   district: Moabit
 latitude: 52.5278334
 longitude: 13.3386209

@@ -1,10 +1,11 @@
 name:
   en: Dump Ling
   zh: Dump Ling
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
 address:
   addressLine1: Alte Schönhauser Str. 44
-  postalCode: '10119'
+  postalCode: "10119"
   district: Mitte
 latitude: 52.5265091
 longitude: 13.4078278

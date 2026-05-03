@@ -1,10 +1,10 @@
 name:
   en: Feast
   zh: 王家一号
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Meierottostraße 1
-  postalCode: '10719'
+  postalCode: "10719"
   district: Wilmersdorf
 latitude: 52.4978784
 longitude: 13.3276609

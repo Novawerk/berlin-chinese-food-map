@@ -1,10 +1,10 @@
 name:
   en: Mr. Liu
   zh: Mr. Liu
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Bundesallee 45
-  postalCode: '10715'
+  postalCode: "10715"
   district: Wilmersdorf
 latitude: 52.4858713
 longitude: 13.330572

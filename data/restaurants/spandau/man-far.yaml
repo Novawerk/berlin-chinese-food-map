@@ -1,10 +1,10 @@
 name:
   en: Man-Far
   zh: 万花酒楼
-cuisineType: GENERAL
+tags: []
 address:
   addressLine1: Brunsbütteler Damm 260
-  postalCode: '13581'
+  postalCode: "13581"
   district: Spandau
 latitude: 52.5333397
 longitude: 13.1581957

@@ -1,14 +1,19 @@
 name:
   en: Tu Long
   zh: 土龙
-cuisineType: OTHER
+tags:
+  - STREET_FOOD
 address:
   addressLine1: Otto-Suhr-Allee 25
-  postalCode: '10585'
+  postalCode: "10585"
   district: Charlottenburg
 latitude: 52.5139803
 longitude: 13.3163265
 description:
   en: 平价老店｜家常快炒｜学生友好
   zh: 平价老店｜家常快炒｜学生友好
+featured: true
+editorialNote:
+  zh: 平价老店｜家常快炒｜学生友好
+  en: ""
 placeId: ChIJQWAg6x5RqEcRmK3P9ela00I

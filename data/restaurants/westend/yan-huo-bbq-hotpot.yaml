@@ -1,10 +1,12 @@
 name:
   en: Yan Huo BBQ&Hotpot
   zh: 宴火
-cuisineType: HOTPOT
+tags:
+  - BBQ
+  - HOTPOT
 address:
   addressLine1: Kaiserdamm 89
-  postalCode: '14057'
+  postalCode: "14057"
   district: Westend
 latitude: 52.509738
 longitude: 13.2812349

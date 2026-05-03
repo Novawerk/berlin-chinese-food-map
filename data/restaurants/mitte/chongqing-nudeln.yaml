@@ -1,11 +1,14 @@
 name:
   en: Chongqing-Nudeln
   zh: 碗里香重庆小面
-cuisineType: OTHER
+tags:
+  - SICHUAN
+  - NOODLES
+  - STREET_FOOD
 address:
   addressLine1: Leipziger Pl. 12
   note: Mall of Berlin
-  postalCode: '10117'
+  postalCode: "10117"
   district: Mitte
 latitude: 52.510563
 longitude: 13.3809599

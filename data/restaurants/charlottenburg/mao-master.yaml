@@ -1,10 +1,12 @@
 name:
   en: Mao Master
   zh: 帽牌冒菜
-cuisineType: OTHER
+tags:
+  - SICHUAN
+  - MALATANG
 address:
   addressLine1: Kantstr. 50
-  postalCode: '10625'
+  postalCode: "10625"
   district: Charlottenburg
 latitude: 52.5066733
 longitude: 13.3100697

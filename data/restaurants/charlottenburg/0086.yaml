@@ -1,14 +1,20 @@
 name:
-  en: '0086'
+  en: "0086"
   zh: 零零八六
-cuisineType: GENERAL
+tags:
+  - SICHUAN
+  - FUSION
 address:
   addressLine1: Bleibtreustraße 7
-  postalCode: '10623'
+  postalCode: "10623"
   district: Charlottenburg
 latitude: 52.5052737
 longitude: 13.3192386
 description:
   en: 传统川菜｜重口下饭｜新派氛围
   zh: 传统川菜｜重口下饭｜新派氛围
+featured: true
+editorialNote:
+  zh: 传统川菜｜重口下饭｜新派氛围
+  en: ""
 placeId: ChIJP-uA7_VRqEcRncyMzZUBX6s

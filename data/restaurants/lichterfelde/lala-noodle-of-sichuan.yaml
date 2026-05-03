@@ -1,10 +1,12 @@
 name:
   en: LaLa Noodle of Sichuan
   zh: 一面之缘
-cuisineType: NOODLES
+tags:
+  - SICHUAN
+  - NOODLES
 address:
   addressLine1: Enzianstraße 2
-  postalCode: '12203'
+  postalCode: "12203"
   district: Lichterfelde
 latitude: 52.4485225
 longitude: 13.3051809

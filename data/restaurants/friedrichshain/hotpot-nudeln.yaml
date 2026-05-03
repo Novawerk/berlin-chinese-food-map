@@ -1,10 +1,14 @@
 name:
   en: Hotpot & Nudeln
   zh: 大清面馆
-cuisineType: OTHER
+tags:
+  - SICHUAN
+  - HOTPOT
+  - MALATANG
+  - NOODLES
 address:
   addressLine1: Revaler Str. 17
-  postalCode: '10245'
+  postalCode: "10245"
   district: Friedrichshain
 latitude: 52.5071676
 longitude: 13.4574607

@@ -1,10 +1,11 @@
 name:
   en: Chungking Noodles
   zh: Chungking Noodles
-cuisineType: NOODLES
+tags:
+  - NOODLES
 address:
   addressLine1: Reichenberger Str. 35
-  postalCode: '10999'
+  postalCode: "10999"
   district: Kreuzberg
 latitude: 52.4972686
 longitude: 13.4232581
