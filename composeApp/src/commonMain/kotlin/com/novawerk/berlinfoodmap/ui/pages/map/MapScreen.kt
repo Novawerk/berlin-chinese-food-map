@@ -742,7 +742,7 @@ private fun NearbyCard(
 ) {
     Card(
         modifier = Modifier
-            .width(240.dp)
+            .width(220.dp)
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -750,7 +750,7 @@ private fun NearbyCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
     ) {
         Row(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Square cover thumbnail. Generic Material icon as fallback so a
@@ -758,7 +758,7 @@ private fun NearbyCard(
             val coverUrl = restaurant.previewImageUrl()
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(44.dp)
                     .clip(RoundedCornerShape(6.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center,
@@ -775,7 +775,7 @@ private fun NearbyCard(
                         Icons.Filled.Restaurant,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(22.dp),
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             }
@@ -805,43 +805,13 @@ private fun NearbyCard(
                     maxLines = 1,
                 )
                 if (restaurant.tags.isNotEmpty()) {
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(2.dp))
                     val tagLine = restaurant.tags.map { tagDisplayName(it) }.joinToString(" · ")
                     Text(
                         text = tagLine,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        maxLines = 2,
-                    )
-                }
-                Spacer(Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Filled.Place,
-                        contentDescription = null,
-                        modifier = Modifier.size(11.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.width(2.dp))
-                    Text(
-                        text = restaurant.address.district,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Icon(
-                        Icons.Filled.Visibility,
-                        contentDescription = null,
-                        modifier = Modifier.size(11.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.width(2.dp))
-                    Text(
-                        text = "${restaurant.viewCount}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
