@@ -35,7 +35,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
@@ -221,8 +224,21 @@ fun MapScreen(
                     // per `keys` change, so we feed `coverReady` as a key —
                     // when the image arrives the marker re-renders with the
                     // photo instead of the fallback Material icon.
+                    //
+                    // `allowHardware(false)` is critical: MarkerComposable
+                    // rasterises onto a software canvas and crashes with
+                    // `Software rendering doesn't support hardware bitmaps`
+                    // when coil hands it the default hardware-backed bitmap.
                     val coverUrl = restaurant.previewImageUrl()
-                    val coverPainter = coverUrl?.let { rememberAsyncImagePainter(it) }
+                    val platformContext = LocalPlatformContext.current
+                    val coverPainter = coverUrl?.let {
+                        rememberAsyncImagePainter(
+                            ImageRequest.Builder(platformContext)
+                                .data(it)
+                                .allowHardware(false)
+                                .build(),
+                        )
+                    }
                     val coverReady = coverPainter
                         ?.state
                         ?.collectAsState()
