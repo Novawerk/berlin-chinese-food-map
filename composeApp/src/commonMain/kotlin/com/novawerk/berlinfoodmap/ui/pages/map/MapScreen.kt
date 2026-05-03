@@ -39,6 +39,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
+import coil3.request.crossfade
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
@@ -822,10 +823,13 @@ private fun NearbyCard(
                 contentAlignment = Alignment.Center,
             ) {
                 if (coverUrl != null) {
+                    // Crossfade so the photo eases in over the grey
+                    // surfaceVariant background instead of popping.
                     AsyncImage(
                         model = ImageRequest.Builder(ctx)
                             .data(coverUrl)
                             .size(NEARBY_COVER_PX, NEARBY_COVER_PX)
+                            .crossfade(durationMillis = 200)
                             .build(),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
