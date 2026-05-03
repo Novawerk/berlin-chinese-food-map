@@ -1,0 +1,37 @@
+package com.novawerk.berlinfoodmap.ui.pages.map
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import eu.buney.maps.BitmapDescriptor
+
+/**
+ * One bitmap descriptor + the cover-state it was rendered for. The
+ * coverReady flag lets us evict the placeholder-pill descriptor once the
+ * photo loads and replace it with the photo-pill descriptor.
+ */
+internal data class CachedMarkerDescriptor(
+    val coverReady: Boolean,
+    val descriptor: BitmapDescriptor,
+)
+
+/**
+ * Hoisted bitmap descriptor cache, keyed by restaurant id. Lives for the
+ * whole MapScreen — survives cluster regroupings.
+ *
+ * Without this, each transition between single-marker and multi-cluster
+ * forces `RestaurantMarker` to re-rasterise the pill via
+ * `rememberStableComposeBitmapDescriptor` (creates an off-screen
+ * ComposeView, measures, lays out, draws to bitmap — ~5-15ms per marker).
+ * For 30+ markers reshuffling on every zoom that's hundreds of ms of
+ * synchronous work on the UI thread.
+ *
+ * With this cache, each restaurant's pill is rasterised at most twice
+ * across the session: once before the cover photo loads (placeholder
+ * variant) and once after (photo variant). Subsequent cluster transitions
+ * are pure cache hits.
+ */
+@Composable
+internal fun rememberMarkerDescriptorCache(): SnapshotStateMap<String, CachedMarkerDescriptor> =
+    remember { mutableStateMapOf() }
