@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.di.create
+import com.novawerk.berlinfoodmap.ui.pages.map.locationPermissionAppContext
 import okio.Path.Companion.toPath
 
 private const val DATA_STORE_FILE_NAME = "berlinfoodmap.preferences_pb"
@@ -83,6 +84,11 @@ class MainActivity : ComponentActivity() {
         ) {}
 
         ensureFirestoreConfigured()
+
+        // Capture app context for hasLocationPermission() — used by the
+        // map's startup-time silent prefetch to skip the request when
+        // permission isn't granted yet, so we don't auto-prompt.
+        locationPermissionAppContext = applicationContext
 
         val component = appComponent(applicationContext)
 
