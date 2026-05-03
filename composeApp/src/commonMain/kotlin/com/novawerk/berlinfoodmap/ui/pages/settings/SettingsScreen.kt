@@ -5,7 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.ui.components.MenuRow
-import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.settings
@@ -40,8 +38,6 @@ import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
 import berlinfoodmap.composeapp.generated.resources.team_manmanyou_name
 import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
 
-private const val NOVAWERK_URL = "https://novawerk.io"
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -52,7 +48,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
 ) {
     var showContributeSheet by remember { mutableStateOf(false) }
-    val urlLauncher = rememberUrlLauncher()
+    var showNovawerkSheet by remember { mutableStateOf(false) }
+    var showManmanyouSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -139,12 +136,12 @@ fun SettingsScreen(
             MenuRow(
                 title = stringResource(Res.string.team_novawerk_name),
                 supportingText = stringResource(Res.string.team_novawerk_role),
-                trailingIcon = Icons.Filled.OpenInNew,
-                onClick = { urlLauncher.open(NOVAWERK_URL) },
+                onClick = { showNovawerkSheet = true },
             )
             MenuRow(
                 title = stringResource(Res.string.team_manmanyou_name),
                 supportingText = stringResource(Res.string.team_manmanyou_role),
+                onClick = { showManmanyouSheet = true },
             )
 
             HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
@@ -198,5 +195,11 @@ fun SettingsScreen(
 
     if (showContributeSheet) {
         ContributeBottomSheet(onDismiss = { showContributeSheet = false })
+    }
+    if (showNovawerkSheet) {
+        NovawerkBottomSheet(onDismiss = { showNovawerkSheet = false })
+    }
+    if (showManmanyouSheet) {
+        ManmanyouBottomSheet(onDismiss = { showManmanyouSheet = false })
     }
 }

@@ -100,6 +100,10 @@
     <string name="team_title">幕后团队</string>
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">产品 · 设计 · 开发</string>
+    <string name="team_novawerk_bio">Novawerk 是一家扎根柏林的独立产品工作室，专注为社区驱动的品牌设计和开发数字产品——从原生移动 App 到数据流水线和管理后台。\n\n在「柏林中餐地图」里，我们负责工程的部分：Kotlin Multiplatform App、YAML→Firestore 数据流水线、管理后台，以及部署基础设施——把工程的事做扎实，让编辑团队可以专心琢磨那些餐桌上的事。</string>
+    <string name="team_novawerk_visit">访问官网</string>
+
     <string name="team_manmanyou_name">柏林慢慢游</string>
     <string name="team_manmanyou_role">社区 · 内容 · 策划</string>
+    <string name="team_manmanyou_bio">「柏林慢慢游」是柏林一群华语美食爱好者和城市探索者的自发社群。他们分享日常所吃、所走、所看，以及那些让一家店值得再去一次的小细节。\n\n你在「柏林中餐地图」里看到的每一段推荐和策划，都来自这个社群——来自微信群聊、菜市场探店，以及偶尔关于「哪家牛肉面最对味」的争论。</string>
 </resources>

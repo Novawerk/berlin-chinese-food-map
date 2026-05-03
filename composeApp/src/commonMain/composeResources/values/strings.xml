@@ -100,6 +100,10 @@
     <string name="team_title">The team behind</string>
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">Product · Design · Engineering</string>
+    <string name="team_novawerk_bio">Novawerk is an independent product studio based in Berlin. We design and build digital products for community-driven brands — from native mobile apps to data pipelines and admin tooling.\n\nFor Berlin Food Map, we handle the engineering side of the project: the Kotlin Multiplatform app, the YAML-to-Firestore data pipeline, the admin panel, and the deployment infrastructure — so the editorial team can focus on the food rather than the plumbing.</string>
+    <string name="team_novawerk_visit">Visit website</string>
+
     <string name="team_manmanyou_name">柏林慢慢游 · Berlin Manmanyou</string>
     <string name="team_manmanyou_role">Community · Content · Curation</string>
+    <string name="team_manmanyou_bio">「柏林慢慢游」(Berlin Manmanyou — literally \'wander Berlin slowly\') is a grassroots community of Chinese-speaking food lovers and city explorers in Berlin. They share what they eat, where they go, and the small details that make a place worth a second visit.\n\nThe recommendations and curation you read inside Berlin Food Map come from this community — from WeChat group chats, market walks, and the occasional disagreement over which place really has the best beef noodles.</string>
 </resources>
