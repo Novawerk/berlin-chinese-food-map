@@ -1,0 +1,124 @@
+# Google Play Release Workflow
+#
+# Builds a signed AAB and uploads it to Google Play. Triggered by:
+#   - Push of a tag matching `v*` → uploads to internal testing track
+#   - Push of a tag matching `v*-prod` → uploads to production track
+#   - Manual dispatch → choose the track from a dropdown
+#
+# In practice, release.yml dispatches this workflow for every new v* tag,
+# so you don't usually trigger it by hand.
+#
+# REQUIRED GITHUB SECRETS (set once in repo Settings → Secrets and variables → Actions):
+#   KEYSTORE_BASE64                 — `base64 -i berlinfoodmap-release.jks | pbcopy`
+#   KEYSTORE_PASSWORD               — keystore password
+#   KEY_ALIAS                       — alias of the key inside the keystore
+#   KEY_PASSWORD                    — password of the key (often = KEYSTORE_PASSWORD)
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON — `base64 -i play-service-account.json | pbcopy`
+#
+# ONE-TIME PLAY CONSOLE SETUP:
+#   1. Create the app listing in https://play.google.com/console
+#      (app name, language, store listing, content rating, data safety).
+#   2. Manually upload the first AAB so Play knows the package + signing
+#      certificate fingerprint:
+#        ./gradlew :composeApp:bundleRelease
+#        Console → Internal testing → Create new release → Upload AAB
+#        from composeApp/build/outputs/bundle/release/.
+#      Roll out to internal testing once.
+#   3. Wire API access:
+#        Console → Setup → API access → Link a Google Cloud project
+#        Create service account → grant "Editor" in Cloud Console
+#        Console → Grant the service account "Release manager" permission
+#        Download the JSON key, base64-encode, set as
+#        GOOGLE_PLAY_SERVICE_ACCOUNT_JSON above.
+#
+# After this is done, every push to release that produces a v* tag
+# auto-uploads a draft release to internal testing.
+
+name: Google Play Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Google Play track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Read version from catalog
+        id: version
+        run: |
+          # Single source of truth: gradle/libs.versions.toml. Both AGP and
+          # BuildKonfig read these via the env-var override path below.
+          TOML="gradle/libs.versions.toml"
+          VERSION_NAME=$(grep '^app-versionName' "$TOML" | sed 's/.*= *"\(.*\)"/\1/')
+          VERSION_CODE=$(grep '^app-versionCode' "$TOML" | sed 's/.*= *"\(.*\)"/\1/')
+          echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
+          echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
+          echo "Release: $VERSION_NAME ($VERSION_CODE)"
+
+      - name: Determine track
+        id: track
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "track=${{ inputs.track }}" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == *-prod ]]; then
+            echo "track=production" >> $GITHUB_OUTPUT
+          else
+            echo "track=internal" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+
+      - name: Build release AAB
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.version_code }}
+          VERSION_NAME: ${{ steps.version.outputs.version_name }}
+        run: ./gradlew :composeApp:bundleRelease
+
+      - name: Decode service account key
+        run: echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}" | base64 -d > service-account.json
+
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: service-account.json
+          packageName: com.novawerk.berlinfoodmap
+          releaseFiles: composeApp/build/outputs/bundle/release/*.aab
+          track: ${{ steps.track.outputs.track }}
+          status: draft
+
+      - name: Upload AAB as artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: release-aab
+          path: composeApp/build/outputs/bundle/release/*.aab
