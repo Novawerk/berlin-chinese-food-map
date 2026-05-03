@@ -82,9 +82,11 @@
 
     <!-- Contributors section -->
     <string name="contributors_title">Data contributors</string>
-    <string name="contributors_intro">This map exists because of the people listed below — the ones who sent in tips, corrected addresses, or pushed YAML changes. Names are pulled directly from the project\'s git history and refreshed automatically on every release. If you\'ve contributed and we\'ve missed you, please open an issue and we\'ll fix it.</string>
-    <string name="contributors_count">%1$d contributors</string>
-    <string name="contributors_empty">No contributors yet — be the first!</string>
+    <string name="contributors_seed_title">First and foremost — 柏林慢慢游</string>
+    <string name="contributors_seed_body">Long before there was an app, the 柏林慢慢游 (Berlin Manmanyou) team walked the city restaurant by restaurant. They visited, photographed, and tasted their way through Berlin\'s Chinese food scene, hand-collected the first batch of data this map is built on — and, most of all, inspired the entire project. Everything below is built on the groundwork they laid.</string>
+    <string name="contributors_intro">And the list below comes straight from the project\'s git history — every commit that touches the restaurant data files. The list refreshes automatically. If you\'ve contributed and we\'ve missed you, please open an issue and we\'ll fix it.</string>
+    <string name="contributors_count">%1$d from git history</string>
+    <string name="contributors_empty">No git contributors yet — be the first!</string>
 
     <!-- Contribute section -->
     <string name="contribute_title">How to contribute data</string>
