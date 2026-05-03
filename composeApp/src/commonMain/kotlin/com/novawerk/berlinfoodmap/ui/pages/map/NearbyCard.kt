@@ -33,6 +33,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
+import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 

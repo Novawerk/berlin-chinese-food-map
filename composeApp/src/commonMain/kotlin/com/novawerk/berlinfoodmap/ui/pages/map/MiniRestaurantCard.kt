@@ -32,6 +32,7 @@ import coil3.Image
 import coil3.compose.LocalPlatformContext
 import coil3.compose.asPainter
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
+import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 

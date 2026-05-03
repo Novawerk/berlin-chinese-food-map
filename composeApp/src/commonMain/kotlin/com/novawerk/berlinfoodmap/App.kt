@@ -11,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
@@ -21,7 +20,6 @@ import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.navigation.*
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
-import com.novawerk.berlinfoodmap.ui.pages.search.SearchScreen
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
 import com.novawerk.berlinfoodmap.ui.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -135,18 +133,6 @@ fun App(component: AppComponent) {
                             MapScreen(
                                 repository = restaurantRepository,
                                 onNavigateDetail = { id -> detailRestaurantId = id },
-                                onNavigateSearch = { navController.navigate(SearchRoute()) },
-                            )
-                        }
-
-                        composable<SearchRoute> { backStackEntry ->
-                            val route = backStackEntry.toRoute<SearchRoute>()
-                            SearchScreen(
-                                repository = restaurantRepository,
-                                initialCuisine = route.initialCuisine,
-                                initialDistrict = route.initialDistrict,
-                                onNavigateDetail = { id -> detailRestaurantId = id },
-                                onBack = { navController.popBackStack() },
                             )
                         }
 
