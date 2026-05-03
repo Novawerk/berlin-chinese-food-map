@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FB0001000000000000000001 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FB0001000000000000000002 /* FirebaseAuth */; };
+		FB0001000000000000000003 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FB0001000000000000000004 /* FirebaseCore */; };
+		FB0001000000000000000005 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FB0001000000000000000006 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		6A8964866344B40AFF568FAB /* Berlin Food Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Berlin Food Map.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +47,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB0001000000000000000003 /* FirebaseCore in Frameworks */,
+				FB0001000000000000000001 /* FirebaseAuth in Frameworks */,
+				FB0001000000000000000005 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +94,9 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				FB0001000000000000000002 /* FirebaseAuth */,
+				FB0001000000000000000004 /* FirebaseCore */,
+				FB0001000000000000000006 /* FirebaseFirestore */,
 			);
 			productName = iosApp;
 			productReference = 6A8964866344B40AFF568FAB /* Berlin Food Map.app */;
@@ -115,6 +127,9 @@
 			);
 			mainGroup = 884FAFFD9E705B0395E48D9C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 55D5208220B8E06A339B3779 /* Products */;
 			projectDirPath = "";
@@ -299,7 +314,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = $(TEAM_ID);
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -336,7 +351,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = $(TEAM_ID);
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -387,6 +402,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FB0001000000000000000002 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		FB0001000000000000000004 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		FB0001000000000000000006 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0A2BCF6CC0F4EE367BF2C510 /* Project object */;
 }
