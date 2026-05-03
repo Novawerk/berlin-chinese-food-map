@@ -51,6 +51,18 @@
     <string name="tag_muslim">Halal</string>
     <string name="tag_mongolian">Mongolian Grill</string>
 
+    <!-- Tag descriptions: regional cuisines -->
+    <string name="tag_sichuan_desc">Bold, numbing, fiery — Sichuan peppercorn at the centre.</string>
+    <string name="tag_cantonese_desc">Light, fresh, seafood-forward — Hong Kong &amp; Guangdong roots.</string>
+    <string name="tag_northern_desc">Wheat-driven home cooking — vinegar, scallion, hearty stews.</string>
+    <string name="tag_northeastern_desc">Big portions, sour cabbage, pork &amp; dumplings — Dongbei comfort food.</string>
+    <string name="tag_shanghainese_desc">Sweet-savoury, soy-and-sugar braises from the Yangtze delta.</string>
+    <string name="tag_hunan_desc">Pure heat, no numbness — smoky chili and fermented bean.</string>
+    <string name="tag_xinjiang_desc">Lamb, cumin, hand-pulled noodles — Northwest halal cooking.</string>
+    <string name="tag_taiwanese_desc">Beef noodle soup, lu rou fan, bubble tea — Taiwanese street &amp; home.</string>
+    <string name="tag_muslim_desc">Halal-certified Chinese kitchens, mostly Northwestern.</string>
+    <string name="tag_mongolian_desc">All-you-can-grill buffet — a Berlin invention, not authentic Mongolian.</string>
+
     <!-- Tags: formats -->
     <string name="tag_hotpot">Hotpot</string>
     <string name="tag_bbq">BBQ</string>
@@ -64,6 +76,58 @@
     <string name="tag_bakery">Bakery</string>
     <string name="tag_street_food">Street Food</string>
     <string name="tag_fusion">Modern Chinese</string>
+
+    <!-- Tag descriptions: formats -->
+    <string name="tag_hotpot_desc">Cook your own at the table — bubbling broth, social meal.</string>
+    <string name="tag_bbq_desc">Grill skewers and meat at the table or counter.</string>
+    <string name="tag_noodles_desc">Noodle-led — beef noodle soup, knife-cut, biang biang.</string>
+    <string name="tag_dumplings_desc">Dumpling specialists — boiled, steamed, pan-fried.</string>
+    <string name="tag_dim_sum_desc">Cantonese small plates, brunch on carts and steamer baskets.</string>
+    <string name="tag_malatang_desc">Pick-your-own skewers in a numbing-spicy broth, cooked to order.</string>
+    <string name="tag_vegetarian_desc">Fully vegetarian or with strong vegetarian options.</string>
+    <string name="tag_breakfast_desc">Soy milk, fried dough, congee — Chinese breakfast classics.</string>
+    <string name="tag_tea_house_desc">Tea-led — pu\'er, oolong, slow brewing.</string>
+    <string name="tag_bakery_desc">Pineapple buns, egg tarts, milk bread — Chinese-style baking.</string>
+    <string name="tag_street_food_desc">Quick bites, snacks, takeaway-friendly.</string>
+    <string name="tag_fusion_desc">Modern, cross-style cooking — Chinese roots, contemporary plates.</string>
+
+    <!-- District descriptions (Berlin neighbourhoods) -->
+    <string name="district_desc_mitte">Berlin\'s historic core — Brandenburg Gate, Museum Island, central everything.</string>
+    <string name="district_desc_charlottenburg">Old West Berlin — KaDeWe, Kurfürstendamm, City West shopping.</string>
+    <string name="district_desc_friedrichshain">East Berlin nightlife — clubs, street art, young energy.</string>
+    <string name="district_desc_kreuzberg">Multicultural and lively — Turkish kitchens, hip cafés, late-night bars.</string>
+    <string name="district_desc_neukoelln">Immigrant-rooted, fast-changing — new restaurants and bars open weekly.</string>
+    <string name="district_desc_prenzlauer_berg">Gentrified family neighbourhood — playgrounds, cafés, brunch spots.</string>
+    <string name="district_desc_schoeneberg">Quiet and storied — gay village, old Jewish history, pleasant streets.</string>
+    <string name="district_desc_wedding">Working-class roots, gentrifying fast — affordable, diverse food.</string>
+    <string name="district_desc_tiergarten">Berlin\'s central park district — embassies and government quarter.</string>
+    <string name="district_desc_moabit">Workers\' housing on a Spree island — strong immigrant communities.</string>
+    <string name="district_desc_pankow">Northeast residential — quieter than its inner-city neighbours.</string>
+    <string name="district_desc_spandau">Westernmost Berlin — feels almost like its own town.</string>
+    <string name="district_desc_tempelhof">Around the old airport-turned-park — south-side residential.</string>
+    <string name="district_desc_wilmersdorf">Old West-Berlin bourgeois — leafy, calm, large Iranian community.</string>
+    <string name="district_desc_steglitz">Southwest residential and shopping — student-friendly Schloßstraße.</string>
+    <string name="district_desc_lichtenberg">East-Berlin Plattenbau and Berlin\'s largest Vietnamese community.</string>
+    <string name="district_desc_marzahn">East-Berlin Plattenbau, Vietnamese groceries and food courts.</string>
+    <string name="district_desc_hellersdorf">Far east-Berlin Plattenbau — residential edge of the city.</string>
+    <string name="district_desc_reinickendorf">Northwest residential — quiet, lakes and forest nearby.</string>
+    <string name="district_desc_dahlem">Free University quarter — leafy, embassy villas.</string>
+    <string name="district_desc_tegel">Northwest near the old TXL airport — residential and lakeside.</string>
+    <string name="district_desc_friedenau">Small, cosy, between Schöneberg and Steglitz.</string>
+    <string name="district_desc_halensee">Tiny district by the lake — between Charlottenburg and Wilmersdorf.</string>
+    <string name="district_desc_westend">Western Charlottenburg — leafy villas around Messe Berlin.</string>
+    <string name="district_desc_schmargendorf">Quiet residential pocket of Wilmersdorf.</string>
+    <string name="district_desc_lichterfelde">Southwest leafy residential — early-20th-century villas.</string>
+    <string name="district_desc_lankwitz">Quiet south Berlin residential pocket.</string>
+    <string name="district_desc_britz">South Neukölln — Hufeisensiedlung garden city.</string>
+    <string name="district_desc_mariendorf">Southern residential along Tempelhofer Damm.</string>
+    <string name="district_desc_marienfelde">Outer south, residential and industrial mix.</string>
+    <string name="district_desc_lichtenrade">Quiet southern fringe — village feel.</string>
+    <string name="district_desc_rudow">Southeast residential at the Brandenburg border.</string>
+    <string name="district_desc_franzoesisch_buchholz">Northern Pankow — outer-ring residential.</string>
+    <string name="district_desc_hermsdorf">Northern Reinickendorf — green, lakeside calm.</string>
+    <string name="district_desc_johannisthal">Southeast Treptow-Köpenick — quiet residential.</string>
+    <string name="district_desc_wittenau">Northern Reinickendorf — small residential pocket.</string>
 
     <!-- Search -->
     <string name="search_hint">Search restaurants...</string>
