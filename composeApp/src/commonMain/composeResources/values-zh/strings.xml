@@ -76,4 +76,47 @@
     <string name="privacy_policy">隐私政策</string>
     <string name="icon_credits">图标致谢</string>
     <string name="icon_credits_value">地图图标由 Freepik 提供 — Flaticon</string>
+
+    <!-- Project story section -->
+    <string name="story_title">项目故事</string>
+    <string name="story_body">「柏林中餐地图」始于一个很简单的烦恼。每次有朋友来柏林，我们都要在微信里翻出同一份餐厅推荐——照片丢了、地址忘了，还要为「哪家牛肉面最对味」争上几句。\n\n我们试过 Google Maps 收藏夹、共享 Excel、Notion 文档，但没有一个能真正承载我们想说的：在柏林，一个从小吃中餐长大的人，到底该去哪儿吃。\n\n于是有了这个项目。它是开源的、非盈利的，背后只有一个简单的念头——一家店该由真正在那里吃饭的人来描述。所有餐厅数据以 YAML 文件的形式存放在公开的 GitHub 仓库里，谁都可以阅读、Fork 或者改进。App 完全免费、没有广告，也不收集你的任何信息。\n\n说到底它是一封情书——写给那些藏在巷子里的小面馆、家庭经营的川味厨房，以及永远不会出现在 Google 推荐里的深夜饺子店。如果它帮你找到了下一家心头好，那就是这一切的意义。</string>
+
+    <!-- Contributors section -->
+    <string name="contributors_title">数据贡献者</string>
+    <string name="contributors_intro">下面的名单直接来自仓库的 git 历史——每次有人提交餐厅数据的改动时会自动刷新。如果你也贡献过却没出现在这里，欢迎提 Issue，我们会补上。</string>
+    <string name="contributors_count">%1$d 位贡献者</string>
+    <string name="contributors_empty">还没有贡献者——欢迎成为第一位！</string>
+    <string name="contributors_thanks_manmanyou">特别感谢「柏林慢慢游」团队完成了第一轮探店走访与初始数据收集，也启发了这个项目。</string>
+
+    <!-- Contribute section -->
+    <string name="contribute_title">如何贡献数据</string>
+    <string name="contribute_intro">柏林中餐地图是一个非盈利的社区项目，全靠在这里吃饭的人一起维护。每个月都有新店开业，也有老馆子搬走或关门，仅靠几个人的力量永远跟不上节奏。如果你发现一家我们还没收录的小店、一处过时的地址，或者一个再也没人接听的电话——欢迎一起把它补上。</string>
+
+    <string name="contribute_what_title">你可以分享什么</string>
+    <string name="contribute_what_1">•  还没收录的新餐厅——店名、地址，以及你记得的任何细节。</string>
+    <string name="contribute_what_2">•  需要更正的信息——已关门、改名、营业时间不对、地图坐标偏差。</string>
+    <string name="contribute_what_3">•  菜系和招牌菜的标签——川菜、粤菜、东北家常……让下一个人更快找到对口味的店。</string>
+    <string name="contribute_what_4">•  照片、一段私人笔记，或者一句可以被引用的推荐语。</string>
+
+    <string name="contribute_how_title">怎么提交</string>
+    <string name="contribute_step_1">1. 最省事——把 CSV、Excel 或 Google Sheets 发给我们，每家餐厅一行，列名随你定，剩下的整理工作我们来做。</string>
+    <string name="contribute_step_2">2. 上手版——直接到 GitHub 提 PR。餐厅数据以 YAML 文件存放在 data/restaurants 目录下，改动一个文件、发起一次变更，CI 流水线会自动同步上线。</string>
+    <string name="contribute_step_3">3. 随手版——在微信社区群里留言，或者在小红书上 @ 我们。所有线索都会被收入审核队列。</string>
+
+    <string name="contribute_after_title">提交之后</string>
+    <string name="contribute_after">每一条投稿都会经过真人审核，再用 Google Places 复核营业时间和坐标，下一次数据同步时正式上线，一般几天内可见。投稿默认匿名；如果希望出现在贡献者名单里，提交时告诉我们就好。</string>
+
+    <string name="contribute_action">前往 GitHub 项目</string>
+
+    <!-- Team section -->
+    <string name="team_title">幕后团队</string>
+    <string name="team_novawerk_name">Novawerk.io</string>
+    <string name="team_novawerk_role">产品 · 设计 · 开发</string>
+    <string name="team_novawerk_bio">Novawerk 是一个位于柏林的独立产品工作室，专注于在 AI 时代做非盈利 App。\n\n我们相信，新时代的构建者不应只把 AI 用来做能赚钱的事——更重要的是，要用今天的生产力去解决那些一直没人看见、却真实存在的场景。当一个人也能完成过去十个人的工程量时，那些没有商业模型支撑的小众需求——一份只服务某个语言群体的工具、一份本该有人整理却从没人愿意做的资料——终于可以被认真地做出来。\n\n这就是 Novawerk 在做的事。</string>
+    <string name="team_novawerk_visit">访问官网</string>
+
+    <string name="team_manmanyou_name">柏林慢慢游</string>
+    <string name="team_manmanyou_role">街区慢游 · 城市内容</string>
+    <string name="team_manmanyou_bio">「柏林慢慢游」是柏林的一个深度慢游社群，每月组织一次走访某个柏林街区（Kiez），关注它的历史、建筑、文化与典故——目前已经一步步走过 Kreuzberg、Schöneberg、Pankow、Prenzlauer Berg 等多个区。\n\n除了街区慢游，他们还系统整理出一份《200 家柏林中餐目录》——「柏林中餐地图」最初的那批数据正是来自这份目录。\n\n走访笔记和活动通告发布在小红书 @Berlin_Slowtour。</string>
+    <string name="team_manmanyou_visit">在小红书查看</string>
 </resources>

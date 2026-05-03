@@ -1,13 +1,20 @@
 package com.novawerk.berlinfoodmap.ui.pages.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.novawerk.berlinfoodmap.ui.components.MenuRow
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.settings
@@ -24,6 +31,14 @@ import berlinfoodmap.composeapp.generated.resources.version
 import berlinfoodmap.composeapp.generated.resources.privacy_policy
 import berlinfoodmap.composeapp.generated.resources.icon_credits
 import berlinfoodmap.composeapp.generated.resources.icon_credits_value
+import berlinfoodmap.composeapp.generated.resources.contribute_title
+import berlinfoodmap.composeapp.generated.resources.story_title
+import berlinfoodmap.composeapp.generated.resources.contributors_title
+import berlinfoodmap.composeapp.generated.resources.team_title
+import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
+import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
+import berlinfoodmap.composeapp.generated.resources.team_manmanyou_name
+import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,20 +49,33 @@ fun SettingsScreen(
     onLanguageChange: (String?) -> Unit,
     onBack: () -> Unit,
 ) {
+    var showStorySheet by remember { mutableStateOf(false) }
+    var showContributeSheet by remember { mutableStateOf(false) }
+    var showContributorsSheet by remember { mutableStateOf(false) }
+    var showNovawerkSheet by remember { mutableStateOf(false) }
+    var showManmanyouSheet by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.back),
+                        )
                     }
                 },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
         ) {
             // Dark mode section
             Text(
@@ -91,7 +119,6 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
 
             // About section
             Text(
@@ -99,6 +126,37 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = 12.dp),
             )
+            MenuRow(
+                title = stringResource(Res.string.story_title),
+                onClick = { showStorySheet = true },
+            )
+            MenuRow(
+                title = stringResource(Res.string.contribute_title),
+                onClick = { showContributeSheet = true },
+            )
+            MenuRow(
+                title = stringResource(Res.string.contributors_title),
+                onClick = { showContributorsSheet = true },
+            )
+
+            // Team section
+            Text(
+                text = stringResource(Res.string.team_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            )
+            MenuRow(
+                title = stringResource(Res.string.team_novawerk_name),
+                supportingText = stringResource(Res.string.team_novawerk_role),
+                onClick = { showNovawerkSheet = true },
+            )
+            MenuRow(
+                title = stringResource(Res.string.team_manmanyou_name),
+                supportingText = stringResource(Res.string.team_manmanyou_role),
+                onClick = { showManmanyouSheet = true },
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
 
             // Version row
             Row(
@@ -142,6 +200,24 @@ fun SettingsScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+
+            Spacer(Modifier.height(24.dp))
         }
+    }
+
+    if (showStorySheet) {
+        StoryBottomSheet(onDismiss = { showStorySheet = false })
+    }
+    if (showContributeSheet) {
+        ContributeBottomSheet(onDismiss = { showContributeSheet = false })
+    }
+    if (showContributorsSheet) {
+        ContributorsBottomSheet(onDismiss = { showContributorsSheet = false })
+    }
+    if (showNovawerkSheet) {
+        NovawerkBottomSheet(onDismiss = { showNovawerkSheet = false })
+    }
+    if (showManmanyouSheet) {
+        ManmanyouBottomSheet(onDismiss = { showManmanyouSheet = false })
     }
 }
