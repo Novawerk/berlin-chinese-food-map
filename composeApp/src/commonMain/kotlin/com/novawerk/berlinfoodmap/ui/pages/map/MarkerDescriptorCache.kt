@@ -35,3 +35,19 @@ internal data class CachedMarkerDescriptor(
 @Composable
 internal fun rememberMarkerDescriptorCache(): SnapshotStateMap<String, CachedMarkerDescriptor> =
     remember { mutableStateMapOf() }
+
+/**
+ * Hoisted cluster-bitmap cache, keyed on the *displayed* count (clamped to
+ * 100 because ≥100 collapses to "99+"). Cluster badges don't depend on
+ * cluster identity or centroid — only the rendered number — so a single
+ * bitmap per count is shared across every cluster of that size and survives
+ * cluster regroupings.
+ *
+ * Without this, every zoom-idle that changes the cluster grouping forces
+ * each `ClusterMarker` slot to re-rasterise via the off-screen ComposeView
+ * path (~5–15 ms per cluster). On big zoom-out transitions where 30+
+ * clusters appear, that's a noticeable hitch.
+ */
+@Composable
+internal fun rememberClusterDescriptorCache(): SnapshotStateMap<Int, BitmapDescriptor> =
+    remember { mutableStateMapOf() }
