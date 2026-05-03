@@ -1,7 +1,8 @@
 name:
   en: Tianfu
   zh: 天府酒家
-tags: []
+tags:
+  - SICHUAN
 address:
   addressLine1: Uhlandstraße 142
   postalCode: "10719"

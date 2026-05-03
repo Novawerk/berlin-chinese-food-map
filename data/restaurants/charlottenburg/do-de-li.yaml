@@ -1,7 +1,8 @@
 name:
   en: Do De Li
   zh: 多得利
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Kantstraße 120
   postalCode: "10625"

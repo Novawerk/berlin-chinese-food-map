@@ -1,7 +1,8 @@
 name:
   en: Prince
   zh: 太子
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Kommandantenstraße 75
   postalCode: "10117"

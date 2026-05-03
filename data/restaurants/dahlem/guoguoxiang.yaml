@@ -1,7 +1,9 @@
 name:
   en: Guoguoxiang
   zh: 锅锅香
-tags: []
+tags:
+  - SICHUAN
+  - HOTPOT
 address:
   addressLine1: Breitenbachpl. 8
   postalCode: "14195"

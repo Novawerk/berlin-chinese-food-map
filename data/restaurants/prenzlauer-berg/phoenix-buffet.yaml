@@ -1,7 +1,8 @@
 name:
   en: Phönix Buffet
   zh: 凤凰酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Greifswalder Str. 90
   postalCode: "10409"

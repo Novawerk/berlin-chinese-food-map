@@ -1,7 +1,8 @@
 name:
   en: Fu Duo
   zh: 福多酒家
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Triftstraße 33
   postalCode: "13127"

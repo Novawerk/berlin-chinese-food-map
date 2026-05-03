@@ -1,7 +1,8 @@
 name:
   en: Lucky
   zh: 福仁
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Alt-Tegel 29
   postalCode: "13507"

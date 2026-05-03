@@ -1,7 +1,8 @@
 name:
   en: Happy Buddha
   zh: 佛笑楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Marienfelder Allee 145
   postalCode: "12279"

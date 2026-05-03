@@ -1,7 +1,8 @@
 name:
   en: Fu Li Lai
   zh: 福利来
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Erlenstraße 19
   postalCode: "12167"

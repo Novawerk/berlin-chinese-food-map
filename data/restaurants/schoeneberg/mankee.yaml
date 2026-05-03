@@ -1,7 +1,8 @@
 name:
   en: Mankee
   zh: 文记
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Grunewaldstraße 60
   postalCode: "10825"

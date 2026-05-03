@@ -1,7 +1,8 @@
 name:
   en: China City
   zh: 中国城大酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Leipziger Str. 46
   postalCode: "10117"

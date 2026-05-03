@@ -1,7 +1,8 @@
 name:
   en: Lucky Star
   zh: 全家福
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Friedrichstraße 127
   postalCode: "10117"

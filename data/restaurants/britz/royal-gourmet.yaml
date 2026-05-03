@@ -1,7 +1,8 @@
 name:
   en: Royal Gourmet
   zh: Royal Gourmet
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Mohriner Allee 50
   postalCode: "12347"

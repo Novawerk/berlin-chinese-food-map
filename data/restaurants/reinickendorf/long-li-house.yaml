@@ -1,7 +1,8 @@
 name:
   en: Long Li House
   zh: 龙利阁
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Residenzstraße 130
   postalCode: "13409"

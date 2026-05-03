@@ -1,7 +1,8 @@
 name:
   en: Happy Panda
   zh: Happy Panda
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Johannisthaler Ch 261
   postalCode: "12351"

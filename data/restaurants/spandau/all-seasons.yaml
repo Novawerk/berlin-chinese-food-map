@@ -1,7 +1,8 @@
 name:
   en: All seasons
   zh: 五湖四海
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Am Juliusturm 53
   postalCode: "13599"

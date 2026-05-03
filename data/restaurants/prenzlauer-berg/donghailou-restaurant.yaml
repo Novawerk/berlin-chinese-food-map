@@ -1,7 +1,8 @@
 name:
   en: Donghailou Restaurant
   zh: 东海楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Ostseestraße 79
   postalCode: "10409"

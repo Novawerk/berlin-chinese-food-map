@@ -1,7 +1,8 @@
 name:
   en: Feng Yuan
   zh: 丰源饭店
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Kaiser-Wilhelm-Straße 8
   postalCode: "12247"

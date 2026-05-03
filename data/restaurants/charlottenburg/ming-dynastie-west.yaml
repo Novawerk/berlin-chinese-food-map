@@ -1,7 +1,9 @@
 name:
   en: Ming Dynastie (West)
   zh: 大明酒家
-tags: []
+tags:
+  - CANTONESE
+  - DIM_SUM
 address:
   addressLine1: Tauentzienstraße 9-12
   postalCode: "10789"

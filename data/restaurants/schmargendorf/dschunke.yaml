@@ -1,7 +1,8 @@
 name:
   en: Dschunke
   zh: 帆船酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Breite Str. 15
   postalCode: "14199"

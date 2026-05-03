@@ -1,7 +1,8 @@
 name:
   en: Rosengarten
   zh: 玫瑰苑
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Hohenzollerndamm 110A
   postalCode: "14199"

@@ -1,7 +1,8 @@
 name:
   en: Good Friends
   zh: 老友记
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Kantstraße 30
   postalCode: "10623"

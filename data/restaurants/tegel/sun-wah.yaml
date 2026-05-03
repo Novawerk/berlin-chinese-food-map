@@ -1,7 +1,8 @@
 name:
   en: Sun Wah
   zh: 新华
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Alt-Tegel 4
   postalCode: "13507"

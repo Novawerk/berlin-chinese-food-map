@@ -1,7 +1,8 @@
 name:
   en: Panda II
   zh: 熊猫酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Rudower Str. 173
   postalCode: "12351"

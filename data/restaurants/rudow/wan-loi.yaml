@@ -1,7 +1,8 @@
 name:
   en: Wan-Loi
   zh: 云涞
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Neuköllner Str. 302
   postalCode: "12357"

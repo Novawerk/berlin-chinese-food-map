@@ -1,7 +1,8 @@
 name:
   en: Panda Garden
   zh: 熊猫园
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Heinsestraße 42
   postalCode: "13467"

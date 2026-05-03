@@ -1,7 +1,8 @@
 name:
   en: Man-Far
   zh: 万花酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Brunsbütteler Damm 260
   postalCode: "13581"

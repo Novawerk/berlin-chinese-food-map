@@ -1,7 +1,8 @@
 name:
   en: Tai Lee
   zh: 大利
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Hildburghauser Str. 29
   postalCode: "12279"

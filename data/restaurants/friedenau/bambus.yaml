@@ -1,7 +1,8 @@
 name:
   en: Bambus
   zh: 竹园酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Rheinstraße 43
   postalCode: "12161"

@@ -1,7 +1,8 @@
 name:
   en: Pong's China Restaurant
   zh: Pong's China Restaurant
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Jörsstr. 14
   postalCode: "13505"

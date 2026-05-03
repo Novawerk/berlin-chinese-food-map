@@ -1,7 +1,8 @@
 name:
   en: Regent
   zh: Regent
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Imchenallee 44
   postalCode: "14089"

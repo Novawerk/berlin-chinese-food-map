@@ -1,7 +1,8 @@
 name:
   en: Mayflower
   zh: 五月花
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Greifenhagener Str. 27
   postalCode: "10437"

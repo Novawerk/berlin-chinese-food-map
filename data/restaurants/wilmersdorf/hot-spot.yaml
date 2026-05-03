@@ -1,7 +1,8 @@
 name:
   en: Hot Spot
   zh: 聚友阁
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Eisenzahnstraße 66
   postalCode: "10709"

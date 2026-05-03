@@ -1,7 +1,8 @@
 name:
   en: Zhong Hua
   zh: 中华饭店
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Lindenstraße 29A
   postalCode: "10969"

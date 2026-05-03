@@ -1,7 +1,8 @@
 name:
   en: Chuan House
   zh: 寻鲜记
-tags: []
+tags:
+  - SICHUAN
 address:
   addressLine1: Landsberger Allee 6
   postalCode: "10249"

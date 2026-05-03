@@ -1,7 +1,8 @@
 name:
   en: Neu Wuzhou
   zh: 新五洲饭店
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Marzahner Promenade 13
   postalCode: "12679"

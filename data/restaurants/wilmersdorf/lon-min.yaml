@@ -1,7 +1,8 @@
 name:
   en: Lon-Min
   zh: 龙门
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Bamberger Str. 30
   postalCode: "10779"

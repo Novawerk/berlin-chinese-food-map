@@ -1,7 +1,8 @@
 name:
   en: Hui Feng
   zh: 汇丰酒家
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Hellersdorfer Promenade 24
   postalCode: "12627"

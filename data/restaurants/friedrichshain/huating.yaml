@@ -1,7 +1,8 @@
 name:
   en: HuaTing
   zh: 华亭酒家
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Strausberger Pl. 13
   postalCode: "10243"

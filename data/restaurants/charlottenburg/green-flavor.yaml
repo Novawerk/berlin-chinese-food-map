@@ -1,7 +1,8 @@
 name:
   en: Green Flavor
   zh: 绿食膳
-tags: []
+tags:
+  - VEGETARIAN
 address:
   addressLine1: Kantstraße 22
   postalCode: "10623"

@@ -1,7 +1,8 @@
 name:
   en: Macao
   zh: 澳门酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Breite Str. 37
   postalCode: "13597"

@@ -1,7 +1,9 @@
 name:
   en: Aroma (Fhain)
   zh: 财神饭店
-tags: []
+tags:
+  - CANTONESE
+  - DIM_SUM
 address:
   addressLine1: Warschauer Str. 62
   postalCode: "10243"

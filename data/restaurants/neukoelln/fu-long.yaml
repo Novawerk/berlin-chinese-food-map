@@ -1,7 +1,8 @@
 name:
   en: Fu-Long
   zh: 富隆酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Britzer Damm 18
   postalCode: "12347"

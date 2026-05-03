@@ -1,7 +1,8 @@
 name:
   en: HowHow
   zh: 好好酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Oranienburger Str. 168
   postalCode: "13437"

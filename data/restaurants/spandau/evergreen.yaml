@@ -1,7 +1,8 @@
 name:
   en: Evergreen
   zh: 长青酒楼
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Magistratsweg 31
   postalCode: "13593"
