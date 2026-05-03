@@ -23,9 +23,9 @@ import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
 initializeApp();
 
-// Pin the region close to the Firestore database (Firebase project default
-// for restaurants in europe-west). Adjust if the Firestore region differs.
-setGlobalOptions({ region: "europe-west1", maxInstances: 5 });
+// Pin the function to the same region as the Firestore database
+// (europe-west3 / Frankfurt) so trigger reads/writes don't cross regions.
+setGlobalOptions({ region: "europe-west3", maxInstances: 5 });
 
 /**
  * Mirrors the diff in `count` from a single user's view doc up to the
