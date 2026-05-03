@@ -68,10 +68,17 @@ internal class MapControlViewModel : ViewModel() {
 
     init {
         // Best-effort first fix when the VM is created so the blue dot is
-        // on the map by default. Failures (denied / unavailable) are
-        // silent — the user didn't ask for this attempt; the FAB will
-        // re-prompt and surface errors when tapped.
-        viewModelScope.launch { ensureFreshLocation() }
+        // on the map by default. Skipped entirely when permission isn't
+        // already granted — the user didn't ask for this attempt, so we
+        // don't trigger the OS permission dialog at startup. The FAB is
+        // the user-driven trigger for the first prompt.
+        //
+        // This path also does NOT flip [isLocating]: even when permission
+        // is already granted, the underlying sensor fetch can take a few
+        // seconds, and the FAB's spinner should reflect manual taps only.
+        if (hasLocationPermission()) {
+            viewModelScope.launch { fetchAndStore() }
+        }
     }
 
     fun isLocationFresh(): Boolean =
@@ -96,21 +103,24 @@ internal class MapControlViewModel : ViewModel() {
         }
         isLocating = true
         try {
-            return when (val result = geolocator.current()) {
-                is GeolocatorResult.Success -> {
-                    val latLng = LatLng(
-                        result.data.coordinates.latitude,
-                        result.data.coordinates.longitude,
-                    )
-                    myLocation = latLng
-                    fetchedAt = TimeSource.Monotonic.markNow()
-                    LocationOutcome.Available(latLng)
-                }
-                is GeolocatorResult.PermissionError -> LocationOutcome.PermissionDenied
-                is GeolocatorResult.Error -> LocationOutcome.Unavailable
-            }
+            return fetchAndStore()
         } finally {
             isLocating = false
         }
     }
+
+    private suspend fun fetchAndStore(): LocationOutcome =
+        when (val result = geolocator.current()) {
+            is GeolocatorResult.Success -> {
+                val latLng = LatLng(
+                    result.data.coordinates.latitude,
+                    result.data.coordinates.longitude,
+                )
+                myLocation = latLng
+                fetchedAt = TimeSource.Monotonic.markNow()
+                LocationOutcome.Available(latLng)
+            }
+            is GeolocatorResult.PermissionError -> LocationOutcome.PermissionDenied
+            is GeolocatorResult.Error -> LocationOutcome.Unavailable
+        }
 }
