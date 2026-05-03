@@ -80,6 +80,13 @@ private val BERLIN_BOUNDS = LatLngBounds(
 )
 private val BERLIN_CENTER = LatLng(52.52, 13.405)
 
+// Cover-thumbnail decode sizes for the two on-map surfaces. Each is the
+// rendered side length × 4 (xxxhdpi safety margin). The source photos
+// hosted in Firebase Storage are up to 1600 px wide; coil's `.size()`
+// downsamples on decode, so passing these saves memory + CPU per marker.
+private const val MARKER_COVER_PX = 128   // MiniRestaurantCard at 32 dp
+private const val NEARBY_COVER_PX = 192   // NearbyCard at 44 dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
@@ -222,13 +229,17 @@ fun MapScreen(
                     )
                     // Preload the cover thumb. The marker is rasterised once
                     // per `keys` change, so we feed `coverReady` as a key —
-                    // when the image arrives the marker re-renders with the
-                    // photo instead of the fallback Material icon.
+                    // when the image arrives the marker re-rasterises with
+                    // the loaded photo.
                     //
-                    // `allowHardware(false)` is critical: MarkerComposable
-                    // rasterises onto a software canvas and crashes with
-                    // `Software rendering doesn't support hardware bitmaps`
-                    // when coil hands it the default hardware-backed bitmap.
+                    // `allowHardware(false)`: MarkerComposable rasterises
+                    // onto a software canvas; coil's default hardware bitmap
+                    // crashes that path.
+                    //
+                    // `size(MARKER_COVER_PX)`: marker thumbnail is 32dp.
+                    // Decoding the source 1600px JPEG at full size is
+                    // hundreds of KB of memory per marker; 128px covers
+                    // 4× density screens and downsamples on decode.
                     val coverUrl = restaurant.previewImageUrl()
                     val platformContext = LocalPlatformContext.current
                     val coverPainter = coverUrl?.let {
@@ -236,6 +247,7 @@ fun MapScreen(
                             ImageRequest.Builder(platformContext)
                                 .data(it)
                                 .allowHardware(false)
+                                .size(MARKER_COVER_PX, MARKER_COVER_PX)
                                 .build(),
                         )
                     }
@@ -257,6 +269,7 @@ fun MapScreen(
                         MiniRestaurantCard(
                             restaurant = restaurant,
                             coverPainter = coverPainter.takeIf { coverReady },
+                            hasCoverUrl = coverUrl != null,
                         )
                     }
                 } else {
@@ -366,7 +379,10 @@ fun MapScreen(
         }
 
         // My-location FAB — anchored above the card row, branded red.
-        val cardOffset = if (visibleRestaurants.isNotEmpty()) 132.dp else 24.dp
+        // 76dp clears the trimmed NearbyCard (44dp cover + 12dp card padding +
+        // 12dp LazyRow bottom inset) by ~8dp. When no card row is showing
+        // (empty viewport) the FABs sit close to the bottom edge.
+        val cardOffset = if (visibleRestaurants.isNotEmpty()) 76.dp else 24.dp
         SmallFloatingActionButton(
             onClick = {
                 if (locating) return@SmallFloatingActionButton
@@ -637,17 +653,21 @@ private fun cellKey(cx: Int, cy: Int): Long =
     (cx.toLong() shl 32) or (cy.toLong() and 0xFFFFFFFFL)
 
 /**
- * Pill-shaped marker label. Leading thumbnail uses the restaurant cover
- * photo; falls back to a generic Material restaurant icon when no photo
- * is available (e.g. a freshly added entry without a placeId yet).
+ * Pill-shaped marker label. Leading thumbnail behaviour:
  *
- * Subtitle line shows the primary tag, with a small star prefix for
+ *  - cover loaded → render the photo
+ *  - cover loading (URL exists, painter not ready) → empty placeholder
+ *    so the marker re-rasterises to the photo without flashing an icon
+ *  - no cover URL at all → fallback Material restaurant icon
+ *
+ * Subtitle line shows all tags joined with `·`, with a star prefix for
  * editorially-featured restaurants.
  */
 @Composable
 private fun MiniRestaurantCard(
     restaurant: Restaurant,
     coverPainter: Painter?,
+    hasCoverUrl: Boolean,
 ) {
     Box(
         modifier = Modifier
@@ -664,6 +684,18 @@ private fun MiniRestaurantCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape),
+                )
+            } else if (hasCoverUrl) {
+                // URL is set but the photo hasn't decoded yet — empty
+                // circle. Once coverReady flips, the marker re-rasterises
+                // and the photo lands without an interim icon flash.
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            CircleShape,
+                        ),
                 )
             } else {
                 Box(
@@ -755,7 +787,11 @@ private fun NearbyCard(
         ) {
             // Square cover thumbnail. Generic Material icon as fallback so a
             // freshly added restaurant without a placeId still renders cleanly.
+            // ImageRequest.size() decodes the source 1600px JPEG down to
+            // ~192px (4× the rendered 44dp side) — saves ~95% of the bitmap
+            // memory when 30+ NearbyCards scroll past in the viewport row.
             val coverUrl = restaurant.previewImageUrl()
+            val ctx = LocalPlatformContext.current
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -765,7 +801,10 @@ private fun NearbyCard(
             ) {
                 if (coverUrl != null) {
                     AsyncImage(
-                        model = coverUrl,
+                        model = ImageRequest.Builder(ctx)
+                            .data(coverUrl)
+                            .size(NEARBY_COVER_PX, NEARBY_COVER_PX)
+                            .build(),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
