@@ -17,6 +17,7 @@ import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
+import eu.buney.maps.LatLngBounds
 import eu.buney.maps.Projection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,6 +70,25 @@ internal class MapViewModel(
     var clusters by mutableStateOf<List<RestaurantCluster>>(emptyList())
         private set
 
+    /**
+     * Current map viewport. Pushed in by the composable each time
+     * `cameraPositionState.projection.visibleBounds` changes; the rest of
+     * the screen reads [visibleRestaurants] derived from it.
+     *
+     * Lives here (not in composable as a `derivedStateOf`) so MapScreen
+     * stays a display layer — bounds → filtered list is data work.
+     */
+    var visibleBounds by mutableStateOf<LatLngBounds?>(null)
+        private set
+
+    val visibleRestaurants: List<Restaurant> by derivedStateOf {
+        val bounds = visibleBounds ?: return@derivedStateOf restaurantsFiltered
+        restaurantsFiltered.filter { r ->
+            r.latitude in bounds.southwest.latitude..bounds.northeast.latitude &&
+                r.longitude in bounds.southwest.longitude..bounds.northeast.longitude
+        }
+    }
+
     val markerCovers = mutableStateMapOf<String, MarkerCover>()
 
     private val imageLoader = SingletonImageLoader.get(context)
@@ -96,6 +116,10 @@ internal class MapViewModel(
     fun resetFilters() {
         selectedCuisine = null
         selectedFormat = null
+    }
+
+    fun updateVisibleBounds(bounds: LatLngBounds?) {
+        visibleBounds = bounds
     }
 
     private fun reconcileCovers(restaurants: List<Restaurant>) {

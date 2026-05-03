@@ -34,12 +34,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-private val BERLIN_BOUNDS = LatLngBounds(
-    southwest = LatLng(52.33, 13.08),
-    northeast = LatLng(52.68, 13.76),
-)
-private val BERLIN_CENTER = LatLng(52.52, 13.405)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
@@ -57,10 +51,12 @@ fun MapScreen(
     // iOS: empty marker), so no leak risk from the long lifetime.
     val platformContext = LocalPlatformContext.current
     val viewModel: MapViewModel = viewModel { MapViewModel(repository, platformContext) }
-    val allRestaurants = viewModel.allRestaurants
+    // Map-control state (location + freshness) lives in its own VM, separate
+    // from the restaurant pipeline. Each VM has independent lifecycle and
+    // dependencies; both bind to the same NavBackStackEntry so they survive
+    // configuration changes together.
+    val controlVm: MapControlViewModel = viewModel { MapControlViewModel() }
     val restaurantsFiltered = viewModel.restaurantsFiltered
-    val clusters = viewModel.clusters
-    val activeFilterCount = viewModel.activeFilterCount
 
     var filterSheetOpen by remember { mutableStateOf(false) }
     var mapLoaded by remember { mutableStateOf(false) }
@@ -69,41 +65,11 @@ fun MapScreen(
             try { myLocationDotIcon() } catch (_: Exception) { null }
         } else null
     }
-    var myLocation by remember { mutableStateOf<LatLng?>(null) }
-    var locating by remember { mutableStateOf(false) }
 
-    val mapStyleOptions = remember {
-        try {
-            MapStyleOptions.fromJson(BERLIN_MAP_STYLE_JSON)
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    val mapProperties = remember(mapStyleOptions) {
-        MapProperties(
-            mapStyleOptions = mapStyleOptions,
-            minZoomPreference = 10f,
-            maxZoomPreference = 18f,
-            isBuildingEnabled = false,
-            isTrafficEnabled = false,
-            isIndoorEnabled = false,
-        )
-    }
-
-    val mapUiSettings = remember {
-        MapUiSettings(
-            zoomControlsEnabled = false,
-            compassEnabled = false,
-            mapToolbarEnabled = false,
-            myLocationButtonEnabled = false,
-            rotationGesturesEnabled = false,
-            tiltGesturesEnabled = false,
-        )
-    }
+    val mapConfig = rememberBerlinMapConfig()
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition(target = BERLIN_CENTER, zoom = 12f)
+        position = DEFAULT_BERLIN_CAMERA
     }
 
     // Cover bitmaps are owned by the VM (loaded via `imageLoader.execute`,
@@ -122,27 +88,20 @@ fun MapScreen(
         }
     }
 
-    // Bottom-card-row visibility — derived from camera bounds, so it has
-    // to stay close to `cameraPositionState`.
-    val visibleRestaurants by remember(restaurantsFiltered) {
-        derivedStateOf {
-            cameraPositionState.position // subscribe to camera changes
-            val bounds = cameraPositionState.projection?.visibleBounds
-            if (bounds == null) restaurantsFiltered
-            else restaurantsFiltered.filter { r ->
-                r.latitude in bounds.southwest.latitude..bounds.northeast.latitude &&
-                    r.longitude in bounds.southwest.longitude..bounds.northeast.longitude
-            }
-        }
-    }
-
     val listState = rememberLazyListState()
-    val locationRequester = rememberLocationRequester()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val density = LocalDensity.current
     val clusterRadiusPx = with(density) { 72.dp.toPx() }
+
+    // Push viewport bounds into the data VM so it can derive
+    // `visibleRestaurants` itself — composable's only job here is to
+    // forward the (composable-bound) camera state.
+    LaunchedEffect(Unit) {
+        snapshotFlow { cameraPositionState.projection?.visibleBounds }
+            .collect { viewModel.updateVisibleBounds(it) }
+    }
 
     // Recompute clusters on filter changes (immediate) and on zoom-idle
     // (lazy — pan is invariant under our screen-distance clustering).
@@ -167,11 +126,11 @@ fun MapScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            uiSettings = mapUiSettings,
+            properties = mapConfig.properties,
+            uiSettings = mapConfig.uiSettings,
             onMapLoaded = { mapLoaded = true },
         ) {
-            clusters.forEach { cluster ->
+            viewModel.clusters.forEach { cluster ->
                 if (cluster.items.size == 1) {
                     val restaurant = cluster.items.first()
                     RestaurantMarker(
@@ -196,7 +155,7 @@ fun MapScreen(
                 }
             }
 
-            myLocation?.let { loc ->
+            controlVm.myLocation?.let { loc ->
                 val state = rememberMarkerState(key = "__my_location__", position = loc)
                 Marker(
                     state = state,
@@ -256,7 +215,7 @@ fun MapScreen(
             shape = MaterialTheme.shapes.extraLarge,
         )
 
-        if (visibleRestaurants.isNotEmpty()) {
+        if (viewModel.visibleRestaurants.isNotEmpty()) {
             LazyRow(
                 state = listState,
                 modifier = Modifier
@@ -266,7 +225,7 @@ fun MapScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(visibleRestaurants, key = { it.id }) { restaurant ->
+                items(viewModel.visibleRestaurants, key = { it.id }) { restaurant ->
                     NearbyCard(
                         restaurant = restaurant,
                         onClick = { onNavigateDetail(restaurant.id) },
@@ -278,26 +237,19 @@ fun MapScreen(
         // 76dp clears the trimmed NearbyCard (44dp cover + 12dp card padding +
         // 12dp LazyRow bottom inset) by ~8dp. When no card row is showing
         // (empty viewport) the FABs sit close to the bottom edge.
-        val cardOffset = if (visibleRestaurants.isNotEmpty()) 76.dp else 24.dp
+        val cardOffset = if (viewModel.visibleRestaurants.isNotEmpty()) 76.dp else 24.dp
         SmallFloatingActionButton(
             onClick = {
-                if (locating) return@SmallFloatingActionButton
+                if (controlVm.isLocating) return@SmallFloatingActionButton
                 scope.launch {
-                    locating = true
-                    val result = locationRequester.request()
-                    locating = false
-                    when (result) {
-                        is LocationResult.Success -> {
-                            val target = LatLng(result.latitude, result.longitude)
-                            myLocation = target
-                            cameraPositionState.animate(
-                                CameraUpdateFactory.newLatLngZoom(target, 15f),
-                            )
-                        }
-                        LocationResult.PermissionDenied -> snackbarHostState.showSnackbar(
+                    when (val result = controlVm.ensureFreshLocation()) {
+                        is LocationOutcome.Available -> cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(result.coords, 15f),
+                        )
+                        LocationOutcome.PermissionDenied -> snackbarHostState.showSnackbar(
                             "Location permission denied",
                         )
-                        LocationResult.Unavailable -> snackbarHostState.showSnackbar(
+                        LocationOutcome.Unavailable -> snackbarHostState.showSnackbar(
                             "Could not determine your location",
                         )
                     }
@@ -309,7 +261,7 @@ fun MapScreen(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
-            if (locating) {
+            if (controlVm.isLocating) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -322,8 +274,8 @@ fun MapScreen(
 
         BadgedBox(
             badge = {
-                if (activeFilterCount > 0) {
-                    Badge { Text(text = "$activeFilterCount") }
+                if (viewModel.activeFilterCount > 0) {
+                    Badge { Text(text = "${viewModel.activeFilterCount}") }
                 }
             },
             modifier = Modifier
@@ -350,7 +302,7 @@ fun MapScreen(
 
     if (filterSheetOpen) {
         FilterSheet(
-            allRestaurants = allRestaurants,
+            allRestaurants = viewModel.allRestaurants,
             selectedCuisine = viewModel.selectedCuisine,
             selectedFormat = viewModel.selectedFormat,
             // Cuisine + format: pick → auto-dismiss. Reset stays in the

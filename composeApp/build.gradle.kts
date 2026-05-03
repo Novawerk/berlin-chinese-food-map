@@ -47,8 +47,11 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.play.services.location)
-            implementation(libs.kotlinx.coroutines.play.services)
+            // play-services-location + coroutines-play-services were the
+            // dependency stack for the hand-rolled FusedLocationProvider
+            // wrapper. Compass pulls them in transitively now (its own
+            // FLP impl). Keeping these as explicit deps would double-pin
+            // the version and silently shadow Compass's resolution.
             implementation(libs.ktor.client.okhttp)
         }
         iosMain.dependencies {
@@ -74,6 +77,8 @@ kotlin {
             implementation(libs.kmp.maps.compose)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
+            implementation(libs.compass.geolocation)
+            implementation(libs.compass.geolocation.mobile)
         }
     }
 }
