@@ -76,6 +76,16 @@
     <string name="icon_credits">Icon credits</string>
     <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
 
+    <!-- Project story section -->
+    <string name="story_title">The story behind this project</string>
+    <string name="story_body">Berlin Food Map started from a simple frustration. Every time a friend visited, we\'d end up sending the same handful of restaurant recommendations over WeChat — losing photos, forgetting addresses, and disagreeing about which place really had the best beef noodles.\n\nWe tried a Google Maps list, then a shared spreadsheet, then a Notion doc. None of them captured what mattered: where to actually eat in Berlin if you grew up with Chinese food.\n\nSo we started this project. It\'s open-source, non-profit, and built around a simple idea — the people who eat at a place should be the ones describing it. The restaurant data lives as plain YAML files in a public GitHub repository, easy for anyone to read, fork, or improve. The app is free, ad-free, and stores nothing about you.\n\nIt\'s a love letter, really — to the small noodle shops, the family-run Sichuan kitchens, the late-night dumpling spots that don\'t show up in Google\'s top picks. If we\'ve helped you find your next favourite, that\'s the whole point.</string>
+
+    <!-- Contributors section -->
+    <string name="contributors_title">Data contributors</string>
+    <string name="contributors_intro">This map exists because of the people listed below — the ones who sent in tips, corrected addresses, or pushed YAML changes. Names are pulled directly from the project\'s git history and refreshed automatically on every release. If you\'ve contributed and we\'ve missed you, please open an issue and we\'ll fix it.</string>
+    <string name="contributors_count">%1$d contributors</string>
+    <string name="contributors_empty">No contributors yet — be the first!</string>
+
     <!-- Contribute section -->
     <string name="contribute_title">How to contribute data</string>
     <string name="contribute_intro">Berlin Food Map is a non-profit project, kept alive by the people who eat here. New places open every month, old favourites move or close, and no single team can keep up alone. If you\'ve spotted a noodle shop we\'re missing, an address that has gone stale, or a phone number nobody picks up — we\'d love a hand.</string>

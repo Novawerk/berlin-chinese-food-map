@@ -76,6 +76,16 @@
     <string name="icon_credits">图标致谢</string>
     <string name="icon_credits_value">地图图标由 Freepik 提供 — Flaticon</string>
 
+    <!-- Project story section -->
+    <string name="story_title">项目故事</string>
+    <string name="story_body">「柏林中餐地图」始于一个很简单的烦恼。每次有朋友来柏林，我们都要在微信里翻出同一份餐厅推荐——照片丢了、地址忘了，还要为「哪家牛肉面最对味」争上几句。\n\n我们试过 Google Maps 收藏夹、共享 Excel、Notion 文档，但没有一个能真正承载我们想说的：在柏林，一个从小吃中餐长大的人，到底该去哪儿吃。\n\n于是有了这个项目。它是开源的、非盈利的，背后只有一个简单的念头——一家店该由真正在那里吃饭的人来描述。所有餐厅数据以 YAML 文件的形式存放在公开的 GitHub 仓库里，谁都可以阅读、Fork 或者改进。App 完全免费、没有广告，也不收集你的任何信息。\n\n说到底它是一封情书——写给那些藏在巷子里的小面馆、家庭经营的川味厨房，以及永远不会出现在 Google 推荐里的深夜饺子店。如果它帮你找到了下一家心头好，那就是这一切的意义。</string>
+
+    <!-- Contributors section -->
+    <string name="contributors_title">数据贡献者</string>
+    <string name="contributors_intro">这份地图能存在，是因为下面这些人——他们提交过线索、更正过地址，或者直接动手改了 YAML。名单来自仓库的 git 历史，每次发版会自动刷新。如果你也贡献过却没出现在这里，欢迎提 Issue，我们会补上。</string>
+    <string name="contributors_count">%1$d 位贡献者</string>
+    <string name="contributors_empty">还没有贡献者——欢迎成为第一位！</string>
+
     <!-- Contribute section -->
     <string name="contribute_title">如何贡献数据</string>
     <string name="contribute_intro">柏林中餐地图是一个非盈利的社区项目，全靠在这里吃饭的人一起维护。每个月都有新店开业，也有老馆子搬走或关门，仅靠几个人的力量永远跟不上节奏。如果你发现一家我们还没收录的小店、一处过时的地址，或者一个再也没人接听的电话——欢迎一起把它补上。</string>
