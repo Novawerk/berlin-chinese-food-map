@@ -6,8 +6,6 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.firestore
-import dev.gitlive.firebase.firestore.firestoreSettings
-import dev.gitlive.firebase.firestore.persistentCacheSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
@@ -15,17 +13,16 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class FirestoreRestaurantRepository : RestaurantRepository {
 
-    private val db = Firebase.firestore.also { firestore ->
-        // Enable on-disk persistent cache so cold starts can read locally
-        // before the network round-trip completes. Wrapped in runCatching
-        // because settings can only be applied once per process — subsequent
-        // calls (e.g. after a configuration change recreates DI) throw.
-        runCatching {
-            firestore.settings = firestoreSettings {
-                cacheSettings = persistentCacheSettings { }
-            }
-        }
-    }
+    // Firestore persistent-cache settings are applied in the native entry
+    // points (MainActivity on Android, AppDelegate on iOS) BEFORE the DI
+    // graph is constructed and this class touches Firestore. iOS rejects
+    // settings changes via FIRIllegalStateException once the instance has
+    // been "started" — and on iOS, gitlive's `Firebase.firestore` getter
+    // counts as a start, so any Kotlin-side settings call here would
+    // throw an NSException that runCatching can't intercept (the NSE
+    // bypasses the JVM-style exception handling and crashes the process).
+    // Keeping the setup native sidesteps that entirely.
+    private val db = Firebase.firestore
     private val restaurantsRef = db.collection("restaurants")
 
     override suspend fun getAll(): List<Restaurant> {

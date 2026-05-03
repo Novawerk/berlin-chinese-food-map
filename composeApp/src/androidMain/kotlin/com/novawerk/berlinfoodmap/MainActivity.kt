@@ -9,6 +9,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import com.google.android.gms.maps.MapsInitializer
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.PersistentCacheSettings
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.di.create
 import okio.Path.Companion.toPath
@@ -25,7 +28,27 @@ private const val DATA_STORE_FILE_NAME = "berlinfoodmap.preferences_pb"
 // crash on the second activity instance.
 @Volatile private var sDataStore: DataStore<Preferences>? = null
 @Volatile private var sComponent: AppComponent? = null
+@Volatile private var sFirestoreConfigured = false
 private val sLock = Any()
+
+// Configure Firestore's persistent cache before anything else touches the
+// FirebaseFirestore instance. This must happen before kotlin-inject
+// constructs FirestoreRestaurantRepository (which calls Firebase.firestore
+// for the first time and effectively "starts" the instance — settings
+// changes after that throw IllegalStateException).
+private fun ensureFirestoreConfigured() {
+    if (sFirestoreConfigured) return
+    synchronized(sLock) {
+        if (sFirestoreConfigured) return
+        runCatching {
+            FirebaseFirestore.getInstance().firestoreSettings =
+                FirebaseFirestoreSettings.Builder()
+                    .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
+                    .build()
+        }
+        sFirestoreConfigured = true
+    }
+}
 
 private fun appDataStore(context: Context): DataStore<Preferences> =
     sDataStore ?: synchronized(sLock) {
@@ -58,6 +81,8 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             MapsInitializer.Renderer.LATEST,
         ) {}
+
+        ensureFirestoreConfigured()
 
         val component = appComponent(applicationContext)
 
