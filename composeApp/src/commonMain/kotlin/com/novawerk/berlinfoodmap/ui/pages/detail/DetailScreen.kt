@@ -63,6 +63,8 @@ import berlinfoodmap.composeapp.generated.resources.weekday_long_tue
 import berlinfoodmap.composeapp.generated.resources.weekday_long_wed
 import coil3.compose.AsyncImage
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
+import com.novawerk.berlinfoodmap.domain.common.preferred
+import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.domain.restaurant.OpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
@@ -149,11 +151,6 @@ fun DetailScreen(
 
                 ChipsRow(restaurant = r)
 
-                r.editorialNote?.let { note ->
-                    val display = note.zh.takeIf { it.isNotBlank() } ?: note.en
-                    if (display.isNotBlank()) EditorialQuote(display)
-                }
-
                 HoursCard(
                     periods = r.googleData?.periods.orEmpty(),
                     weekdayText = r.googleData?.weekdayText.orEmpty(),
@@ -162,9 +159,8 @@ fun DetailScreen(
                 AddressCard(restaurant = r)
 
                 r.description?.let { desc ->
-                    if (desc.zh.isNotBlank() || desc.en.isNotBlank()) {
-                        DescriptionCard(zh = desc.zh, en = desc.en)
-                    }
+                    val text = desc.preferred(LocalAppLocale.current)
+                    if (text.isNotBlank()) DescriptionCard(text = text)
                 }
 
                 // Photo carousel — placed after the info sections so the hero
@@ -490,8 +486,12 @@ private fun PrimaryAction(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    // `secondary` (PinwoWine, deep red) instead of `primary` (PinwoRed) so
+    // the action bar reads as a different surface from the brand-red POI
+    // pins on the map. Same colour family, ~one stop darker — visible
+    // distinction without breaking brand consistency.
     Surface(
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.secondary,
         shape = RoundedCornerShape(28.dp),
         modifier = modifier
             .height(72.dp)
@@ -505,13 +505,13 @@ private fun PrimaryAction(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier.size(22.dp),
             )
             Spacer(Modifier.width(10.dp))
             Text(
                 text = stringResource(labelRes),
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -555,37 +555,6 @@ private fun SatelliteAction(
 }
 
 // endregion
-
-// region Editorial quote --------------------------------------------------
-
-@Composable
-private fun EditorialQuote(text: String) {
-    Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
-        shape = SECTION_SHAPE,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(20.dp),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Text(
-                text = "“",
-                fontSize = 44.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 32.sp,
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.5f),
-                modifier = Modifier.padding(end = 8.dp, top = 4.dp),
-            )
-            Text(
-                text = text,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                fontWeight = FontWeight.Medium,
-            )
-        }
-    }
-}
 
 // endregion
 
@@ -892,25 +861,17 @@ private fun AddressCard(restaurant: Restaurant) {
 }
 
 @Composable
-private fun DescriptionCard(zh: String, en: String) {
+private fun DescriptionCard(text: String) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = SECTION_SHAPE,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            if (zh.isNotBlank()) {
-                Text(zh, style = MaterialTheme.typography.bodyMedium)
-            }
-            if (en.isNotBlank()) {
-                if (zh.isNotBlank()) Spacer(Modifier.height(8.dp))
-                Text(
-                    en,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+        Text(
+            text,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(20.dp),
+        )
     }
 }
 
