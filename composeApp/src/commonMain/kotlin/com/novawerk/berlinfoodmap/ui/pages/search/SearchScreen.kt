@@ -16,12 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
-import com.novawerk.berlinfoodmap.domain.restaurant.CuisineType
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
-import com.novawerk.berlinfoodmap.ui.components.CuisineChips
+import com.novawerk.berlinfoodmap.domain.restaurant.Tag
+import com.novawerk.berlinfoodmap.domain.restaurant.tagFromString
 import com.novawerk.berlinfoodmap.ui.components.EmptyState
 import com.novawerk.berlinfoodmap.ui.components.RestaurantCard
+import com.novawerk.berlinfoodmap.ui.components.TagChips
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
@@ -43,10 +44,12 @@ fun SearchScreen(
     var allRestaurants by remember { mutableStateOf<List<Restaurant>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var query by remember { mutableStateOf("") }
-    var selectedCuisine by remember {
-        mutableStateOf(initialCuisine?.let { name ->
-            CuisineType.entries.find { it.name == name }
-        })
+    var selectedTags by remember {
+        mutableStateOf(
+            buildSet {
+                tagFromString(initialCuisine)?.let { add(it) }
+            },
+        )
     }
     var selectedDistrict by remember { mutableStateOf(initialDistrict) }
     var filteredResults by remember { mutableStateOf<List<Restaurant>>(emptyList()) }
@@ -68,8 +71,10 @@ fun SearchScreen(
         }
     }
 
-    // Debounced filtering
-    LaunchedEffect(query, selectedCuisine, selectedDistrict, allRestaurants) {
+    // Debounced filtering. Tag filter is OR semantics: a restaurant matches
+    // if any of its tags is in the selection (so picking SICHUAN + HOTPOT
+    // shows everything Sichuan-related plus everything hotpot-related).
+    LaunchedEffect(query, selectedTags, selectedDistrict, allRestaurants) {
         delay(300)
         filteredResults = allRestaurants.filter { restaurant ->
             val matchesQuery = query.isBlank() ||
@@ -77,11 +82,12 @@ fun SearchScreen(
                 restaurant.name.en.contains(query, ignoreCase = true) ||
                 (restaurant.name.de?.contains(query, ignoreCase = true) == true)
 
-            val matchesCuisine = selectedCuisine == null || restaurant.cuisineType == selectedCuisine
+            val matchesTags = selectedTags.isEmpty() ||
+                restaurant.tags.any { it in selectedTags }
 
             val matchesDistrict = selectedDistrict == null || restaurant.address.district == selectedDistrict
 
-            matchesQuery && matchesCuisine && matchesDistrict
+            matchesQuery && matchesTags && matchesDistrict
         }
     }
 
@@ -121,10 +127,13 @@ fun SearchScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            // Cuisine chips
-            CuisineChips(
-                selected = selectedCuisine,
-                onSelected = { selectedCuisine = it },
+            // Tag chips (multi-select)
+            TagChips(
+                selected = selectedTags,
+                onToggle = { tag ->
+                    selectedTags = if (tag in selectedTags) selectedTags - tag else selectedTags + tag
+                },
+                onClear = { selectedTags = emptySet() },
             )
 
             // District chips

@@ -23,7 +23,7 @@
 
     <!-- Filters -->
     <string name="filter_name">名称</string>
-    <string name="filter_cuisine">菜系</string>
+    <string name="filter_cuisine">标签</string>
     <string name="filter_district">街区</string>
     <string name="filter_distance">距离</string>
     <string name="filter_title">筛选</string>
@@ -35,15 +35,34 @@
     <string name="opening_hours">营业时间</string>
     <string name="rating_count">%1$d 条评价</string>
 
-    <!-- Cuisine types -->
-    <string name="cuisine_sichuan">川菜</string>
-    <string name="cuisine_cantonese">粤菜</string>
-    <string name="cuisine_hotpot">火锅</string>
-    <string name="cuisine_bbq">烧烤</string>
-    <string name="cuisine_dim_sum">点心</string>
-    <string name="cuisine_noodles">面食</string>
-    <string name="cuisine_general">中餐</string>
-    <string name="cuisine_other">其他</string>
+    <!-- Tag families (filter section headers) -->
+    <string name="tag_family_regional">菜系</string>
+    <string name="tag_family_format">类型</string>
+
+    <!-- Tags: regional cuisines -->
+    <string name="tag_sichuan">川菜</string>
+    <string name="tag_cantonese">粤菜</string>
+    <string name="tag_northern">北方菜</string>
+    <string name="tag_northeastern">东北菜</string>
+    <string name="tag_shanghainese">江浙沪</string>
+    <string name="tag_hunan">湘菜</string>
+    <string name="tag_xinjiang">新疆菜</string>
+    <string name="tag_taiwanese">台菜</string>
+    <string name="tag_muslim">清真</string>
+
+    <!-- Tags: formats -->
+    <string name="tag_hotpot">火锅</string>
+    <string name="tag_bbq">烧烤</string>
+    <string name="tag_noodles">面食</string>
+    <string name="tag_dumplings">饺子</string>
+    <string name="tag_dim_sum">点心</string>
+    <string name="tag_malatang">麻辣烫</string>
+    <string name="tag_vegetarian">素食</string>
+    <string name="tag_breakfast">早餐</string>
+    <string name="tag_tea_house">茶寮</string>
+    <string name="tag_bakery">烘焙</string>
+    <string name="tag_street_food">小吃</string>
+    <string name="tag_fusion">创新中餐</string>
 
     <!-- Search -->
     <string name="search_hint">搜索餐厅...</string>
@@ -55,5 +74,5 @@
     <string name="version">版本</string>
     <string name="privacy_policy">隐私政策</string>
     <string name="icon_credits">图标致谢</string>
-    <string name="icon_credits_value">菜系图标由 Freepik 提供 — Flaticon</string>
+    <string name="icon_credits_value">地图图标由 Freepik 提供 — Flaticon</string>
 </resources>

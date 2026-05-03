@@ -5,7 +5,7 @@ import {
   Create,
   SimpleForm,
   TextInput,
-  SelectInput,
+  AutocompleteArrayInput,
   NumberInput,
   Show,
   SimpleShowLayout,
@@ -20,15 +20,30 @@ import { Download, EyeOff, Eye } from "lucide-react";
 import { downloadYamlZip } from "@/lib/export-yaml";
 import { useState } from "react";
 
-const CUISINE_CHOICES = [
-  { id: "SICHUAN", name: "Sichuan" },
-  { id: "CANTONESE", name: "Cantonese" },
-  { id: "HOTPOT", name: "Hotpot" },
-  { id: "BBQ", name: "BBQ" },
-  { id: "DIM_SUM", name: "Dim Sum" },
-  { id: "NOODLES", name: "Noodles" },
-  { id: "GENERAL", name: "General" },
-  { id: "OTHER", name: "Other" },
+const TAG_CHOICES = [
+  // Regional
+  { id: "SICHUAN", name: "Sichuan 川菜" },
+  { id: "CANTONESE", name: "Cantonese 粤菜" },
+  { id: "NORTHERN", name: "Northern 北方菜" },
+  { id: "NORTHEASTERN", name: "Northeastern 东北菜" },
+  { id: "SHANGHAINESE", name: "Shanghainese 江浙沪" },
+  { id: "HUNAN", name: "Hunan 湘菜" },
+  { id: "XINJIANG", name: "Xinjiang 新疆菜" },
+  { id: "TAIWANESE", name: "Taiwanese 台菜" },
+  { id: "MUSLIM", name: "Halal 清真" },
+  // Format
+  { id: "HOTPOT", name: "Hotpot 火锅" },
+  { id: "BBQ", name: "BBQ 烧烤" },
+  { id: "NOODLES", name: "Noodles 面食" },
+  { id: "DUMPLINGS", name: "Dumplings 饺子" },
+  { id: "DIM_SUM", name: "Dim Sum 点心" },
+  { id: "MALATANG", name: "Malatang 麻辣烫" },
+  { id: "VEGETARIAN", name: "Vegetarian 素食" },
+  { id: "BREAKFAST", name: "Breakfast 早餐" },
+  { id: "TEA_HOUSE", name: "Tea House 茶寮" },
+  { id: "BAKERY", name: "Bakery 烘焙" },
+  { id: "STREET_FOOD", name: "Street Food 小吃" },
+  { id: "FUSION", name: "Modern Chinese 创新中餐" },
 ];
 
 const ExportYamlButton = () => {
@@ -79,10 +94,10 @@ export const RestaurantList = () => (
     <DataTable>
       <DataTable.Col source="name.zh" label="Name (ZH)" />
       <DataTable.Col source="name.en" label="Name (EN)" />
-      <DataTable.Col source="cuisineType" label="Cuisine" />
+      <DataTable.Col source="tags" label="Tags" />
       <DataTable.Col source="address.district" label="District" />
+      <DataTable.Col source="featured" label="Featured" />
       <DataTable.Col source="hidden" label="Hidden" />
-      <DataTable.Col source="visitCount" label="Visits" />
       <DataTable.Col source="viewCount" label="Views" />
       <DataTable.Col label="" disableSort>
         <ToggleHiddenButton />
@@ -97,11 +112,11 @@ const RestaurantForm = () => (
     <TextInput source="name.zh" label="Name (Chinese)" isRequired />
     <TextInput source="name.de" label="Name (German)" />
 
-    <SelectInput
-      source="cuisineType"
-      label="Cuisine Type"
-      choices={CUISINE_CHOICES}
-      isRequired
+    <AutocompleteArrayInput
+      source="tags"
+      label="Tags"
+      choices={TAG_CHOICES}
+      helperText="Pick 1–3 tags. First one is treated as the primary tag."
     />
     <TextInput source="phone" label="Phone" />
     <TextInput source="priceRange" label="Price Range" />
@@ -121,6 +136,13 @@ const RestaurantForm = () => (
     <TextInput source="description.en" label="Description (English)" multiline />
     <TextInput source="description.zh" label="Description (Chinese)" multiline />
     <TextInput source="description.de" label="Description (German)" multiline />
+
+    <BooleanInput source="featured" label="Featured (柏林慢慢游甄选)" defaultValue={false} />
+    <TextInput source="editorialNote.zh" label="Editorial note (中文)" />
+    <TextInput source="editorialNote.en" label="Editorial note (English)" />
+
+    <TextInput source="chain.brand" label="Chain brand" helperText="Set on every branch sharing the same operator." />
+    <TextInput source="chain.branch" label="Branch label" />
 
     <BooleanInput source="hidden" label="Hidden (soft-delete)" defaultValue={false} />
   </SimpleForm>
@@ -143,12 +165,15 @@ export const RestaurantShow = () => (
     <SimpleShowLayout>
       <TextField source="name.zh" />
       <TextField source="name.en" />
-      <TextField source="cuisineType" />
+      <TextField source="tags" />
       <TextField source="address.addressLine1" />
       <TextField source="address.district" />
       <TextField source="phone" />
       <TextField source="priceRange" />
-      <NumberField source="visitCount" />
+      <BooleanField source="featured" />
+      <TextField source="editorialNote.zh" />
+      <TextField source="chain.brand" />
+      <TextField source="chain.branch" />
       <NumberField source="viewCount" />
       <BooleanField source="hidden" />
     </SimpleShowLayout>

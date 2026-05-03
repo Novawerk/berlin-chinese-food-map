@@ -16,23 +16,48 @@ export interface Address {
   country: string;
 }
 
-export const CUISINE_TYPES = [
+// Mirror of the Kotlin `Tag` enum (composeApp/.../domain/restaurant/Tag.kt)
+// and the migration script's `KNOWN_TAGS`. Keep all three in sync.
+export const REGIONAL_TAGS = [
   "SICHUAN",
   "CANTONESE",
-  "HOTPOT",
-  "BBQ",
-  "DIM_SUM",
-  "NOODLES",
-  "GENERAL",
-  "OTHER",
+  "NORTHERN",
+  "NORTHEASTERN",
+  "SHANGHAINESE",
+  "HUNAN",
+  "XINJIANG",
+  "TAIWANESE",
+  "MUSLIM",
 ] as const;
 
-export type CuisineType = (typeof CUISINE_TYPES)[number];
+export const FORMAT_TAGS = [
+  "HOTPOT",
+  "BBQ",
+  "NOODLES",
+  "DUMPLINGS",
+  "DIM_SUM",
+  "MALATANG",
+  "VEGETARIAN",
+  "BREAKFAST",
+  "TEA_HOUSE",
+  "BAKERY",
+  "STREET_FOOD",
+  "FUSION",
+] as const;
+
+export const TAGS = [...REGIONAL_TAGS, ...FORMAT_TAGS] as const;
+
+export type Tag = (typeof TAGS)[number];
+
+export interface Chain {
+  brand: string;
+  branch?: string;
+}
 
 export interface Restaurant {
   id?: string;
   name: Localizable;
-  cuisineType: CuisineType;
+  tags: Tag[];
   address: Address;
   latitude: number;
   longitude: number;
@@ -44,6 +69,9 @@ export interface Restaurant {
   visitCount: number;
   viewCount: number;
   hidden?: boolean;
+  featured?: boolean;
+  editorialNote?: Localizable;
+  chain?: Chain;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 }

@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,12 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import com.novawerk.berlinfoodmap.domain.restaurant.CuisineType
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
+import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
-import com.novawerk.berlinfoodmap.ui.components.cuisineDisplayName
-import com.novawerk.berlinfoodmap.ui.components.cuisineMaterialIcon
+import com.novawerk.berlinfoodmap.ui.components.TagChipsGroup
+import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import eu.buney.maps.GoogleMap
 import eu.buney.maps.LatLng
 import eu.buney.maps.LatLngBounds
@@ -60,12 +62,13 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.all
-import berlinfoodmap.composeapp.generated.resources.filter_cuisine
 import berlinfoodmap.composeapp.generated.resources.filter_district
 import berlinfoodmap.composeapp.generated.resources.filter_reset
 import berlinfoodmap.composeapp.generated.resources.filter_title
 import berlinfoodmap.composeapp.generated.resources.map_loading
 import berlinfoodmap.composeapp.generated.resources.search_hint
+import berlinfoodmap.composeapp.generated.resources.tag_family_format
+import berlinfoodmap.composeapp.generated.resources.tag_family_regional
 
 private val BERLIN_BOUNDS = LatLngBounds(
     southwest = LatLng(52.33, 13.08),
@@ -86,7 +89,7 @@ fun MapScreen(
         repository.observeAll()
     }.collectAsState(initial = emptyList())
 
-    var selectedCuisine by remember { mutableStateOf<CuisineType?>(null) }
+    var selectedTags by remember { mutableStateOf<Set<Tag>>(emptySet()) }
     var selectedDistrict by remember { mutableStateOf<String?>(null) }
     var filterSheetOpen by remember { mutableStateOf(false) }
 
@@ -135,13 +138,14 @@ fun MapScreen(
     val districts = remember(allRestaurants) {
         allRestaurants.map { it.address.district }.distinct().sorted()
     }
-    val activeFilterCount = (if (selectedCuisine != null) 1 else 0) +
+    val activeFilterCount = selectedTags.size +
         (if (selectedDistrict != null) 1 else 0)
 
-    val restaurantsFiltered = remember(allRestaurants, selectedCuisine, selectedDistrict) {
+    val restaurantsFiltered = remember(allRestaurants, selectedTags, selectedDistrict) {
         allRestaurants.filter { r ->
-            (selectedCuisine == null || r.cuisineType == selectedCuisine) &&
-                (selectedDistrict == null || r.address.district == selectedDistrict)
+            val matchesTags = selectedTags.isEmpty() || r.tags.any { it in selectedTags }
+            val matchesDistrict = selectedDistrict == null || r.address.district == selectedDistrict
+            matchesTags && matchesDistrict
         }
     }
 
@@ -419,12 +423,15 @@ fun MapScreen(
     if (filterSheetOpen) {
         FilterSheet(
             districts = districts,
-            selectedCuisine = selectedCuisine,
+            selectedTags = selectedTags,
             selectedDistrict = selectedDistrict,
-            onCuisineSelected = { selectedCuisine = it },
+            onTagToggle = { tag ->
+                selectedTags = if (tag in selectedTags) selectedTags - tag else selectedTags + tag
+            },
+            onTagsClear = { selectedTags = emptySet() },
             onDistrictSelected = { selectedDistrict = it },
             onReset = {
-                selectedCuisine = null
+                selectedTags = emptySet()
                 selectedDistrict = null
             },
             onDismiss = { filterSheetOpen = false },
@@ -436,9 +443,10 @@ fun MapScreen(
 @Composable
 private fun FilterSheet(
     districts: List<String>,
-    selectedCuisine: CuisineType?,
+    selectedTags: Set<Tag>,
     selectedDistrict: String?,
-    onCuisineSelected: (CuisineType?) -> Unit,
+    onTagToggle: (Tag) -> Unit,
+    onTagsClear: () -> Unit,
     onDistrictSelected: (String?) -> Unit,
     onReset: () -> Unit,
     onDismiss: () -> Unit,
@@ -470,30 +478,13 @@ private fun FilterSheet(
             }
 
             Spacer(Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.filter_cuisine),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            TagChipsGroup(
+                selected = selectedTags,
+                onToggle = onTagToggle,
+                onClear = onTagsClear,
+                regionalLabel = stringResource(Res.string.tag_family_regional),
+                formatLabel = stringResource(Res.string.tag_family_format),
             )
-            Spacer(Modifier.height(8.dp))
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                FilterChip(
-                    selected = selectedCuisine == null,
-                    onClick = { onCuisineSelected(null) },
-                    label = { Text(stringResource(Res.string.all)) },
-                )
-                CuisineType.entries.forEach { cuisine ->
-                    FilterChip(
-                        selected = selectedCuisine == cuisine,
-                        onClick = { onCuisineSelected(cuisine) },
-                        label = { Text(cuisineDisplayName(cuisine)) },
-                    )
-                }
-            }
 
             if (districts.isNotEmpty()) {
                 Spacer(Modifier.height(20.dp))
@@ -629,9 +620,12 @@ private fun cellKey(cx: Int, cy: Int): Long =
     (cx.toLong() shl 32) or (cy.toLong() and 0xFFFFFFFFL)
 
 /**
- * Pill-shaped marker label with a small leading dot, restaurant zh name, and
- * cuisine subtitle. No cuisine icon — the dot keeps the marker recognisable
- * while letting the text carry the meaning.
+ * Pill-shaped marker label. Leading thumbnail uses the restaurant cover
+ * photo; falls back to a generic Material restaurant icon when no photo
+ * is available (e.g. a freshly added entry without a placeId yet).
+ *
+ * Subtitle line shows the primary tag, with a small star prefix for
+ * editorially-featured restaurants.
  */
 @Composable
 private fun MiniRestaurantCard(
@@ -665,28 +659,41 @@ private fun MiniRestaurantCard(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = cuisineMaterialIcon(restaurant.cuisineType),
+                        imageVector = Icons.Filled.Restaurant,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
                     )
                 }
             }
             Spacer(Modifier.width(8.dp))
             Column {
-                Text(
-                    text = restaurant.name.zh,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = cuisineDisplayName(restaurant.cuisineType),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (restaurant.featured) {
+                        Icon(
+                            Icons.Filled.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.width(3.dp))
+                    }
+                    Text(
+                        text = restaurant.name.zh,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+                restaurant.tags.firstOrNull()?.let { tag ->
+                    Text(
+                        text = tagDisplayName(tag),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                    )
+                }
             }
         }
     }
@@ -750,7 +757,13 @@ private fun NearbyCard(
                     )
                     Spacer(Modifier.width(2.dp))
                     Text(
-                        text = "${restaurant.address.district} · ${cuisineDisplayName(restaurant.cuisineType)}",
+                        text = buildString {
+                            append(restaurant.address.district)
+                            restaurant.tags.firstOrNull()?.let { primary ->
+                                append(" · ")
+                                append(tagDisplayName(primary))
+                            }
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,

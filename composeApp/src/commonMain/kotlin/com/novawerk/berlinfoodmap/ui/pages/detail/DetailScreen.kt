@@ -14,23 +14,26 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
 import com.novawerk.berlinfoodmap.domain.restaurant.GooglePlaceData
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
-import com.novawerk.berlinfoodmap.ui.components.cuisineDisplayName
-import com.novawerk.berlinfoodmap.ui.components.cuisineIconResource
+import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.call_phone
@@ -128,7 +131,7 @@ fun DetailScreen(
                 }
                 Spacer(Modifier.height(16.dp))
             } else {
-                // Cuisine-iconed placeholder when no photo is available.
+                // Generic placeholder when no photo is available.
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,10 +140,10 @@ fun DetailScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        painter = painterResource(cuisineIconResource(r.cuisineType)),
+                        Icons.Filled.Restaurant,
                         contentDescription = null,
-                        tint = androidx.compose.ui.graphics.Color.Unspecified,
-                        modifier = Modifier.size(96.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(72.dp),
                     )
                 }
                 Spacer(Modifier.height(16.dp))
@@ -150,27 +153,62 @@ fun DetailScreen(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // Restaurant name
-                Text(r.name.zh, style = MaterialTheme.typography.headlineMedium)
+                // Restaurant name + featured star
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        r.name.zh,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                    if (r.featured) {
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
                 Text(
                     r.name.en,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                // Cuisine badge + price range
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    SuggestionChip(
-                        onClick = {},
-                        label = { Text(cuisineDisplayName(r.cuisineType)) },
-                    )
-                    r.priceRange?.let { price ->
+                // Editorial note (curated short hook from "柏林慢慢游甄选20")
+                r.editorialNote?.let { note ->
+                    val display = note.zh.takeIf { it.isNotBlank() } ?: note.en
+                    if (display.isNotBlank()) {
                         Text(
-                            text = price,
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = display,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium,
+                        )
+                    }
+                }
+
+                // Tag chips + price range
+                if (r.tags.isNotEmpty() || r.priceRange != null) {
+                    TagsAndPriceRow(r)
+                }
+
+                // Chain/brand line — surfaces "part of the Wen Cheng family" etc.
+                r.chain?.let { chain ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Filled.Storefront,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = buildString {
+                                append(chain.brand)
+                                chain.branch?.let { append(" · ").append(it) }
+                            },
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -365,4 +403,30 @@ private fun Double.toFormattedRating(): String {
     val whole = rounded.toInt()
     val tenth = ((rounded - whole) * 10 + 0.5).toInt()
     return if (tenth == 0) "$whole.0" else "$whole.$tenth"
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TagsAndPriceRow(restaurant: Restaurant) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        restaurant.tags.forEach { tag ->
+            SuggestionChip(
+                onClick = {},
+                label = { Text(tagDisplayName(tag), style = MaterialTheme.typography.bodySmall) },
+            )
+        }
+        restaurant.priceRange?.let { price ->
+            Spacer(Modifier.width(2.dp))
+            Text(
+                text = price,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 6.dp),
+            )
+        }
+    }
 }

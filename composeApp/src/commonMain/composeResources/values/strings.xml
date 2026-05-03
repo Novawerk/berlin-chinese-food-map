@@ -23,7 +23,7 @@
 
     <!-- Filters -->
     <string name="filter_name">Name</string>
-    <string name="filter_cuisine">Cuisine</string>
+    <string name="filter_cuisine">Tags</string>
     <string name="filter_district">District</string>
     <string name="filter_distance">Distance</string>
     <string name="filter_title">Filters</string>
@@ -35,15 +35,34 @@
     <string name="opening_hours">Opening hours</string>
     <string name="rating_count">%1$d reviews</string>
 
-    <!-- Cuisine types -->
-    <string name="cuisine_sichuan">Sichuan</string>
-    <string name="cuisine_cantonese">Cantonese</string>
-    <string name="cuisine_hotpot">Hotpot</string>
-    <string name="cuisine_bbq">BBQ</string>
-    <string name="cuisine_dim_sum">Dim Sum</string>
-    <string name="cuisine_noodles">Noodles</string>
-    <string name="cuisine_general">General</string>
-    <string name="cuisine_other">Other</string>
+    <!-- Tag families (filter section headers) -->
+    <string name="tag_family_regional">Regional</string>
+    <string name="tag_family_format">Format</string>
+
+    <!-- Tags: regional cuisines -->
+    <string name="tag_sichuan">Sichuan</string>
+    <string name="tag_cantonese">Cantonese</string>
+    <string name="tag_northern">Northern</string>
+    <string name="tag_northeastern">Northeastern</string>
+    <string name="tag_shanghainese">Shanghainese</string>
+    <string name="tag_hunan">Hunan</string>
+    <string name="tag_xinjiang">Xinjiang</string>
+    <string name="tag_taiwanese">Taiwanese</string>
+    <string name="tag_muslim">Halal</string>
+
+    <!-- Tags: formats -->
+    <string name="tag_hotpot">Hotpot</string>
+    <string name="tag_bbq">BBQ</string>
+    <string name="tag_noodles">Noodles</string>
+    <string name="tag_dumplings">Dumplings</string>
+    <string name="tag_dim_sum">Dim Sum</string>
+    <string name="tag_malatang">Malatang</string>
+    <string name="tag_vegetarian">Vegetarian</string>
+    <string name="tag_breakfast">Breakfast</string>
+    <string name="tag_tea_house">Tea House</string>
+    <string name="tag_bakery">Bakery</string>
+    <string name="tag_street_food">Street Food</string>
+    <string name="tag_fusion">Modern Chinese</string>
 
     <!-- Search -->
     <string name="search_hint">Search restaurants...</string>
@@ -55,5 +74,5 @@
     <string name="version">Version</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="icon_credits">Icon credits</string>
-    <string name="icon_credits_value">Cuisine icons by Freepik — Flaticon</string>
+    <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
 </resources>

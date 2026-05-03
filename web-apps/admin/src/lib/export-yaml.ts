@@ -16,7 +16,14 @@ function toYaml(r: Restaurant & { id: string }): string {
   if (r.name.de) lines.push(`  de: "${esc(r.name.de)}"`);
 
   lines.push("");
-  lines.push(`cuisineType: ${r.cuisineType}`);
+  if (r.tags && r.tags.length > 0) {
+    lines.push("tags:");
+    for (const t of r.tags) {
+      lines.push(`  - ${t}`);
+    }
+  } else {
+    lines.push("tags: []");
+  }
 
   // address
   lines.push("");
@@ -66,6 +73,25 @@ function toYaml(r: Restaurant & { id: string }): string {
   if (r.hidden) {
     lines.push("");
     lines.push("hidden: true");
+  }
+
+  if (r.featured) {
+    lines.push("");
+    lines.push("featured: true");
+  }
+
+  if (r.editorialNote && (r.editorialNote.zh || r.editorialNote.en)) {
+    lines.push("");
+    lines.push("editorialNote:");
+    if (r.editorialNote.zh) lines.push(`  zh: "${esc(r.editorialNote.zh)}"`);
+    if (r.editorialNote.en) lines.push(`  en: "${esc(r.editorialNote.en)}"`);
+  }
+
+  if (r.chain && r.chain.brand) {
+    lines.push("");
+    lines.push("chain:");
+    lines.push(`  brand: "${esc(r.chain.brand)}"`);
+    if (r.chain.branch) lines.push(`  branch: "${esc(r.chain.branch)}"`);
   }
 
   return lines.join("\n") + "\n";
