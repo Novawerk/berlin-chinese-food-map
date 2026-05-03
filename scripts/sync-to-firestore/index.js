@@ -22,6 +22,7 @@ const PLACES_FIELD_MASK = [
   "rating",
   "userRatingCount",
   "currentOpeningHours.weekdayDescriptions",
+  "currentOpeningHours.periods",
   "websiteUri",
   "googleMapsUri",
   "nationalPhoneNumber",
@@ -319,6 +320,30 @@ async function resolveAllPlaceIds(restaurants) {
   }
 }
 
+// Encode Google Places periods array into compact "openMOW-closeMOW" strings.
+// MOW = minute-of-week with Sunday = 0 (matching Google's `day` numbering).
+// 24/7 venues are returned as the sentinel ["OPEN_24H"].
+function encodePeriods(periods) {
+  if (!Array.isArray(periods) || periods.length === 0) return null;
+  // Google represents 24/7 as a single period with open at Sunday 00:00 and no close field.
+  if (periods.length === 1 && !periods[0].close) {
+    const o = periods[0].open;
+    if (o && (o.day ?? 0) === 0 && (o.hour ?? 0) === 0 && (o.minute ?? 0) === 0) {
+      return ["OPEN_24H"];
+    }
+  }
+  const out = [];
+  for (const p of periods) {
+    if (!p.open || !p.close) continue;
+    const oMow =
+      (p.open.day ?? 0) * 1440 + (p.open.hour ?? 0) * 60 + (p.open.minute ?? 0);
+    const cMow =
+      (p.close.day ?? 0) * 1440 + (p.close.hour ?? 0) * 60 + (p.close.minute ?? 0);
+    out.push(`${oMow}-${cMow}`);
+  }
+  return out.length > 0 ? out : null;
+}
+
 // --- Google Places enrichment (Places API New) ---
 async function fetchPlaceDetails(placeId) {
   const url = `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`;
@@ -344,6 +369,10 @@ async function fetchPlaceDetails(placeId) {
     rating: r.rating ?? null,
     userRatingsTotal: r.userRatingCount ?? null,
     weekdayText: r.currentOpeningHours?.weekdayDescriptions ?? null,
+    // Compact "openMOW-closeMOW" strings (Sunday=0 minute-of-week) so the
+    // mobile client can compute "open now" without re-parsing locale-specific
+    // weekdayText. ["OPEN_24H"] is the sentinel for 24/7 venues.
+    periods: encodePeriods(r.currentOpeningHours?.periods),
     website: r.websiteUri ?? null,
     googleMapsUrl: r.googleMapsUri ?? `https://www.google.com/maps/place/?q=place_id:${placeId}`,
     formattedPhoneNumber:
@@ -564,6 +593,7 @@ async function dryRun(restaurants) {
         rating: details.rating,
         userRatingsTotal: details.userRatingsTotal,
         weekdayText: details.weekdayText,
+        periods: details.periods,
         website: details.website,
         googleMapsUrl: details.googleMapsUrl,
         formattedPhoneNumber: details.formattedPhoneNumber,
