@@ -13,6 +13,10 @@ const PLACES_REFRESH_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 const MAX_PHOTOS = 10;
 const PHOTO_MAX_WIDTH = 1600;
 // Places API (New) — camelCase field mask. The legacy API is being deprecated.
+// `primaryType` / `types` / `editorialSummary` / `reviews` feed the tag
+// suggestor (scripts/sync-to-firestore/tag-from-places.mjs); they're cheap
+// to include in the same Place Details call and let downstream auto-tagging
+// run from cached data instead of issuing a second round of API calls.
 const PLACES_FIELD_MASK = [
   "id",
   "rating",
@@ -24,6 +28,10 @@ const PLACES_FIELD_MASK = [
   "internationalPhoneNumber",
   "formattedAddress",
   "photos.name",
+  "primaryType",
+  "types",
+  "editorialSummary",
+  "reviews",
 ].join(",");
 
 const DRY_RUN = process.argv.includes("--dry-run");
@@ -346,6 +354,16 @@ async function fetchPlaceDetails(placeId) {
       .slice(0, MAX_PHOTOS)
       .map((p) => p.name)
       .filter(Boolean),
+    // Tag-suggestion inputs — cached so future re-tagging passes can run
+    // straight from Firestore without re-hitting the Places API.
+    primaryType: r.primaryType ?? null,
+    types: r.types ?? null,
+    editorialSummary: r.editorialSummary?.text ?? null,
+    reviews: (r.reviews ?? []).slice(0, 5).map((rv) => ({
+      text: rv.text?.text ?? null,
+      rating: rv.rating ?? null,
+      languageCode: rv.text?.languageCode ?? null,
+    })),
     fetchedAt: Timestamp.now(),
   };
 }

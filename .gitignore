@@ -25,3 +25,8 @@ scripts/**/node_modules
 admin/dist
 admin/.env
 .vercel
+
+# Local Firestore dumps + Places API tag suggestion runs (see
+# scripts/sync-to-firestore/{dump-firestore,tag-from-places}.mjs).
+data/firestore-dump/
+data/places-tag-suggestions.csv
