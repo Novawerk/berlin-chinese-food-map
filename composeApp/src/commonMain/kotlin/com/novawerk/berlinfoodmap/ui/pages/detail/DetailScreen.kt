@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Language
@@ -154,7 +155,23 @@ fun DetailScreen(
                     weekdayText = r.googleData?.weekdayText.orEmpty(),
                 )
 
-                AddressCard(restaurant = r)
+                AddressCard(
+                    restaurant = r,
+                    onNavigate = {
+                        // Google Maps URL spec: directions to a destination,
+                        // pinned by place_id when we have one (more accurate
+                        // than coordinates which can land mid-block).
+                        // Spec: developers.google.com/maps/documentation/urls
+                        val url = buildString {
+                            append("https://www.google.com/maps/dir/?api=1")
+                            append("&destination=").append(r.latitude).append(',').append(r.longitude)
+                            r.googleData?.placeId?.let {
+                                append("&destination_place_id=").append(it)
+                            }
+                        }
+                        urlLauncher.open(url)
+                    },
+                )
 
                 r.description?.let { desc ->
                     val text = desc.preferred(LocalAppLocale.current)
@@ -818,7 +835,10 @@ private fun weekdayLongRes(sundayBasedIndex: Int): StringResource = when (sunday
 // region Address + description + photos + footer --------------------------
 
 @Composable
-private fun AddressCard(restaurant: Restaurant) {
+private fun AddressCard(
+    restaurant: Restaurant,
+    onNavigate: () -> Unit,
+) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = SECTION_SHAPE,
@@ -838,7 +858,7 @@ private fun AddressCard(restaurant: Restaurant) {
                     )
                 }
                 Spacer(Modifier.width(14.dp))
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         restaurant.address.addressLine1,
                         style = MaterialTheme.typography.titleSmall,
@@ -852,6 +872,22 @@ private fun AddressCard(restaurant: Restaurant) {
                         text = "${restaurant.address.postalCode} ${restaurant.address.city} · ${restaurant.address.district}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                // Trailing nav button — opens Google Maps directions to this
+                // place. The bottom action bar has "View on map" (place
+                // card); this is the deeper action that starts navigation.
+                Spacer(Modifier.width(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.clickable(onClick = onNavigate),
+                ) {
+                    Icon(
+                        Icons.Filled.Directions,
+                        contentDescription = stringResource(Res.string.action_directions),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(10.dp).size(20.dp),
                     )
                 }
             }
