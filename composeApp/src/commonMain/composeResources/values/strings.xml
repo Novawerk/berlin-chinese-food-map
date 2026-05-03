@@ -186,11 +186,14 @@
     <string name="all">All</string>
     <string name="no_results">No restaurants found</string>
     <string name="call_phone">Call</string>
-    <string name="about">About</string>
     <string name="version">Version</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="icon_credits">Icon credits</string>
     <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
+
+    <!-- About entry (opens merged story / contribute / contributors sheet) -->
+    <string name="about_title">About this project</string>
+    <string name="about_subtitle">The story, how to help, and who built the data</string>
 
     <!-- Project story section -->
     <string name="story_title">The story behind this project</string>
@@ -198,10 +201,9 @@
 
     <!-- Contributors section -->
     <string name="contributors_title">Data contributors</string>
-    <string name="contributors_intro">The list below is pulled directly from the project\'s git history — every commit that touches the restaurant data files. It refreshes automatically. If you\'ve contributed and we\'ve missed you, please open an issue and we\'ll fix it.</string>
+    <string name="contributors_intro">Pulled live from the project\'s git history — every commit that touches the restaurant data files. If you\'ve contributed and we missed you, open an issue and we\'ll fix it.</string>
     <string name="contributors_count">%1$d contributors</string>
     <string name="contributors_empty">No contributors yet — be the first!</string>
-    <string name="contributors_thanks_manmanyou">Special thanks to the 柏林慢慢游 team for the field visits and first-round data collection that seeded this map, and for inspiring the project.</string>
 
     <!-- Contribute section -->
     <string name="contribute_title">How to contribute data</string>

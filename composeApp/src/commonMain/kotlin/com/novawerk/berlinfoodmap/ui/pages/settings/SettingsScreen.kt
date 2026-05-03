@@ -23,14 +23,12 @@ import berlinfoodmap.composeapp.generated.resources.light
 import berlinfoodmap.composeapp.generated.resources.dark
 import berlinfoodmap.composeapp.generated.resources.english
 import berlinfoodmap.composeapp.generated.resources.chinese
-import berlinfoodmap.composeapp.generated.resources.about
 import berlinfoodmap.composeapp.generated.resources.version
 import berlinfoodmap.composeapp.generated.resources.privacy_policy
 import berlinfoodmap.composeapp.generated.resources.icon_credits
 import berlinfoodmap.composeapp.generated.resources.icon_credits_value
-import berlinfoodmap.composeapp.generated.resources.contribute_title
-import berlinfoodmap.composeapp.generated.resources.story_title
-import berlinfoodmap.composeapp.generated.resources.contributors_title
+import berlinfoodmap.composeapp.generated.resources.about_title
+import berlinfoodmap.composeapp.generated.resources.about_subtitle
 import berlinfoodmap.composeapp.generated.resources.team_title
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
@@ -45,9 +43,7 @@ fun SettingsScreen(
     onDarkModeChange: (String) -> Unit,
     onLanguageChange: (String?) -> Unit,
 ) {
-    var showStorySheet by remember { mutableStateOf(false) }
-    var showContributeSheet by remember { mutableStateOf(false) }
-    var showContributorsSheet by remember { mutableStateOf(false) }
+    var showAboutSheet by remember { mutableStateOf(false) }
     var showNovawerkSheet by remember { mutableStateOf(false) }
     var showManmanyouSheet by remember { mutableStateOf(false) }
 
@@ -106,23 +102,11 @@ fun SettingsScreen(
         Spacer(Modifier.height(24.dp))
         HorizontalDivider()
 
-        // About section
-        Text(
-            text = stringResource(Res.string.about),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 12.dp),
-        )
+        // About — story, contribute, and contributors live in one merged sheet
         MenuRow(
-            title = stringResource(Res.string.story_title),
-            onClick = { showStorySheet = true },
-        )
-        MenuRow(
-            title = stringResource(Res.string.contribute_title),
-            onClick = { showContributeSheet = true },
-        )
-        MenuRow(
-            title = stringResource(Res.string.contributors_title),
-            onClick = { showContributorsSheet = true },
+            title = stringResource(Res.string.about_title),
+            supportingText = stringResource(Res.string.about_subtitle),
+            onClick = { showAboutSheet = true },
         )
 
         // Team section
@@ -190,14 +174,8 @@ fun SettingsScreen(
     Spacer(Modifier.height(24.dp))
     }
 
-    if (showStorySheet) {
-        StoryBottomSheet(onDismiss = { showStorySheet = false })
-    }
-    if (showContributeSheet) {
-        ContributeBottomSheet(onDismiss = { showContributeSheet = false })
-    }
-    if (showContributorsSheet) {
-        ContributorsBottomSheet(onDismiss = { showContributorsSheet = false })
+    if (showAboutSheet) {
+        AboutBottomSheet(onDismiss = { showAboutSheet = false })
     }
     if (showNovawerkSheet) {
         NovawerkBottomSheet(onDismiss = { showNovawerkSheet = false })
