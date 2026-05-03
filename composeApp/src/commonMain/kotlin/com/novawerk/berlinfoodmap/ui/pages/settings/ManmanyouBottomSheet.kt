@@ -25,7 +25,7 @@ import berlinfoodmap.composeapp.generated.resources.team_manmanyou_bio
 import berlinfoodmap.composeapp.generated.resources.team_manmanyou_visit
 
 private const val MANMANYOU_XHS_URL =
-    "https://www.xiaohongshu.com/user/profile/6251a0cc000000001000cc43?xsec_token=AB9CHAQVkTAFzuk1_HXLnf8KcpjAtB7aQI0LSMUKpp-rc%3D&xsec_source=pc_search"
+    "https://www.xiaohongshu.com/user/profile/6251a0cc000000001000cc43"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
