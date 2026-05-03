@@ -33,6 +33,7 @@ const TAG_LABEL: Record<string, string> = {
   XINJIANG: "Xinjiang 新疆菜",
   TAIWANESE: "Taiwanese 台菜",
   MUSLIM: "Halal 清真",
+  MONGOLIAN: "Mongolian Grill 蒙古烤肉",
   HOTPOT: "Hotpot 火锅",
   BBQ: "BBQ 烧烤",
   NOODLES: "Noodles 面食",
