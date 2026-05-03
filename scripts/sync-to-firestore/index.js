@@ -96,6 +96,15 @@ const DEFAULTS = {
   viewCount: 0,
 };
 
+// Mirror of the Kotlin `Tag` enum (composeApp/.../domain/restaurant/Tag.kt).
+// Keep in sync when adding values.
+const KNOWN_TAGS = new Set([
+  "SICHUAN", "CANTONESE", "NORTHERN", "NORTHEASTERN",
+  "SHANGHAINESE", "HUNAN", "XINJIANG", "TAIWANESE", "MUSLIM",
+  "HOTPOT", "BBQ", "NOODLES", "DUMPLINGS", "DIM_SUM", "MALATANG",
+  "VEGETARIAN", "BREAKFAST", "TEA_HOUSE", "BAKERY", "STREET_FOOD", "FUSION",
+]);
+
 // --- Load YAML files ---
 async function loadRestaurants() {
   const files = await glob(`${DATA_DIR}/**/*.yaml`, {
@@ -113,9 +122,17 @@ async function loadRestaurants() {
     const raw = readFileSync(file, "utf-8");
     const data = yaml.load(raw);
 
-    if (!data || !data.name || !data.cuisineType || !data.address) {
-      console.warn(`Skipping ${file}: missing required fields`);
+    if (!data || !data.name || !data.address) {
+      console.warn(`Skipping ${file}: missing required fields (name/address)`);
       continue;
+    }
+    // Tag taxonomy is the source of truth — surface unknown values rather
+    // than silently dropping them, so the migration can be re-run.
+    if (data.tags) {
+      const bad = data.tags.filter((t) => !KNOWN_TAGS.has(t));
+      if (bad.length) {
+        console.warn(`  ⚠ ${id}: unknown tag(s) ${bad.join(", ")}`);
+      }
     }
 
     // Apply defaults
@@ -126,8 +143,10 @@ async function loadRestaurants() {
         country: DEFAULTS["address.country"],
         ...data.address,
       },
+      tags: Array.isArray(data.tags) ? data.tags.filter((t) => KNOWN_TAGS.has(t)) : [],
       hidden: data.hidden ?? DEFAULTS.hidden,
       galleries: data.galleries ?? DEFAULTS.galleries,
+      featured: data.featured ?? false,
     };
 
     restaurants.push({ id, file, data: restaurant });
@@ -460,6 +479,21 @@ async function syncToFirestore(restaurants) {
     } else if (existingData?.googleData && !data.placeId) {
       // YAML cleared placeId — drop cached googleData
       doc.googleData = FieldValue.delete();
+    }
+
+    // Drop the legacy single-cuisine field — superseded by `tags`. Only
+    // queue the delete when the existing doc actually still carries it,
+    // so post-migration runs stay idempotent in the audit log.
+    if (existingData && "cuisineType" in existingData) {
+      doc.cuisineType = FieldValue.delete();
+    }
+    // Same idea for editorialNote / chain — when YAML drops them we need
+    // to remove them from Firestore (merge:true alone won't).
+    if (existingData?.editorialNote && !data.editorialNote) {
+      doc.editorialNote = FieldValue.delete();
+    }
+    if (existingData?.chain && !data.chain) {
+      doc.chain = FieldValue.delete();
     }
 
     if (existing.exists) {
