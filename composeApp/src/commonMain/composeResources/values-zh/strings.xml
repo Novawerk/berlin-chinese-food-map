@@ -51,6 +51,18 @@
     <string name="tag_muslim">清真</string>
     <string name="tag_mongolian">蒙古烤肉</string>
 
+    <!-- Tag descriptions: regional cuisines -->
+    <string name="tag_sichuan_desc">麻辣鲜香，重花椒重豆瓣，西南风味的代表。</string>
+    <string name="tag_cantonese_desc">清淡鲜甜，重原味与海鲜，源自广东与香港。</string>
+    <string name="tag_northern_desc">面食为主，醋香浓郁，北方家常炖菜与面点。</string>
+    <string name="tag_northeastern_desc">大份量酸菜白肉、东北饺子，朴实顶饱。</string>
+    <string name="tag_shanghainese_desc">甜咸兼具，酱油糖色重，江浙沪的精致小菜。</string>
+    <string name="tag_hunan_desc">干香纯辣不麻，烟熏剁椒与湘式腊味。</string>
+    <string name="tag_xinjiang_desc">孜然羊肉与拉条子，西北清真，带中亚口味。</string>
+    <string name="tag_taiwanese_desc">牛肉面、卤肉饭、珍珠奶茶，台味街头与家常。</string>
+    <string name="tag_muslim_desc">清真认证的中餐馆，多为西北菜系。</string>
+    <string name="tag_mongolian_desc">自助烤肉自助餐，柏林本地发明，并非地道蒙餐。</string>
+
     <!-- Tags: formats -->
     <string name="tag_hotpot">火锅</string>
     <string name="tag_bbq">烧烤</string>
@@ -64,6 +76,58 @@
     <string name="tag_bakery">烘焙</string>
     <string name="tag_street_food">小吃</string>
     <string name="tag_fusion">创新中餐</string>
+
+    <!-- Tag descriptions: formats -->
+    <string name="tag_hotpot_desc">桌上自助涮锅，沸汤翻滚，多人聚餐首选。</string>
+    <string name="tag_bbq_desc">桌上或台前的烤串与烤肉。</string>
+    <string name="tag_noodles_desc">以面为主——牛肉面、刀削、biangbiang。</string>
+    <string name="tag_dumplings_desc">饺子专门——水饺、蒸饺、煎饺。</string>
+    <string name="tag_dim_sum_desc">广式茶点，推车点单的小笼蒸食。</string>
+    <string name="tag_malatang_desc">自选食材麻辣汤底现煮，便宜随性。</string>
+    <string name="tag_vegetarian_desc">全素或大量素食选择。</string>
+    <string name="tag_breakfast_desc">豆浆油条、稀饭包子，中式早餐经典。</string>
+    <string name="tag_tea_house_desc">以茶为主——普洱、乌龙，坐下细品。</string>
+    <string name="tag_bakery_desc">菠萝包、蛋挞、奶香面包等中式烘焙。</string>
+    <string name="tag_street_food_desc">快餐小吃，方便外带。</string>
+    <string name="tag_fusion_desc">现代融合，中式底子配当代呈现。</string>
+
+    <!-- District descriptions (Berlin neighbourhoods) -->
+    <string name="district_desc_mitte">柏林历史中心，博物馆岛、勃兰登堡门所在。</string>
+    <string name="district_desc_charlottenburg">老西柏林商业核心，KaDeWe 与库当步行街。</string>
+    <string name="district_desc_friedrichshain">东柏林夜生活与艺术涂鸦聚集地。</string>
+    <string name="district_desc_kreuzberg">多元文化中心，土耳其菜与酒吧林立。</string>
+    <string name="district_desc_neukoelln">移民社群与新潮餐厅夜店区域。</string>
+    <string name="district_desc_prenzlauer_berg">改造后的中产家庭区，咖啡馆与早午餐林立。</string>
+    <string name="district_desc_schoeneberg">同志社区与犹太历史并存，街道安静雅致。</string>
+    <string name="district_desc_wedding">传统工人区，正在快速 gentrify。</string>
+    <string name="district_desc_tiergarten">柏林中央公园所在，西边老使馆区。</string>
+    <string name="district_desc_moabit">施普雷河中的住宅区，移民社群比例较高。</string>
+    <string name="district_desc_pankow">中央偏东北的安静住宅区。</string>
+    <string name="district_desc_spandau">柏林最西的卫星城，自带独立感。</string>
+    <string name="district_desc_tempelhof">老 Tempelhof 机场公园所在，南边住宅区。</string>
+    <string name="district_desc_wilmersdorf">老西柏林富人区，安静绿意，伊朗社群较大。</string>
+    <string name="district_desc_steglitz">西南住宅与购物区，Schloßstraße 一带较热闹。</string>
+    <string name="district_desc_lichtenberg">东柏林老工人区，柏林最大越南社群所在。</string>
+    <string name="district_desc_marzahn">东柏林板楼住宅区，越南超市与美食广场聚集。</string>
+    <string name="district_desc_hellersdorf">柏林东侧板楼区，城市东缘。</string>
+    <string name="district_desc_reinickendorf">西北郊区，湖泊与森林环绕。</string>
+    <string name="district_desc_dahlem">自由大学所在，绿意盎然的安静住宅。</string>
+    <string name="district_desc_tegel">西北旧机场区，靠近 Tegeler See。</string>
+    <string name="district_desc_friedenau">Schöneberg 与 Steglitz 之间的安静小街区。</string>
+    <string name="district_desc_halensee">夹在 Charlottenburg 与 Wilmersdorf 间的湖边小区。</string>
+    <string name="district_desc_westend">Charlottenburg 西部，Messe 周边的高端住宅。</string>
+    <string name="district_desc_schmargendorf">Wilmersdorf 西南的安静住宅区。</string>
+    <string name="district_desc_lichterfelde">西南绿意住宅，老式别墅区。</string>
+    <string name="district_desc_lankwitz">南柏林安静住宅区。</string>
+    <string name="district_desc_britz">Neukölln 南部，Hufeisensiedlung 花园城所在。</string>
+    <string name="district_desc_mariendorf">Tempelhofer Damm 沿线的南部住宅区。</string>
+    <string name="district_desc_marienfelde">南郊住宅与轻工业混合区。</string>
+    <string name="district_desc_lichtenrade">南端边缘住宅，村落感。</string>
+    <string name="district_desc_rudow">东南边缘住宅，邻近勃兰登堡。</string>
+    <string name="district_desc_franzoesisch_buchholz">Pankow 北部，外环住宅。</string>
+    <string name="district_desc_hermsdorf">Reinickendorf 北部，湖畔绿意。</string>
+    <string name="district_desc_johannisthal">Treptow-Köpenick 东南安静住宅。</string>
+    <string name="district_desc_wittenau">Reinickendorf 北部小住宅区。</string>
 
     <!-- Search -->
     <string name="search_hint">搜索餐厅...</string>

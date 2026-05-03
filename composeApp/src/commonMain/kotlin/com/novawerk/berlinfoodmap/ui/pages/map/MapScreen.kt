@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Place
@@ -42,8 +45,11 @@ import coil3.request.allowHardware
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
+import com.novawerk.berlinfoodmap.domain.restaurant.TagFamily
+import com.novawerk.berlinfoodmap.domain.restaurant.family
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
-import com.novawerk.berlinfoodmap.ui.components.TagChipsGroup
+import com.novawerk.berlinfoodmap.ui.components.districtDescription
+import com.novawerk.berlinfoodmap.ui.components.tagDescription
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import eu.buney.maps.GoogleMap
 import eu.buney.maps.LatLng
@@ -65,7 +71,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.all
 import berlinfoodmap.composeapp.generated.resources.filter_district
 import berlinfoodmap.composeapp.generated.resources.filter_reset
 import berlinfoodmap.composeapp.generated.resources.filter_title
@@ -100,8 +105,8 @@ fun MapScreen(
         repository.observeAll()
     }.collectAsState(initial = emptyList())
 
-    var selectedTags by remember { mutableStateOf<Set<Tag>>(emptySet()) }
-    var selectedDistrict by remember { mutableStateOf<String?>(null) }
+    var selectedCuisine by remember { mutableStateOf<Tag?>(null) }
+    var selectedFormat by remember { mutableStateOf<Tag?>(null) }
     var filterSheetOpen by remember { mutableStateOf(false) }
 
     var mapLoaded by remember { mutableStateOf(false) }
@@ -146,17 +151,13 @@ fun MapScreen(
         position = CameraPosition(target = BERLIN_CENTER, zoom = 12f)
     }
 
-    val districts = remember(allRestaurants) {
-        allRestaurants.map { it.address.district }.distinct().sorted()
-    }
-    val activeFilterCount = selectedTags.size +
-        (if (selectedDistrict != null) 1 else 0)
+    val activeFilterCount = (if (selectedCuisine != null) 1 else 0) +
+        (if (selectedFormat != null) 1 else 0)
 
-    val restaurantsFiltered = remember(allRestaurants, selectedTags, selectedDistrict) {
+    val restaurantsFiltered = remember(allRestaurants, selectedCuisine, selectedFormat) {
         allRestaurants.filter { r ->
-            val matchesTags = selectedTags.isEmpty() || r.tags.any { it in selectedTags }
-            val matchesDistrict = selectedDistrict == null || r.address.district == selectedDistrict
-            matchesTags && matchesDistrict
+            (selectedCuisine == null || selectedCuisine in r.tags) &&
+                (selectedFormat == null || selectedFormat in r.tags)
         }
     }
 
@@ -455,49 +456,117 @@ fun MapScreen(
 
     if (filterSheetOpen) {
         FilterSheet(
-            districts = districts,
-            selectedTags = selectedTags,
-            selectedDistrict = selectedDistrict,
-            onTagToggle = { tag ->
-                selectedTags = if (tag in selectedTags) selectedTags - tag else selectedTags + tag
+            allRestaurants = allRestaurants,
+            selectedCuisine = selectedCuisine,
+            selectedFormat = selectedFormat,
+            // Cuisine + format: pick → auto-dismiss. Reset stays in the sheet
+            // so the user can clear without reopening.
+            onCuisineSelected = {
+                selectedCuisine = it
+                filterSheetOpen = false
             },
-            onTagsClear = { selectedTags = emptySet() },
-            onDistrictSelected = { selectedDistrict = it },
+            onFormatSelected = {
+                selectedFormat = it
+                filterSheetOpen = false
+            },
+            onDistrictSelected = { center ->
+                scope.launch {
+                    cameraPositionState.animate(
+                        CameraUpdateFactory.newLatLngZoom(center, 14f),
+                    )
+                }
+                filterSheetOpen = false
+            },
             onReset = {
-                selectedTags = emptySet()
-                selectedDistrict = null
+                selectedCuisine = null
+                selectedFormat = null
             },
             onDismiss = { filterSheetOpen = false },
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+/**
+ * Tabbed filter sheet — three lists (Cuisine / Format / District), each row
+ * shows a one-line description plus a result count.
+ *
+ * Cuisine and Format are independent single-selects (one of each can be
+ * active at a time); the count next to each row reflects the number of
+ * restaurants you would see if you tapped that row, given the *other*
+ * family's current selection.
+ *
+ * District rows are not filters — tapping a district pans the map to its
+ * centroid and dismisses the sheet. Counts there are raw per-district totals
+ * within the active cuisine+format filter.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FilterSheet(
-    districts: List<String>,
-    selectedTags: Set<Tag>,
-    selectedDistrict: String?,
-    onTagToggle: (Tag) -> Unit,
-    onTagsClear: () -> Unit,
-    onDistrictSelected: (String?) -> Unit,
+    allRestaurants: List<Restaurant>,
+    selectedCuisine: Tag?,
+    selectedFormat: Tag?,
+    onCuisineSelected: (Tag?) -> Unit,
+    onFormatSelected: (Tag?) -> Unit,
+    onDistrictSelected: (LatLng) -> Unit,
     onReset: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var selectedTab by remember { mutableStateOf(0) }
+
+    val cuisineTags = remember { Tag.entries.filter { it.family() == TagFamily.REGIONAL } }
+    val formatTags = remember { Tag.entries.filter { it.family() == TagFamily.FORMAT } }
+
+    // For each cuisine, count restaurants matching the current format selection
+    // (same idea for formats) so counts represent "what you'd see if you tap".
+    val cuisineCounts = remember(allRestaurants, selectedFormat) {
+        cuisineTags.associateWith { tag ->
+            allRestaurants.count { r ->
+                tag in r.tags && (selectedFormat == null || selectedFormat in r.tags)
+            }
+        }
+    }
+    val formatCounts = remember(allRestaurants, selectedCuisine) {
+        formatTags.associateWith { tag ->
+            allRestaurants.count { r ->
+                tag in r.tags && (selectedCuisine == null || selectedCuisine in r.tags)
+            }
+        }
+    }
+
+    val districts = remember(allRestaurants, selectedCuisine, selectedFormat) {
+        allRestaurants
+            .filter { r ->
+                (selectedCuisine == null || selectedCuisine in r.tags) &&
+                    (selectedFormat == null || selectedFormat in r.tags)
+            }
+            .groupBy { it.address.district }
+            .map { (name, members) ->
+                val avgLat = members.sumOf { it.latitude } / members.size
+                val avgLng = members.sumOf { it.longitude } / members.size
+                DistrictEntry(
+                    name = name,
+                    count = members.size,
+                    center = LatLng(avgLat, avgLng),
+                )
+            }
+            .sortedWith(compareByDescending<DistrictEntry> { it.count }.thenBy { it.name })
+    }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        // Override Material 3's default tinted `surfaceContainerLow` so the
+        // sheet picks up the brand cream surface — without this it picks up a
+        // primary-tinted overlay that reads faintly purple against PinwoCream.
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp),
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 12.dp, top = 4.dp, bottom = 8.dp),
             ) {
                 Text(
                     text = stringResource(Res.string.filter_title),
@@ -510,43 +579,142 @@ private fun FilterSheet(
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
-            TagChipsGroup(
-                selected = selectedTags,
-                onToggle = onTagToggle,
-                onClear = onTagsClear,
-                regionalLabel = stringResource(Res.string.tag_family_regional),
-                formatLabel = stringResource(Res.string.tag_family_format),
-            )
-
-            if (districts.isNotEmpty()) {
-                Spacer(Modifier.height(20.dp))
-                Text(
-                    text = stringResource(Res.string.filter_district),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            PrimaryTabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = MaterialTheme.colorScheme.surface,
+            ) {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    text = { Text(stringResource(Res.string.tag_family_regional)) },
                 )
-                Spacer(Modifier.height(8.dp))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    FilterChip(
-                        selected = selectedDistrict == null,
-                        onClick = { onDistrictSelected(null) },
-                        label = { Text(stringResource(Res.string.all)) },
-                    )
-                    districts.forEach { district ->
-                        FilterChip(
-                            selected = selectedDistrict == district,
-                            onClick = { onDistrictSelected(district) },
-                            label = { Text(district) },
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = { Text(stringResource(Res.string.tag_family_format)) },
+                )
+                Tab(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    text = { Text(stringResource(Res.string.filter_district)) },
+                )
+            }
+
+            // Plain Column + verticalScroll plays nicely with ModalBottomSheet's
+            // own drag-to-expand. With ~35 districts max this is cheap enough
+            // not to need LazyColumn.
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 24.dp),
+            ) {
+                when (selectedTab) {
+                    0 -> cuisineTags.forEach { tag ->
+                        FilterRow(
+                            title = tagDisplayName(tag),
+                            subtitle = tagDescription(tag),
+                            count = cuisineCounts[tag] ?: 0,
+                            selected = tag == selectedCuisine,
+                            onClick = {
+                                onCuisineSelected(if (tag == selectedCuisine) null else tag)
+                            },
+                        )
+                    }
+                    1 -> formatTags.forEach { tag ->
+                        FilterRow(
+                            title = tagDisplayName(tag),
+                            subtitle = tagDescription(tag),
+                            count = formatCounts[tag] ?: 0,
+                            selected = tag == selectedFormat,
+                            onClick = {
+                                onFormatSelected(if (tag == selectedFormat) null else tag)
+                            },
+                        )
+                    }
+                    else -> districts.forEach { entry ->
+                        FilterRow(
+                            title = entry.name,
+                            subtitle = districtDescription(entry.name),
+                            count = entry.count,
+                            selected = false,
+                            onClick = { onDistrictSelected(entry.center) },
                         )
                     }
                 }
             }
         }
+    }
+}
+
+private data class DistrictEntry(
+    val name: String,
+    val count: Int,
+    val center: LatLng,
+)
+
+@Composable
+private fun FilterRow(
+    title: String,
+    subtitle: String?,
+    count: Int,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                    color = if (selected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+                if (selected) {
+                    Spacer(Modifier.width(6.dp))
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+            if (!subtitle.isNullOrBlank()) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(
+            text = "$count",
+            style = MaterialTheme.typography.labelLarge,
+            color = if (count == 0) {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            modifier = Modifier
+                .background(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    RoundedCornerShape(percent = 50),
+                )
+                .padding(horizontal = 10.dp, vertical = 3.dp),
+        )
     }
 }
 
