@@ -94,6 +94,11 @@ function toYaml(r: Restaurant & { id: string }): string {
     if (r.chain.branch) lines.push(`  branch: "${esc(r.chain.branch)}"`);
   }
 
+  if (r.placeId) {
+    lines.push("");
+    lines.push(`placeId: "${esc(r.placeId)}"`);
+  }
+
   return lines.join("\n") + "\n";
 }
 

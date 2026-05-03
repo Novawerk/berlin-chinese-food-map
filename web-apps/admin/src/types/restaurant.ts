@@ -54,6 +54,20 @@ export interface Chain {
   branch?: string;
 }
 
+export interface GoogleData {
+  placeId: string;
+  rating?: number;
+  userRatingsTotal?: number;
+  weekdayText?: string[];
+  website?: string;
+  googleMapsUrl?: string;
+  formattedPhoneNumber?: string;
+  formattedAddress?: string;
+  photoUrls?: string[];
+  coverPhotoUrl?: string;
+  fetchedAt?: Timestamp;
+}
+
 export interface Restaurant {
   id?: string;
   name: Localizable;
@@ -66,6 +80,8 @@ export interface Restaurant {
   description?: Localizable;
   logoUrl?: string;
   galleries: string[];
+  placeId?: string;
+  googleData?: GoogleData;
   visitCount: number;
   viewCount: number;
   hidden?: boolean;

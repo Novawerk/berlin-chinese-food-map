@@ -31,6 +31,9 @@ const App = () => (
       edit={RestaurantEdit}
       create={RestaurantCreate}
       show={RestaurantShow}
+      recordRepresentation={(record) =>
+        record?.name?.zh || record?.name?.en || String(record?.id ?? "")
+      }
     />
     <Resource
       name="team_members"

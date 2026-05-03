@@ -15,8 +15,8 @@ onAuthStateChanged(auth, (user) => {
 });
 
 export const authProvider: AuthProvider = {
-  async login({ username, password }: { username: string; password: string }) {
-    await signInWithEmailAndPassword(auth, username, password);
+  async login({ email, password }: { email: string; password: string }) {
+    await signInWithEmailAndPassword(auth, email, password);
   },
 
   async logout() {
