@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Berlin Food Map</string>
+    <string name="app_name">Berlin Chinese Food</string>
 
     <!-- Navigation -->
     <string name="nav_map">Map</string>

@@ -1,6 +1,6 @@
 TEAM_ID=
 
-PRODUCT_NAME=Berlin Food Map
+PRODUCT_NAME=Berlin Chinese Food
 PRODUCT_BUNDLE_IDENTIFIER=com.novawerk.berlinfoodmap
 
 // CURRENT_PROJECT_VERSION = Android versionCode; MARKETING_VERSION = versionName.
