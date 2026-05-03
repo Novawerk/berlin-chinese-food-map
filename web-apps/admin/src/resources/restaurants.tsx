@@ -13,37 +13,46 @@ import {
   NumberField,
   BooleanInput,
   BooleanField,
+  ArrayInput,
+  SimpleFormIterator,
 } from "@/components/admin";
 import { useUpdate, useRecordContext, useRefresh } from "ra-core";
 import { Button } from "@/components/ui/button";
-import { Download, EyeOff, Eye } from "lucide-react";
+import { Download, EyeOff, Eye, Star, ImageOff, Sparkles } from "lucide-react";
 import { downloadYamlZip } from "@/lib/export-yaml";
 import { useState } from "react";
+import { REGIONAL_TAGS, FORMAT_TAGS } from "@/types/restaurant";
+
+const TAG_LABEL: Record<string, string> = {
+  SICHUAN: "Sichuan 川菜",
+  CANTONESE: "Cantonese 粤菜",
+  NORTHERN: "Northern 北方菜",
+  NORTHEASTERN: "Northeastern 东北菜",
+  SHANGHAINESE: "Shanghainese 江浙沪",
+  HUNAN: "Hunan 湘菜",
+  XINJIANG: "Xinjiang 新疆菜",
+  TAIWANESE: "Taiwanese 台菜",
+  MUSLIM: "Halal 清真",
+  HOTPOT: "Hotpot 火锅",
+  BBQ: "BBQ 烧烤",
+  NOODLES: "Noodles 面食",
+  DUMPLINGS: "Dumplings 饺子",
+  DIM_SUM: "Dim Sum 点心",
+  MALATANG: "Malatang 麻辣烫",
+  VEGETARIAN: "Vegetarian 素食",
+  BREAKFAST: "Breakfast 早餐",
+  TEA_HOUSE: "Tea House 茶寮",
+  BAKERY: "Bakery 烘焙",
+  STREET_FOOD: "Street Food 小吃",
+  FUSION: "Modern Chinese 创新中餐",
+};
+
+const REGIONAL_SET = new Set<string>(REGIONAL_TAGS);
+const FORMAT_SET = new Set<string>(FORMAT_TAGS);
 
 const TAG_CHOICES = [
-  // Regional
-  { id: "SICHUAN", name: "Sichuan 川菜" },
-  { id: "CANTONESE", name: "Cantonese 粤菜" },
-  { id: "NORTHERN", name: "Northern 北方菜" },
-  { id: "NORTHEASTERN", name: "Northeastern 东北菜" },
-  { id: "SHANGHAINESE", name: "Shanghainese 江浙沪" },
-  { id: "HUNAN", name: "Hunan 湘菜" },
-  { id: "XINJIANG", name: "Xinjiang 新疆菜" },
-  { id: "TAIWANESE", name: "Taiwanese 台菜" },
-  { id: "MUSLIM", name: "Halal 清真" },
-  // Format
-  { id: "HOTPOT", name: "Hotpot 火锅" },
-  { id: "BBQ", name: "BBQ 烧烤" },
-  { id: "NOODLES", name: "Noodles 面食" },
-  { id: "DUMPLINGS", name: "Dumplings 饺子" },
-  { id: "DIM_SUM", name: "Dim Sum 点心" },
-  { id: "MALATANG", name: "Malatang 麻辣烫" },
-  { id: "VEGETARIAN", name: "Vegetarian 素食" },
-  { id: "BREAKFAST", name: "Breakfast 早餐" },
-  { id: "TEA_HOUSE", name: "Tea House 茶寮" },
-  { id: "BAKERY", name: "Bakery 烘焙" },
-  { id: "STREET_FOOD", name: "Street Food 小吃" },
-  { id: "FUSION", name: "Modern Chinese 创新中餐" },
+  ...REGIONAL_TAGS.map((id) => ({ id, name: TAG_LABEL[id] })),
+  ...FORMAT_TAGS.map((id) => ({ id, name: TAG_LABEL[id] })),
 ];
 
 const ExportYamlButton = () => {
@@ -89,15 +98,202 @@ const ToggleHiddenButton = () => {
   );
 };
 
+const CoverThumb = () => {
+  const record = useRecordContext();
+  const url =
+    (record?.galleries as string[] | undefined)?.[0] ??
+    (record?.googleData?.coverPhotoUrl as string | undefined) ??
+    (record?.googleData?.photoUrls as string[] | undefined)?.[0];
+  if (!url) {
+    return (
+      <div className="flex h-10 w-10 items-center justify-center rounded bg-muted text-muted-foreground">
+        <ImageOff className="h-4 w-4" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      className="h-10 w-10 rounded object-cover"
+      loading="lazy"
+    />
+  );
+};
+
+const Check = ({ ok, label }: { ok: boolean; label: string }) => (
+  <span
+    className={
+      ok
+        ? "inline-block rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-700"
+        : "inline-block rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
+    }
+  >
+    {label}
+  </span>
+);
+
+const TagChip = ({ tag, primary }: { tag: string; primary: boolean }) => {
+  const isRegional = REGIONAL_SET.has(tag);
+  const isFormat = FORMAT_SET.has(tag);
+  const family = isRegional
+    ? "bg-indigo-100 text-indigo-800"
+    : isFormat
+      ? "bg-amber-100 text-amber-800"
+      : "bg-rose-100 text-rose-800";
+  return (
+    <span
+      className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${family} ${primary ? "ring-2 ring-offset-1 ring-emerald-400" : ""}`}
+      title={primary ? "primary tag" : isRegional ? "regional" : isFormat ? "format" : "unknown tag"}
+    >
+      {TAG_LABEL[tag] ?? tag}
+    </span>
+  );
+};
+
+const TagsCell = () => {
+  const record = useRecordContext();
+  const tags = (record?.tags as string[] | undefined) ?? [];
+  if (tags.length === 0) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {tags.map((tag, i) => (
+        <TagChip key={tag} tag={tag} primary={i === 0} />
+      ))}
+    </div>
+  );
+};
+
+const NameDeCell = () => {
+  const record = useRecordContext();
+  const de = record?.name?.de as string | undefined;
+  return de ? (
+    <span>{de}</span>
+  ) : (
+    <span className="text-muted-foreground">—</span>
+  );
+};
+
+const PlaceIdCell = () => {
+  const record = useRecordContext();
+  const placeId = record?.placeId as string | undefined;
+  return <Check ok={!!placeId} label={placeId ? "✓" : "—"} />;
+};
+
+const FeaturedCell = () => {
+  const record = useRecordContext();
+  return record?.featured ? (
+    <Sparkles className="h-4 w-4 fill-amber-300 text-amber-600" />
+  ) : (
+    <span className="text-muted-foreground">—</span>
+  );
+};
+
+const ChainCell = () => {
+  const record = useRecordContext();
+  const brand = record?.chain?.brand as string | undefined;
+  const branch = record?.chain?.branch as string | undefined;
+  if (!brand) return <span className="text-muted-foreground">—</span>;
+  return (
+    <span className="text-xs">
+      <span className="font-medium">{brand}</span>
+      {branch && <span className="text-muted-foreground"> · {branch}</span>}
+    </span>
+  );
+};
+
+const RatingCell = () => {
+  const record = useRecordContext();
+  const rating = record?.googleData?.rating as number | undefined;
+  const total = record?.googleData?.userRatingsTotal as number | undefined;
+  if (typeof rating !== "number") {
+    return <span className="text-muted-foreground">—</span>;
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-sm">
+      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+      {rating.toFixed(1)}
+      {typeof total === "number" && (
+        <span className="text-muted-foreground">({total})</span>
+      )}
+    </span>
+  );
+};
+
+const PhotoCountCell = () => {
+  const record = useRecordContext();
+  const count = (record?.googleData?.photoUrls as string[] | undefined)?.length ?? 0;
+  return (
+    <span className={count === 0 ? "text-muted-foreground" : "tabular-nums"}>
+      {count}
+    </span>
+  );
+};
+
+const DescriptionCell = () => {
+  const record = useRecordContext();
+  const d = record?.description as { en?: string; zh?: string; de?: string } | undefined;
+  const note = record?.editorialNote as { en?: string; zh?: string } | undefined;
+  return (
+    <div className="flex flex-wrap gap-1">
+      <Check ok={!!d?.zh} label="zh" />
+      <Check ok={!!d?.en} label="en" />
+      <Check ok={!!d?.de} label="de" />
+      <Check ok={!!(note?.zh || note?.en)} label="note" />
+    </div>
+  );
+};
+
+const HiddenCell = () => {
+  const record = useRecordContext();
+  return record?.hidden ? (
+    <span className="inline-block rounded bg-rose-100 px-1.5 py-0.5 text-xs font-medium text-rose-700">
+      hidden
+    </span>
+  ) : (
+    <span className="text-muted-foreground">—</span>
+  );
+};
+
 export const RestaurantList = () => (
-  <List actions={<ExportYamlButton />}>
+  <List actions={<ExportYamlButton />} perPage={50} sort={{ field: "name.zh", order: "ASC" }}>
     <DataTable>
+      <DataTable.Col label="" disableSort>
+        <CoverThumb />
+      </DataTable.Col>
       <DataTable.Col source="name.zh" label="Name (ZH)" />
       <DataTable.Col source="name.en" label="Name (EN)" />
-      <DataTable.Col source="tags" label="Tags" />
+      <DataTable.Col source="name.de" label="Name (DE)" disableSort>
+        <NameDeCell />
+      </DataTable.Col>
+      <DataTable.Col label="Tags" disableSort>
+        <TagsCell />
+      </DataTable.Col>
       <DataTable.Col source="address.district" label="District" />
-      <DataTable.Col source="featured" label="Featured" />
-      <DataTable.Col source="hidden" label="Hidden" />
+      <DataTable.Col source="featured" label="★" disableSort>
+        <FeaturedCell />
+      </DataTable.Col>
+      <DataTable.Col label="Chain" disableSort>
+        <ChainCell />
+      </DataTable.Col>
+      <DataTable.Col label="Place" disableSort>
+        <PlaceIdCell />
+      </DataTable.Col>
+      <DataTable.Col label="Rating" disableSort>
+        <RatingCell />
+      </DataTable.Col>
+      <DataTable.Col label="Photos" disableSort>
+        <PhotoCountCell />
+      </DataTable.Col>
+      <DataTable.Col label="Desc / Note" disableSort>
+        <DescriptionCell />
+      </DataTable.Col>
+      <DataTable.Col source="hidden" label="State" disableSort>
+        <HiddenCell />
+      </DataTable.Col>
+      <DataTable.Col source="visitCount" label="Visits" />
       <DataTable.Col source="viewCount" label="Views" />
       <DataTable.Col label="" disableSort>
         <ToggleHiddenButton />
@@ -116,11 +312,8 @@ const RestaurantForm = () => (
       source="tags"
       label="Tags"
       choices={TAG_CHOICES}
-      helperText="Pick 1–3 tags. First one is treated as the primary tag."
+      helperText="Pick 1–3 tags. First one is the primary (drives default filter / icon)."
     />
-    <TextInput source="phone" label="Phone" />
-    <TextInput source="priceRange" label="Price Range" />
-    <TextInput source="logoUrl" label="Logo URL" />
 
     <TextInput source="address.addressLine1" label="Address Line 1" isRequired />
     <TextInput source="address.addressLine2" label="Address Line 2" />
@@ -133,16 +326,36 @@ const RestaurantForm = () => (
     <NumberInput source="latitude" label="Latitude" isRequired />
     <NumberInput source="longitude" label="Longitude" isRequired />
 
+    <TextInput
+      source="placeId"
+      label="Google placeId"
+      helperText="Powers ratings, hours, photos sync. Leave empty to skip enrichment."
+    />
+
     <TextInput source="description.en" label="Description (English)" multiline />
     <TextInput source="description.zh" label="Description (Chinese)" multiline />
     <TextInput source="description.de" label="Description (German)" multiline />
 
-    <BooleanInput source="featured" label="Featured (柏林慢慢游甄选)" defaultValue={false} />
-    <TextInput source="editorialNote.zh" label="Editorial note (中文)" />
-    <TextInput source="editorialNote.en" label="Editorial note (English)" />
+    <BooleanInput
+      source="featured"
+      label="Featured (柏林慢慢游甄选)"
+      defaultValue={false}
+    />
+    <TextInput source="editorialNote.zh" label="Editorial note (中文)" multiline />
+    <TextInput source="editorialNote.en" label="Editorial note (English)" multiline />
 
-    <TextInput source="chain.brand" label="Chain brand" helperText="Set on every branch sharing the same operator." />
+    <TextInput
+      source="chain.brand"
+      label="Chain brand"
+      helperText="Set on every branch sharing the same operator."
+    />
     <TextInput source="chain.branch" label="Branch label" />
+
+    <ArrayInput source="galleries" label="Manual gallery URLs">
+      <SimpleFormIterator inline>
+        <TextInput source="" label="URL" />
+      </SimpleFormIterator>
+    </ArrayInput>
 
     <BooleanInput source="hidden" label="Hidden (soft-delete)" defaultValue={false} />
   </SimpleForm>
@@ -160,22 +373,167 @@ export const RestaurantCreate = () => (
   </Create>
 );
 
+const TagsPanel = () => {
+  const record = useRecordContext();
+  const tags = (record?.tags as string[] | undefined) ?? [];
+  if (tags.length === 0) {
+    return <span className="text-muted-foreground">(none)</span>;
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {tags.map((tag, i) => (
+        <TagChip key={tag} tag={tag} primary={i === 0} />
+      ))}
+    </div>
+  );
+};
+
+const GoogleDataPanel = () => {
+  const record = useRecordContext();
+  const g = record?.googleData;
+  if (!g) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        No Google Places data — set a placeId to enable enrichment.
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-3 text-sm">
+      <div className="flex flex-wrap gap-x-6 gap-y-1">
+        <div>
+          <span className="text-muted-foreground">Rating:</span>{" "}
+          {typeof g.rating === "number"
+            ? `${g.rating.toFixed(1)} (${g.userRatingsTotal ?? "?"})`
+            : "—"}
+        </div>
+        <div>
+          <span className="text-muted-foreground">Phone:</span>{" "}
+          {g.formattedPhoneNumber ?? "—"}
+        </div>
+        <div>
+          <span className="text-muted-foreground">Photos:</span>{" "}
+          {g.photoUrls?.length ?? 0}
+        </div>
+      </div>
+      {g.website && (
+        <div>
+          <span className="text-muted-foreground">Website:</span>{" "}
+          <a className="text-blue-600 underline" href={g.website} target="_blank" rel="noreferrer">
+            {g.website}
+          </a>
+        </div>
+      )}
+      {g.googleMapsUrl && (
+        <div>
+          <span className="text-muted-foreground">Maps:</span>{" "}
+          <a className="text-blue-600 underline" href={g.googleMapsUrl} target="_blank" rel="noreferrer">
+            Open in Google Maps
+          </a>
+        </div>
+      )}
+      {g.formattedAddress && (
+        <div>
+          <span className="text-muted-foreground">Formatted address:</span>{" "}
+          {g.formattedAddress}
+        </div>
+      )}
+      {g.weekdayText && g.weekdayText.length > 0 && (
+        <div>
+          <div className="text-muted-foreground mb-1">Hours:</div>
+          <ul className="space-y-0.5">
+            {g.weekdayText.map((line: string) => (
+              <li key={line} className="font-mono text-xs">{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {g.coverPhotoUrl && (
+        <div>
+          <div className="text-muted-foreground mb-1">Cover photo:</div>
+          <img src={g.coverPhotoUrl} alt="" className="h-32 w-auto rounded" />
+        </div>
+      )}
+      {g.photoUrls && g.photoUrls.length > 0 && (
+        <div>
+          <div className="text-muted-foreground mb-1">All photos ({g.photoUrls.length}):</div>
+          <div className="flex flex-wrap gap-2">
+            {g.photoUrls.map((url: string) => (
+              <img
+                key={url}
+                src={url}
+                alt=""
+                className="h-20 w-20 rounded object-cover"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ManualGalleries = () => {
+  const record = useRecordContext();
+  const urls = (record?.galleries as string[] | undefined) ?? [];
+  if (urls.length === 0) {
+    return <p className="text-sm text-muted-foreground">(none)</p>;
+  }
+  return (
+    <div className="flex flex-wrap gap-2">
+      {urls.map((url) => (
+        <img
+          key={url}
+          src={url}
+          alt=""
+          className="h-20 w-20 rounded object-cover"
+          loading="lazy"
+        />
+      ))}
+    </div>
+  );
+};
+
 export const RestaurantShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="name.zh" />
       <TextField source="name.en" />
-      <TextField source="tags" />
+      <TextField source="name.de" />
+      <div className="my-2">
+        <div className="mb-1 text-xs uppercase text-muted-foreground">Tags</div>
+        <TagsPanel />
+      </div>
       <TextField source="address.addressLine1" />
       <TextField source="address.district" />
-      <TextField source="phone" />
-      <TextField source="priceRange" />
-      <BooleanField source="featured" />
-      <TextField source="editorialNote.zh" />
-      <TextField source="chain.brand" />
-      <TextField source="chain.branch" />
+      <TextField source="address.postalCode" />
+      <NumberField source="latitude" />
+      <NumberField source="longitude" />
+      <TextField source="description.zh" />
+      <TextField source="description.en" />
+      <TextField source="description.de" />
+      <BooleanField source="featured" label="Featured (甄选)" />
+      <TextField source="editorialNote.zh" label="Editorial note (中文)" />
+      <TextField source="editorialNote.en" label="Editorial note (English)" />
+      <TextField source="chain.brand" label="Chain brand" />
+      <TextField source="chain.branch" label="Branch label" />
+      <TextField source="placeId" label="Google placeId" />
+      <NumberField source="visitCount" />
       <NumberField source="viewCount" />
       <BooleanField source="hidden" />
+      <div className="my-4 border-t pt-4">
+        <h3 className="mb-3 text-sm font-semibold uppercase text-muted-foreground">
+          Manual gallery
+        </h3>
+        <ManualGalleries />
+      </div>
+      <div className="my-4 border-t pt-4">
+        <h3 className="mb-3 text-sm font-semibold uppercase text-muted-foreground">
+          Google Places (auto-synced)
+        </h3>
+        <GoogleDataPanel />
+      </div>
     </SimpleShowLayout>
   </Show>
 );
