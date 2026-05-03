@@ -111,7 +111,7 @@
     <string name="team_title">幕后团队</string>
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">产品 · 设计 · 开发</string>
-    <string name="team_novawerk_bio">Novawerk 是一家扎根柏林的独立产品工作室，专注为社区驱动的品牌设计和开发数字产品——从原生移动 App 到数据流水线和管理后台。\n\n在「柏林中餐地图」里，我们负责工程的部分：Kotlin Multiplatform App、YAML→Firestore 数据流水线、管理后台，以及部署基础设施——把工程的事做扎实，让编辑团队可以专心琢磨那些餐桌上的事。</string>
+    <string name="team_novawerk_bio">Novawerk 是一个专注于在 AI 时代做非盈利 App 的团队。\n\n我们相信，新时代的构建者不应只把 AI 用来做能赚钱的事——更重要的是，要用今天的生产力去解决那些一直没人看见、却真实存在的场景。当一个人也能完成过去十个人的工程量时，一份只服务某个语言群体的餐厅地图、一个本该有人做却从没人做的工具，终于可以被认真地做出来。\n\n「柏林中餐地图」就是这个想法的第一次实践。</string>
     <string name="team_novawerk_visit">访问官网</string>
 
     <string name="team_manmanyou_name">柏林慢慢游</string>
