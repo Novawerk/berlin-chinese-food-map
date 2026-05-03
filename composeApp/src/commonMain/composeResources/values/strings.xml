@@ -111,7 +111,7 @@
     <string name="team_title">The team behind</string>
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">Product · Design · Engineering</string>
-    <string name="team_novawerk_bio">Novawerk is a Berlin-based team focused on building non-profit apps in the age of AI.\n\nWe think builders in this new era shouldn\'t only use AI for things that make money — what matters more is using today\'s productivity to address the scenarios no one else is going to. When one person can now do the engineering work of ten, the small things — a restaurant map for a single language community, a tool that a few hundred people actually need — can finally get built properly.\n\nBerlin Food Map is our first attempt at that.</string>
+    <string name="team_novawerk_bio">Novawerk is an independent product studio based in Berlin, focused on building non-profit apps in the age of AI.\n\nWe think builders in this new era shouldn\'t only use AI for things that make money — what matters more is using today\'s productivity to address the scenarios no one else is going to. When one person can now do the engineering work of ten, the small things that never had a business model behind them — a tool that serves a single language community, a piece of public data nobody had bandwidth to compile — can finally get built properly.\n\nThat\'s what Novawerk does.</string>
     <string name="team_novawerk_visit">Visit website</string>
 
     <string name="team_manmanyou_name">柏林慢慢游 · Berlin Manmanyou</string>
