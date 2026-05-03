@@ -199,6 +199,7 @@ private fun decodeGoogleData(snap: dev.gitlive.firebase.firestore.DocumentSnapsh
         rating = try { snap.get<Double?>("googleData.rating") } catch (_: Exception) { null },
         userRatingsTotal = try { snap.get<Int?>("googleData.userRatingsTotal") } catch (_: Exception) { null },
         weekdayText = try { snap.get<List<String>?>("googleData.weekdayText") } catch (_: Exception) { null } ?: emptyList(),
+        periods = try { snap.get<List<String>?>("googleData.periods") } catch (_: Exception) { null } ?: emptyList(),
         website = try { snap.get<String?>("googleData.website") } catch (_: Exception) { null },
         googleMapsUrl = try { snap.get<String?>("googleData.googleMapsUrl") } catch (_: Exception) { null },
         formattedPhoneNumber = try { snap.get<String?>("googleData.formattedPhoneNumber") } catch (_: Exception) { null },
