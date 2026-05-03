@@ -10,18 +10,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,117 +24,65 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
-import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.GooglePlaceData
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.ui.components.cuisineDisplayName
+import com.novawerk.berlinfoodmap.ui.components.cuisineIconResource
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
-import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.back
-import berlinfoodmap.composeapp.generated.resources.visited_button
-import berlinfoodmap.composeapp.generated.resources.already_visited
 import berlinfoodmap.composeapp.generated.resources.call_phone
 import berlinfoodmap.composeapp.generated.resources.open_in_maps
 import berlinfoodmap.composeapp.generated.resources.open_website
 import berlinfoodmap.composeapp.generated.resources.opening_hours
 import berlinfoodmap.composeapp.generated.resources.rating_count
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Sheet-friendly detail content. Hosted inside a [ModalBottomSheet] at the
+ * app root so opening/closing it doesn't tear down the underlying screen
+ * (notably the map, which is expensive to re-render).
+ */
 @Composable
 fun DetailScreen(
     restaurantId: String,
     repository: RestaurantRepository,
     authService: AuthService,
-    favoritesRepository: FavoritesRepository,
-    onBack: () -> Unit,
 ) {
-    var restaurant by remember { mutableStateOf<Restaurant?>(null) }
-    var loading by remember { mutableStateOf(true) }
-    var hasVisited by remember { mutableStateOf(false) }
-    var isFavorite by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    var restaurant by remember(restaurantId) { mutableStateOf<Restaurant?>(null) }
+    var loading by remember(restaurantId) { mutableStateOf(true) }
     val urlLauncher = rememberUrlLauncher()
-
-    // Collect favorite state
-    LaunchedEffect(restaurantId) {
-        favoritesRepository.favoriteIds.collect { ids ->
-            isFavorite = restaurantId in ids
-        }
-    }
 
     LaunchedEffect(restaurantId) {
         restaurant = repository.getById(restaurantId)
         loading = false
 
-        // Track view
+        // Track view (best-effort — fails silently if anonymous auth hasn't
+        // landed yet on first launch).
         val uid = authService.getCurrentUid()
         if (uid != null) {
             repository.incrementViewCount(restaurantId, uid)
-            hasVisited = repository.hasVisited(restaurantId, uid)
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    restaurant?.let {
-                        Text(it.name.zh)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.back),
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                favoritesRepository.toggleFavorite(restaurantId)
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = null,
-                            tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        if (loading) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            return@Scaffold
-        }
-
-        val r = restaurant
-        if (r == null) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text(
-                    stringResource(Res.string.back),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            return@Scaffold
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState()),
+    if (loading) {
+        Box(
+            Modifier.fillMaxWidth().padding(vertical = 48.dp),
+            contentAlignment = Alignment.Center,
         ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    val r = restaurant ?: return
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+    ) {
             // Photos — admin-uploaded gallery first, then Google Places photos.
             // The cover image is the first one in this combined list.
             val photos = remember(r.galleries, r.googleData?.photoUrls) {
@@ -182,6 +125,23 @@ fun DetailScreen(
                             )
                         }
                     }
+                }
+                Spacer(Modifier.height(16.dp))
+            } else {
+                // Cuisine-iconed placeholder when no photo is available.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        painter = painterResource(cuisineIconResource(r.cuisineType)),
+                        contentDescription = null,
+                        tint = androidx.compose.ui.graphics.Color.Unspecified,
+                        modifier = Modifier.size(96.dp),
+                    )
                 }
                 Spacer(Modifier.height(16.dp))
             }
@@ -279,37 +239,35 @@ fun DetailScreen(
 
                 HorizontalDivider()
 
-                // Stats row
+                // View count — keeps the existing analytics signal without
+                // surfacing visit/favorite affordances.
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Filled.Visibility,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text("${r.viewCount}", style = MaterialTheme.typography.titleMedium)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Filled.CheckCircle,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text("${r.visitCount}", style = MaterialTheme.typography.titleMedium)
-                    }
+                    Icon(
+                        Icons.Filled.Visibility,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        "${r.viewCount}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
 
                 Spacer(Modifier.height(8.dp))
 
-                // Open in Google Maps — uses the Google-fetched URL when available,
-                // otherwise falls back to a placeId / lat-lng search URL.
-                val mapsUrl = r.googleData?.googleMapsUrl
-                    ?: r.googleData?.placeId?.let { id ->
-                        "https://www.google.com/maps/place/?q=place_id:$id"
-                    }
+                // Open in Google Maps — placeId is preferred because it
+                // resolves to the exact establishment card. The pre-fetched
+                // `googleMapsUrl` is a fallback, and lat/lng search is the
+                // last resort for restaurants without any Google data.
+                val mapsUrl = r.googleData?.placeId?.let { id ->
+                    "https://www.google.com/maps/place/?q=place_id:$id"
+                }
+                    ?: r.googleData?.googleMapsUrl
                     ?: "https://www.google.com/maps/search/?api=1&query=${r.latitude},${r.longitude}"
                 OutlinedButton(
                     onClick = { urlLauncher.open(mapsUrl) },
@@ -320,37 +278,9 @@ fun DetailScreen(
                     Text(stringResource(Res.string.open_in_maps))
                 }
 
-                // Visit button
-                Button(
-                    onClick = {
-                        val uid = authService.getCurrentUid() ?: return@Button
-                        scope.launch {
-                            try {
-                                repository.markVisited(restaurantId, uid)
-                                hasVisited = true
-                                restaurant = repository.getById(restaurantId)
-                            } catch (_: Exception) {
-                            }
-                        }
-                    },
-                    enabled = !hasVisited,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(
-                        if (hasVisited) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                        contentDescription = null,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        if (hasVisited) stringResource(Res.string.already_visited)
-                        else stringResource(Res.string.visited_button)
-                    )
-                }
-
                 Spacer(Modifier.height(16.dp))
             }
         }
-    }
 }
 
 @Composable

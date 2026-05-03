@@ -3,10 +3,20 @@ package com.novawerk.berlinfoodmap.ui.components
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BakeryDining
+import androidx.compose.material.icons.filled.LocalDining
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.OutdoorGrill
+import androidx.compose.material.icons.filled.RamenDining
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.RestaurantMenu
+import androidx.compose.material.icons.filled.SoupKitchen
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.domain.restaurant.CuisineType
 import org.jetbrains.compose.resources.DrawableResource
@@ -68,4 +78,19 @@ fun cuisineIconResource(cuisine: CuisineType): DrawableResource = when (cuisine)
     CuisineType.NOODLES -> Res.drawable.cuisine_noodles
     CuisineType.GENERAL -> Res.drawable.cuisine_general
     CuisineType.OTHER -> Res.drawable.cuisine_other
+}
+
+/**
+ * Lightweight Material icon picked per cuisine — used on map markers where
+ * the full illustrated [cuisineIconResource] would be too busy.
+ */
+fun cuisineMaterialIcon(cuisine: CuisineType): ImageVector = when (cuisine) {
+    CuisineType.SICHUAN -> Icons.Filled.LocalFireDepartment
+    CuisineType.CANTONESE -> Icons.Filled.RestaurantMenu
+    CuisineType.HOTPOT -> Icons.Filled.SoupKitchen
+    CuisineType.BBQ -> Icons.Filled.OutdoorGrill
+    CuisineType.DIM_SUM -> Icons.Filled.BakeryDining
+    CuisineType.NOODLES -> Icons.Filled.RamenDining
+    CuisineType.GENERAL -> Icons.Filled.Restaurant
+    CuisineType.OTHER -> Icons.Filled.LocalDining
 }

@@ -6,18 +6,37 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.firestore.firestoreSettings
+import dev.gitlive.firebase.firestore.persistentCacheSettings
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class FirestoreRestaurantRepository : RestaurantRepository {
 
-    private val db = Firebase.firestore
+    private val db = Firebase.firestore.also { firestore ->
+        // Enable on-disk persistent cache so cold starts can read locally
+        // before the network round-trip completes. Wrapped in runCatching
+        // because settings can only be applied once per process — subsequent
+        // calls (e.g. after a configuration change recreates DI) throw.
+        runCatching {
+            firestore.settings = firestoreSettings {
+                cacheSettings = persistentCacheSettings { }
+            }
+        }
+    }
     private val restaurantsRef = db.collection("restaurants")
 
     override suspend fun getAll(): List<Restaurant> {
         val snapshot = restaurantsRef.get()
         return snapshot.documents.map { it.toRestaurant() }.filter { !it.hidden }
     }
+
+    override fun observeAll(): Flow<List<Restaurant>> =
+        restaurantsRef.snapshots.map { snap ->
+            snap.documents.map { it.toRestaurant() }.filter { !it.hidden }
+        }
 
     override suspend fun getById(id: String): Restaurant? {
         val doc = restaurantsRef.document(id).get()
@@ -34,9 +53,9 @@ class FirestoreRestaurantRepository : RestaurantRepository {
         }
     }
 
-    override suspend fun filterByCuisine(cuisineType: CuisineType): List<Restaurant> {
+    override suspend fun filterByTag(tag: Tag): List<Restaurant> {
         val snapshot = restaurantsRef
-            .where { "cuisineType" equalTo cuisineType.name }
+            .where { "tags" contains tag.name }
             .get()
         return snapshot.documents.map { it.toRestaurant() }
     }
@@ -58,27 +77,6 @@ class FirestoreRestaurantRepository : RestaurantRepository {
         return all.filter { restaurant ->
             haversineDistance(latitude, longitude, restaurant.latitude, restaurant.longitude) <= radiusKm
         }
-    }
-
-    override suspend fun markVisited(restaurantId: String, uid: String) {
-        val visitRef = restaurantsRef.document(restaurantId)
-            .collection("visits").document(uid)
-
-        val existing = visitRef.get()
-        if (!existing.exists) {
-            val data: Map<String, Any> = mapOf(
-                "visitedAt" to Timestamp.now().seconds,
-            )
-            visitRef.set(data)
-            // Count is tracked via sub-collection; no direct restaurant doc update
-            // to avoid PERMISSION_DENIED for anonymous users
-        }
-    }
-
-    override suspend fun hasVisited(restaurantId: String, uid: String): Boolean {
-        val visitRef = restaurantsRef.document(restaurantId)
-            .collection("visits").document(uid)
-        return visitRef.get().exists
     }
 
     override suspend fun incrementViewCount(restaurantId: String, uid: String) {
@@ -124,6 +122,9 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
     val addressMap = get<Map<String, String?>>("address")
     val descMap = try { get<Map<String, String>?>("description") } catch (_: Exception) { null }
 
+    val editorialMap = try { get<Map<String, String>?>("editorialNote") } catch (_: Exception) { null }
+    val chainMap = try { get<Map<String, String?>?>("chain") } catch (_: Exception) { null }
+
     return Restaurant(
         id = id,
         name = Localizable(
@@ -131,10 +132,12 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
             zh = nameMap["zh"] ?: "",
             de = nameMap["de"],
         ),
-        cuisineType = try {
-            CuisineType.valueOf(get("cuisineType"))
+        tags = try {
+            get<List<String>?>("tags")
+                ?.mapNotNull(::tagFromString)
+                ?: emptyList()
         } catch (_: Exception) {
-            CuisineType.OTHER
+            emptyList()
         },
         address = Address(
             addressLine1 = addressMap["addressLine1"] ?: "",
@@ -161,6 +164,18 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
         visitCount = try { get<Int>("visitCount") } catch (_: Exception) { 0 },
         viewCount = try { get<Int>("viewCount") } catch (_: Exception) { 0 },
         hidden = try { get<Boolean>("hidden") } catch (_: Exception) { false },
+        featured = try { get<Boolean>("featured") } catch (_: Exception) { false },
+        editorialNote = editorialMap?.takeIf { it["zh"]?.isNotBlank() == true || it["en"]?.isNotBlank() == true }?.let {
+            Localizable(
+                en = it["en"] ?: "",
+                zh = it["zh"] ?: "",
+                de = it["de"],
+            )
+        },
+        chain = chainMap?.let { c ->
+            val brand = c["brand"] ?: return@let null
+            Chain(brand = brand, branch = c["branch"])
+        },
         googleData = try {
             get<Map<String, Any?>?>("googleData")?.toGooglePlaceData()
         } catch (_: Exception) {

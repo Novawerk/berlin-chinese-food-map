@@ -2,7 +2,6 @@ package com.novawerk.berlinfoodmap
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -21,7 +20,6 @@ import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.navigation.*
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
-import com.novawerk.berlinfoodmap.ui.pages.favorites.FavoritesScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
 import com.novawerk.berlinfoodmap.ui.pages.search.SearchScreen
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
@@ -30,29 +28,37 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.nav_map
-import berlinfoodmap.composeapp.generated.resources.nav_favorites
 import berlinfoodmap.composeapp.generated.resources.settings
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(component: AppComponent) {
     val settings = component.settingsRepository
     val authService = component.authService
     val restaurantRepository = component.restaurantRepository
-    val favoritesRepository = component.favoritesRepository
     val scope = rememberCoroutineScope()
 
     var darkMode by remember { mutableStateOf("system") }
     var language by remember { mutableStateOf<String?>(null) }
     var ready by remember { mutableStateOf(false) }
 
+    // Hoisted detail-sheet state — opening a restaurant updates this id and
+    // shows a ModalBottomSheet over the current screen instead of navigating
+    // to a new destination. This keeps the underlying screen (notably the
+    // map) mounted, so dismissing the sheet doesn't trigger a re-render.
+    var detailRestaurantId by remember { mutableStateOf<String?>(null) }
+
     LaunchedEffect(Unit) {
         darkMode = settings.getDarkMode()
         language = settings.getLanguage()
-        // Anonymous sign-in
-        if (authService.getCurrentUid() == null) {
-            authService.signInAnonymously()
-        }
         ready = true
+        // Anonymous sign-in is needed for view/visit tracking but NOT for the
+        // map or restaurant list to render — Firestore's persistent cache can
+        // serve those reads while auth completes. Run it fire-and-forget so a
+        // first-launch network round-trip doesn't gate first paint.
+        if (authService.getCurrentUid() == null) {
+            runCatching { authService.signInAnonymously() }
+        }
     }
 
     if (!ready) return
@@ -74,15 +80,26 @@ fun App(component: AppComponent) {
                 val currentRoute = currentEntry?.destination?.route
 
                 val showBottomBar = currentRoute?.let {
-                    it.contains("MapRoute") ||
-                        it.contains("FavoritesRoute") ||
-                        it.contains("SettingsRoute")
+                    it.contains("MapRoute") || it.contains("SettingsRoute")
                 } ?: true
 
                 Scaffold(
                     bottomBar = {
                         if (showBottomBar) {
-                            NavigationBar {
+                            // Override the default NavigationBar palette so the
+                            // selected pill uses the brand red instead of the
+                            // sage/olive secondary container — those default
+                            // tones read as a muddy green/purple here.
+                            val navItemColors = NavigationBarItemDefaults.colors(
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            NavigationBar(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                            ) {
                                 NavigationBarItem(
                                     selected = currentRoute?.contains("MapRoute") == true,
                                     onClick = {
@@ -92,16 +109,7 @@ fun App(component: AppComponent) {
                                     },
                                     icon = { Icon(Icons.Filled.Map, contentDescription = null) },
                                     label = { Text(stringResource(Res.string.nav_map)) },
-                                )
-                                NavigationBarItem(
-                                    selected = currentRoute?.contains("FavoritesRoute") == true,
-                                    onClick = {
-                                        navController.navigate(FavoritesRoute) {
-                                            popUpTo(MapRoute)
-                                        }
-                                    },
-                                    icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-                                    label = { Text(stringResource(Res.string.nav_favorites)) },
+                                    colors = navItemColors,
                                 )
                                 NavigationBarItem(
                                     selected = currentRoute?.contains("SettingsRoute") == true,
@@ -112,6 +120,7 @@ fun App(component: AppComponent) {
                                     },
                                     icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
                                     label = { Text(stringResource(Res.string.settings)) },
+                                    colors = navItemColors,
                                 )
                             }
                         }
@@ -125,27 +134,8 @@ fun App(component: AppComponent) {
                         composable<MapRoute> {
                             MapScreen(
                                 repository = restaurantRepository,
-                                onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
+                                onNavigateDetail = { id -> detailRestaurantId = id },
                                 onNavigateSearch = { navController.navigate(SearchRoute()) },
-                            )
-                        }
-
-                        composable<FavoritesRoute> {
-                            FavoritesScreen(
-                                repository = restaurantRepository,
-                                favoritesRepository = favoritesRepository,
-                                onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
-                            )
-                        }
-
-                        composable<DetailRoute> { backStackEntry ->
-                            val route = backStackEntry.toRoute<DetailRoute>()
-                            DetailScreen(
-                                restaurantId = route.restaurantId,
-                                repository = restaurantRepository,
-                                authService = authService,
-                                favoritesRepository = favoritesRepository,
-                                onBack = { navController.popBackStack() },
                             )
                         }
 
@@ -155,7 +145,7 @@ fun App(component: AppComponent) {
                                 repository = restaurantRepository,
                                 initialCuisine = route.initialCuisine,
                                 initialDistrict = route.initialDistrict,
-                                onNavigateDetail = { id -> navController.navigate(DetailRoute(id)) },
+                                onNavigateDetail = { id -> detailRestaurantId = id },
                                 onBack = { navController.popBackStack() },
                             )
                         }
@@ -172,10 +162,25 @@ fun App(component: AppComponent) {
                                     language = newLang
                                     scope.launch { settings.setLanguage(newLang) }
                                 },
-                                favoritesRepository = favoritesRepository,
                                 onBack = { navController.popBackStack() },
                             )
                         }
+                    }
+                }
+
+                detailRestaurantId?.let { id ->
+                    val sheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = true,
+                    )
+                    ModalBottomSheet(
+                        onDismissRequest = { detailRestaurantId = null },
+                        sheetState = sheetState,
+                    ) {
+                        DetailScreen(
+                            restaurantId = id,
+                            repository = restaurantRepository,
+                            authService = authService,
+                        )
                     }
                 }
             }

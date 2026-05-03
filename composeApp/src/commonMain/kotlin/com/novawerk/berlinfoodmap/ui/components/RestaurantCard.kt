@@ -3,7 +3,6 @@ package com.novawerk.berlinfoodmap.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
@@ -91,19 +90,6 @@ fun RestaurantCard(
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = "${restaurant.viewCount}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(16.dp))
-                Icon(
-                    Icons.Filled.CheckCircle,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "${restaurant.visitCount}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

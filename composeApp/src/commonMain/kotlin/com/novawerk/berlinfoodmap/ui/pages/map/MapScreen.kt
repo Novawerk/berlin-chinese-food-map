@@ -1,5 +1,9 @@
 package com.novawerk.berlinfoodmap.ui.pages.map
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,17 +23,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.novawerk.berlinfoodmap.domain.restaurant.CuisineType
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
+import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
 import com.novawerk.berlinfoodmap.ui.components.cuisineDisplayName
-import com.novawerk.berlinfoodmap.ui.components.cuisineIconResource
-import org.jetbrains.compose.resources.painterResource
+import com.novawerk.berlinfoodmap.ui.components.cuisineMaterialIcon
 import eu.buney.maps.GoogleMap
 import eu.buney.maps.LatLng
 import eu.buney.maps.LatLngBounds
@@ -55,6 +64,7 @@ import berlinfoodmap.composeapp.generated.resources.filter_cuisine
 import berlinfoodmap.composeapp.generated.resources.filter_district
 import berlinfoodmap.composeapp.generated.resources.filter_reset
 import berlinfoodmap.composeapp.generated.resources.filter_title
+import berlinfoodmap.composeapp.generated.resources.map_loading
 import berlinfoodmap.composeapp.generated.resources.search_hint
 
 private val BERLIN_BOUNDS = LatLngBounds(
@@ -70,17 +80,15 @@ fun MapScreen(
     onNavigateDetail: (String) -> Unit,
     onNavigateSearch: () -> Unit,
 ) {
-    var allRestaurants by remember { mutableStateOf<List<Restaurant>>(emptyList()) }
-    var loading by remember { mutableStateOf(true) }
+    // Collect via Flow so persistent-cache results paint immediately and the
+    // server refresh follows asynchronously — no full-screen blocking spinner.
+    val allRestaurants by remember(repository) {
+        repository.observeAll()
+    }.collectAsState(initial = emptyList())
+
     var selectedCuisine by remember { mutableStateOf<CuisineType?>(null) }
     var selectedDistrict by remember { mutableStateOf<String?>(null) }
-    var selectedRestaurantId by remember { mutableStateOf<String?>(null) }
     var filterSheetOpen by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        allRestaurants = repository.getAll()
-        loading = false
-    }
 
     var mapLoaded by remember { mutableStateOf(false) }
     val myLocationIcon = remember(mapLoaded) {
@@ -89,13 +97,6 @@ fun MapScreen(
         } else null
     }
     var myLocation by remember { mutableStateOf<LatLng?>(null) }
-
-    if (loading) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
 
     val mapStyleOptions = remember {
         try {
@@ -169,14 +170,20 @@ fun MapScreen(
 
     // Cluster only when the camera settles. Re-rasterizing MarkerComposables
     // every frame during pan/zoom is the real source of jank.
-    var clusters by remember(restaurantsFiltered) {
-        mutableStateOf(
-            restaurantsFiltered.map {
-                RestaurantCluster(listOf(it), LatLng(it.latitude, it.longitude))
-            }
-        )
-    }
+    //
+    // No key on the remember — keeping the previous clusters around while the
+    // LaunchedEffect below recomputes them avoids a flicker frame where every
+    // restaurant in the new filter renders as its own (un-clustered) marker.
+    // For 200 markers each carrying a label card, that frame costs >100ms.
+    var clusters by remember { mutableStateOf<List<RestaurantCluster>>(emptyList()) }
     LaunchedEffect(restaurantsFiltered, clusterRadiusPx) {
+        // Recompute synchronously on filter change so the new cluster set
+        // lands in the same state-batch instead of waiting for the next
+        // camera-idle event.
+        cameraPositionState.projection?.let { projection ->
+            clusters = clusterForViewport(restaurantsFiltered, projection, clusterRadiusPx)
+        }
+
         snapshotFlow {
             // Recompute when the map idles at a new position. isMoving=true
             // values pass through but the filter below drops them.
@@ -186,35 +193,9 @@ fun MapScreen(
             .map { (_, pos) -> pos }
             .distinctUntilChanged()
             .collect {
-                val projection = cameraPositionState.projection
-                if (projection == null) {
-                    clusters = restaurantsFiltered.map {
-                        RestaurantCluster(listOf(it), LatLng(it.latitude, it.longitude))
-                    }
-                    return@collect
-                }
-                // Viewport prefilter — drop restaurants outside the visible region
-                // (with a 20% margin so markers near the edges still cluster
-                // correctly with on-screen ones). Skips toScreenLocation calls
-                // on hidden points entirely.
-                val bounds = projection.visibleBounds
-                val latPad = (bounds.northeast.latitude - bounds.southwest.latitude) * 0.2
-                val lngPad = (bounds.northeast.longitude - bounds.southwest.longitude) * 0.2
-                val minLat = bounds.southwest.latitude - latPad
-                val maxLat = bounds.northeast.latitude + latPad
-                val minLng = bounds.southwest.longitude - lngPad
-                val maxLng = bounds.northeast.longitude + lngPad
-                val candidates = restaurantsFiltered.filter { r ->
-                    r.latitude in minLat..maxLat && r.longitude in minLng..maxLng
-                }
-                clusters = clusterByScreenDistance(candidates, projection, clusterRadiusPx)
+                val projection = cameraPositionState.projection ?: return@collect
+                clusters = clusterForViewport(restaurantsFiltered, projection, clusterRadiusPx)
             }
-    }
-
-    LaunchedEffect(selectedRestaurantId, visibleRestaurants) {
-        val id = selectedRestaurantId ?: return@LaunchedEffect
-        val idx = visibleRestaurants.indexOfFirst { it.id == id }
-        if (idx >= 0) listState.animateScrollToItem(idx)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -223,28 +204,39 @@ fun MapScreen(
             cameraPositionState = cameraPositionState,
             properties = mapProperties,
             uiSettings = mapUiSettings,
-            onMapClick = { selectedRestaurantId = null },
             onMapLoaded = { mapLoaded = true },
         ) {
             clusters.forEach { cluster ->
                 if (cluster.items.size == 1) {
                     val restaurant = cluster.items.first()
-                    val selected = restaurant.id == selectedRestaurantId
                     val state = rememberUpdatedMarkerState(
                         position = LatLng(restaurant.latitude, restaurant.longitude),
                     )
+                    // Preload the cover thumb. The marker is rasterised once
+                    // per `keys` change, so we feed `coverReady` as a key —
+                    // when the image arrives the marker re-renders with the
+                    // photo instead of the fallback Material icon.
+                    val coverUrl = restaurant.previewImageUrl()
+                    val coverPainter = coverUrl?.let { rememberAsyncImagePainter(it) }
+                    val coverReady = coverPainter
+                        ?.state
+                        ?.collectAsState()
+                        ?.value is AsyncImagePainter.State.Success
                     MarkerComposable(
-                        keys = arrayOf<Any>(restaurant.id, selected),
+                        keys = arrayOf<Any>(restaurant.id, coverReady),
                         state = state,
                         title = restaurant.name.zh,
                         snippet = restaurant.name.en,
                         anchor = Offset(0.5f, 1f),
                         onClick = {
-                            selectedRestaurantId = restaurant.id
+                            onNavigateDetail(restaurant.id)
                             true
                         },
                     ) {
-                        MiniRestaurantCard(restaurant, selected)
+                        MiniRestaurantCard(
+                            restaurant = restaurant,
+                            coverPainter = coverPainter.takeIf { coverReady },
+                        )
                     }
                 } else {
                     val currentZoom = cameraPositionState.position.zoom
@@ -276,6 +268,36 @@ fun MapScreen(
                     anchor = Offset(0.5f, 0.5f),
                     zIndex = 10f,
                 )
+            }
+        }
+
+        // Loading mask covers the empty/grey map until the SDK signals the
+        // first frame is rendered (`onMapLoaded`). Fades out so the transition
+        // doesn't feel abrupt.
+        AnimatedVisibility(
+            visible = !mapLoaded,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = stringResource(Res.string.map_loading),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
 
@@ -316,7 +338,6 @@ fun MapScreen(
                 items(visibleRestaurants, key = { it.id }) { restaurant ->
                     NearbyCard(
                         restaurant = restaurant,
-                        selected = restaurant.id == selectedRestaurantId,
                         onClick = { onNavigateDetail(restaurant.id) },
                     )
                 }
@@ -400,12 +421,11 @@ fun MapScreen(
             districts = districts,
             selectedCuisine = selectedCuisine,
             selectedDistrict = selectedDistrict,
-            onCuisineSelected = { selectedCuisine = it; selectedRestaurantId = null },
-            onDistrictSelected = { selectedDistrict = it; selectedRestaurantId = null },
+            onCuisineSelected = { selectedCuisine = it },
+            onDistrictSelected = { selectedDistrict = it },
             onReset = {
                 selectedCuisine = null
                 selectedDistrict = null
-                selectedRestaurantId = null
             },
             onDismiss = { filterSheetOpen = false },
         )
@@ -512,6 +532,30 @@ data class RestaurantCluster(
 )
 
 /**
+ * Viewport-prefilter + spatial clustering. Points outside the visible region
+ * (with a 20% margin so edge markers still cluster correctly with on-screen
+ * neighbours) are skipped before [clusterByScreenDistance] runs, avoiding
+ * `toScreenLocation` calls on points the user can't see.
+ */
+private fun clusterForViewport(
+    restaurants: List<Restaurant>,
+    projection: Projection,
+    radiusPx: Float,
+): List<RestaurantCluster> {
+    val bounds = projection.visibleBounds
+    val latPad = (bounds.northeast.latitude - bounds.southwest.latitude) * 0.2
+    val lngPad = (bounds.northeast.longitude - bounds.southwest.longitude) * 0.2
+    val minLat = bounds.southwest.latitude - latPad
+    val maxLat = bounds.northeast.latitude + latPad
+    val minLng = bounds.southwest.longitude - lngPad
+    val maxLng = bounds.northeast.longitude + lngPad
+    val candidates = restaurants.filter { r ->
+        r.latitude in minLat..maxLat && r.longitude in minLng..maxLng
+    }
+    return clusterByScreenDistance(candidates, projection, radiusPx)
+}
+
+/**
  * Spatial-grid clustering — O(n) average case.
  *
  * The screen is divided into square cells of side [radiusPx]. For each point,
@@ -584,50 +628,63 @@ private fun clusterByScreenDistance(
 private fun cellKey(cx: Int, cy: Int): Long =
     (cx.toLong() shl 32) or (cy.toLong() and 0xFFFFFFFFL)
 
+/**
+ * Pill-shaped marker label with a small leading dot, restaurant zh name, and
+ * cuisine subtitle. No cuisine icon — the dot keeps the marker recognisable
+ * while letting the text carry the meaning.
+ */
 @Composable
-private fun MiniRestaurantCard(restaurant: Restaurant, selected: Boolean) {
-    val container = if (selected) MaterialTheme.colorScheme.primary
-    else MaterialTheme.colorScheme.surface
-    val onContainer = if (selected) MaterialTheme.colorScheme.onPrimary
-    else MaterialTheme.colorScheme.onSurface
-    val border = if (selected) MaterialTheme.colorScheme.primary
-    else MaterialTheme.colorScheme.outlineVariant
-    val iconBg = if (selected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f)
-    else MaterialTheme.colorScheme.surfaceVariant
+private fun MiniRestaurantCard(
+    restaurant: Restaurant,
+    coverPainter: Painter?,
+) {
     Box(
         modifier = Modifier
-            .background(container, RoundedCornerShape(10.dp))
-            .border(1.dp, border, RoundedCornerShape(10.dp))
-            .padding(horizontal = 8.dp, vertical = 5.dp),
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(10.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(10.dp))
+            .padding(start = 6.dp, end = 10.dp, top = 6.dp, bottom = 6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .background(iconBg, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
+            if (coverPainter != null) {
+                Image(
+                    painter = coverPainter,
                     contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(20.dp),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(CircleShape),
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            CircleShape,
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = cuisineMaterialIcon(restaurant.cuisineType),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
             }
             Spacer(Modifier.width(8.dp))
             Column {
                 Text(
                     text = restaurant.name.zh,
                     style = MaterialTheme.typography.labelMedium,
-                    color = onContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
                     text = cuisineDisplayName(restaurant.cuisineType),
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (selected) onContainer.copy(alpha = 0.85f)
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                 )
             }
@@ -656,36 +713,21 @@ private fun ClusterBadge(count: Int) {
 @Composable
 private fun NearbyCard(
     restaurant: Restaurant,
-    selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val container = if (selected) MaterialTheme.colorScheme.primaryContainer
-    else MaterialTheme.colorScheme.surface
     Card(
         modifier = Modifier
             .width(260.dp)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = container),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painter = painterResource(cuisineIconResource(restaurant.cuisineType)),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(34.dp),
-                )
-            }
-            Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = restaurant.name.zh,
