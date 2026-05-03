@@ -35,6 +35,55 @@
     <string name="opening_hours">Opening hours</string>
     <string name="rating_count">%1$d reviews</string>
 
+    <!-- Detail: open status pill -->
+    <string name="open_now">Open</string>
+    <string name="closed_now">Closed</string>
+    <string name="open_24h">Open 24 hours</string>
+    <string name="hours_unknown">Hours unavailable</string>
+    <string name="closes_at">Closes %1$s</string>
+    <string name="opens_at">Opens %1$s</string>
+    <string name="closes_in_min">Closes in %1$d min</string>
+    <string name="opens_in_min">Opens in %1$d min</string>
+    <string name="tomorrow_at">tomorrow %1$s</string>
+    <string name="weekday_at">%1$s %2$s</string>
+    <string name="closed_label">Closed</string>
+    <string name="closed_today">Closed today</string>
+    <string name="today_hours">Today %1$s</string>
+    <string name="hours_view_full">View full week</string>
+    <string name="hours_hide">Hide</string>
+
+    <!-- Detail: weekday names -->
+    <string name="weekday_short_mon">Mon</string>
+    <string name="weekday_short_tue">Tue</string>
+    <string name="weekday_short_wed">Wed</string>
+    <string name="weekday_short_thu">Thu</string>
+    <string name="weekday_short_fri">Fri</string>
+    <string name="weekday_short_sat">Sat</string>
+    <string name="weekday_short_sun">Sun</string>
+    <string name="weekday_long_mon">Monday</string>
+    <string name="weekday_long_tue">Tuesday</string>
+    <string name="weekday_long_wed">Wednesday</string>
+    <string name="weekday_long_thu">Thursday</string>
+    <string name="weekday_long_fri">Friday</string>
+    <string name="weekday_long_sat">Saturday</string>
+    <string name="weekday_long_sun">Sunday</string>
+
+    <!-- Detail: quick actions -->
+    <string name="action_call">Call</string>
+    <string name="action_directions">View on Map</string>
+    <string name="action_website">Website</string>
+
+    <!-- Detail: photos -->
+    <string name="photo_count">%1$d / %2$d</string>
+    <string name="photos_label">Photos</string>
+    <string name="view_all_photos">View all %1$d photos</string>
+    <string name="close_photos">Close</string>
+
+    <!-- Card status badge -->
+    <string name="status_closed_short">Closed</string>
+    <string name="status_opening_soon">Opening soon</string>
+    <string name="status_closing_soon">Closing soon</string>
+
     <!-- Tag families (filter section headers) -->
     <string name="tag_family_regional">Regional</string>
     <string name="tag_family_format">Format</string>

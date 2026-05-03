@@ -35,6 +35,55 @@
     <string name="opening_hours">营业时间</string>
     <string name="rating_count">%1$d 条评价</string>
 
+    <!-- Detail: open status pill -->
+    <string name="open_now">营业中</string>
+    <string name="closed_now">已打烊</string>
+    <string name="open_24h">24 小时营业</string>
+    <string name="hours_unknown">营业时间未知</string>
+    <string name="closes_at">%1$s 打烊</string>
+    <string name="opens_at">%1$s 开门</string>
+    <string name="closes_in_min">%1$d 分钟后打烊</string>
+    <string name="opens_in_min">%1$d 分钟后开门</string>
+    <string name="tomorrow_at">明天 %1$s</string>
+    <string name="weekday_at">%1$s %2$s</string>
+    <string name="closed_label">休息</string>
+    <string name="closed_today">今日休息</string>
+    <string name="today_hours">今日 %1$s</string>
+    <string name="hours_view_full">查看本周</string>
+    <string name="hours_hide">收起</string>
+
+    <!-- Detail: weekday names -->
+    <string name="weekday_short_mon">周一</string>
+    <string name="weekday_short_tue">周二</string>
+    <string name="weekday_short_wed">周三</string>
+    <string name="weekday_short_thu">周四</string>
+    <string name="weekday_short_fri">周五</string>
+    <string name="weekday_short_sat">周六</string>
+    <string name="weekday_short_sun">周日</string>
+    <string name="weekday_long_mon">星期一</string>
+    <string name="weekday_long_tue">星期二</string>
+    <string name="weekday_long_wed">星期三</string>
+    <string name="weekday_long_thu">星期四</string>
+    <string name="weekday_long_fri">星期五</string>
+    <string name="weekday_long_sat">星期六</string>
+    <string name="weekday_long_sun">星期日</string>
+
+    <!-- Detail: quick actions -->
+    <string name="action_call">电话</string>
+    <string name="action_directions">在地图查看</string>
+    <string name="action_website">官网</string>
+
+    <!-- Detail: photos -->
+    <string name="photo_count">%1$d / %2$d</string>
+    <string name="photos_label">图片</string>
+    <string name="view_all_photos">查看全部 %1$d 张图片</string>
+    <string name="close_photos">关闭</string>
+
+    <!-- Card status badge -->
+    <string name="status_closed_short">打烊</string>
+    <string name="status_opening_soon">即将开门</string>
+    <string name="status_closing_soon">即将打烊</string>
+
     <!-- Tag families (filter section headers) -->
     <string name="tag_family_regional">菜系</string>
     <string name="tag_family_format">类型</string>

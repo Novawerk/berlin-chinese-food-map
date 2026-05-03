@@ -1,46 +1,81 @@
 package com.novawerk.berlinfoodmap.ui.pages.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.layout.ContentScale
-import coil3.compose.AsyncImage
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
+import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.ui.unit.sp
+import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.action_call
+import berlinfoodmap.composeapp.generated.resources.action_directions
+import berlinfoodmap.composeapp.generated.resources.action_website
+import berlinfoodmap.composeapp.generated.resources.closed_now
+import berlinfoodmap.composeapp.generated.resources.closed_today
+import berlinfoodmap.composeapp.generated.resources.closes_at
+import berlinfoodmap.composeapp.generated.resources.closes_in_min
+import berlinfoodmap.composeapp.generated.resources.hours_hide
+import berlinfoodmap.composeapp.generated.resources.today_hours
+import berlinfoodmap.composeapp.generated.resources.hours_unknown
+import berlinfoodmap.composeapp.generated.resources.hours_view_full
+import berlinfoodmap.composeapp.generated.resources.open_24h
+import berlinfoodmap.composeapp.generated.resources.open_now
+import berlinfoodmap.composeapp.generated.resources.opens_at
+import berlinfoodmap.composeapp.generated.resources.opens_in_min
+import berlinfoodmap.composeapp.generated.resources.opening_hours
+import berlinfoodmap.composeapp.generated.resources.photo_count
+import berlinfoodmap.composeapp.generated.resources.photos_label
+import berlinfoodmap.composeapp.generated.resources.rating_count
+import berlinfoodmap.composeapp.generated.resources.tomorrow_at
+import berlinfoodmap.composeapp.generated.resources.weekday_at
+import berlinfoodmap.composeapp.generated.resources.weekday_long_fri
+import berlinfoodmap.composeapp.generated.resources.weekday_long_mon
+import berlinfoodmap.composeapp.generated.resources.weekday_long_sat
+import berlinfoodmap.composeapp.generated.resources.weekday_long_sun
+import berlinfoodmap.composeapp.generated.resources.weekday_long_thu
+import berlinfoodmap.composeapp.generated.resources.weekday_long_tue
+import berlinfoodmap.composeapp.generated.resources.weekday_long_wed
+import coil3.compose.AsyncImage
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
-import com.novawerk.berlinfoodmap.domain.restaurant.GooglePlaceData
+import com.novawerk.berlinfoodmap.domain.restaurant.OpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
+import com.novawerk.berlinfoodmap.domain.restaurant.computeOpeningStatus
+import com.novawerk.berlinfoodmap.domain.restaurant.currentBerlinMinuteOfWeek
+import com.novawerk.berlinfoodmap.domain.restaurant.mowToDayIndex
+import com.novawerk.berlinfoodmap.domain.restaurant.mowToTimeOfDay
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
-import org.jetbrains.compose.resources.stringResource
-import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.call_phone
-import berlinfoodmap.composeapp.generated.resources.open_in_maps
-import berlinfoodmap.composeapp.generated.resources.open_website
-import berlinfoodmap.composeapp.generated.resources.opening_hours
-import berlinfoodmap.composeapp.generated.resources.rating_count
+
+private val SECTION_SHAPE = RoundedCornerShape(28.dp)
 
 /**
  * Sheet-friendly detail content. Hosted inside a [ModalBottomSheet] at the
@@ -80,353 +115,839 @@ fun DetailScreen(
     }
 
     val r = restaurant ?: return
+    val photos = remember(r.galleries, r.googleData?.photoUrls) {
+        buildList {
+            addAll(r.galleries)
+            r.googleData?.photoUrls?.let { addAll(it) }
+        }.distinct()
+    }
+    var fullscreenIndex by remember(restaurantId) { mutableStateOf<Int?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-    ) {
-            // Photos — admin-uploaded gallery first, then Google Places photos.
-            // The cover image is the first one in this combined list.
-            val photos = remember(r.galleries, r.googleData?.photoUrls) {
-                buildList {
-                    addAll(r.galleries)
-                    r.googleData?.photoUrls?.let { addAll(it) }
-                }.distinct()
-            }
-            if (photos.isNotEmpty()) {
-                val pagerState = rememberPagerState(pageCount = { photos.size })
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth().height(240.dp),
-                ) { page ->
-                    AsyncImage(
-                        model = photos[page],
-                        contentDescription = r.name.zh,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-                if (photos.size > 1) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        repeat(photos.size) { i ->
-                            val active = pagerState.currentPage == i
-                            Box(
-                                modifier = Modifier
-                                    .padding(horizontal = 3.dp)
-                                    .size(if (active) 8.dp else 6.dp)
-                                    .background(
-                                        color = if (active) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.outlineVariant,
-                                        shape = CircleShape,
-                                    ),
-                            )
-                        }
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
-            } else {
-                // Generic placeholder when no photo is available.
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(240.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        Icons.Filled.Restaurant,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(72.dp),
-                    )
-                }
-                Spacer(Modifier.height(16.dp))
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            HeroCover(
+                photos = photos,
+                onTap = { fullscreenIndex = 0 },
+            )
 
             Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    top = 24.dp,
+                    // Reserve space for the sticky bottom action bar so the
+                    // last section (footer) is fully scrollable above it.
+                    bottom = 120.dp,
+                ),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
-                // Restaurant name + featured star
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        r.name.zh,
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.weight(1f, fill = false),
-                    )
-                    if (r.featured) {
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                }
-                Text(
-                    r.name.en,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                TitleBlock(restaurant = r)
 
-                // Editorial note (curated short hook from "柏林慢慢游甄选20")
+                ChipsRow(restaurant = r)
+
                 r.editorialNote?.let { note ->
                     val display = note.zh.takeIf { it.isNotBlank() } ?: note.en
-                    if (display.isNotBlank()) {
-                        Text(
-                            text = display,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
+                    if (display.isNotBlank()) EditorialQuote(display)
                 }
 
-                // Tag chips + price range
-                if (r.tags.isNotEmpty() || r.priceRange != null) {
-                    TagsAndPriceRow(r)
-                }
+                HoursCard(
+                    periods = r.googleData?.periods.orEmpty(),
+                    weekdayText = r.googleData?.weekdayText.orEmpty(),
+                )
 
-                // Chain/brand line — surfaces "part of the Wen Cheng family" etc.
-                r.chain?.let { chain ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Filled.Storefront,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = buildString {
-                                append(chain.brand)
-                                chain.branch?.let { append(" · ").append(it) }
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+                AddressCard(restaurant = r)
 
-                HorizontalDivider()
-
-                // Address section
-                Row(verticalAlignment = Alignment.Top) {
-                    Icon(
-                        Icons.Filled.Place,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Column {
-                        Text(r.address.addressLine1, style = MaterialTheme.typography.bodyMedium)
-                        r.address.addressLine2?.let {
-                            Text(it, style = MaterialTheme.typography.bodyMedium)
-                        }
-                        Text(
-                            "${r.address.postalCode} ${r.address.city}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            r.address.district,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-
-                // Phone — fall back to the Google-fetched number if YAML is empty.
-                val phoneNumber = r.phone ?: r.googleData?.formattedPhoneNumber
-                phoneNumber?.let { phone ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Filled.Phone,
-                            contentDescription = stringResource(Res.string.call_phone),
-                            modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(phone, style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-
-                // Google Places enrichment — rating + hours + website
-                r.googleData?.let { gd ->
-                    HorizontalDivider()
-                    GoogleDataSection(gd = gd, onOpenUrl = urlLauncher::open)
-                }
-
-                // Description
                 r.description?.let { desc ->
-                    HorizontalDivider()
-                    Text(desc.zh, style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        desc.en,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    if (desc.zh.isNotBlank() || desc.en.isNotBlank()) {
+                        DescriptionCard(zh = desc.zh, en = desc.en)
+                    }
+                }
+
+                // Photo carousel — placed after the info sections so the hero
+                // stays clean and users discover the full gallery once they've
+                // scanned the basics.
+                if (photos.size > 1) {
+                    PhotoCarousel(
+                        photos = photos,
+                        onTap = { fullscreenIndex = it },
                     )
                 }
 
-                HorizontalDivider()
-
-                // View count — keeps the existing analytics signal without
-                // surfacing visit/favorite affordances.
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        Icons.Filled.Visibility,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        "${r.viewCount}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-
-                Spacer(Modifier.height(8.dp))
-
-                // Open in Google Maps — placeId is preferred because it
-                // resolves to the exact establishment card. The pre-fetched
-                // `googleMapsUrl` is a fallback, and lat/lng search is the
-                // last resort for restaurants without any Google data.
-                val mapsUrl = r.googleData?.placeId?.let { id ->
-                    "https://www.google.com/maps/place/?q=place_id:$id"
-                }
-                    ?: r.googleData?.googleMapsUrl
-                    ?: "https://www.google.com/maps/search/?api=1&query=${r.latitude},${r.longitude}"
-                OutlinedButton(
-                    onClick = { urlLauncher.open(mapsUrl) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(Icons.Filled.Map, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(Res.string.open_in_maps))
-                }
-
-                Spacer(Modifier.height(16.dp))
+                Footer(restaurant = r)
             }
         }
+
+        // Sticky action bar — pinned to the bottom of the sheet, fades in over
+        // the scrolling content via a soft top scrim so the buttons always read.
+        StickyActionBar(
+            phone = r.phone ?: r.googleData?.formattedPhoneNumber,
+            website = r.googleData?.website,
+            latitude = r.latitude,
+            longitude = r.longitude,
+            placeId = r.googleData?.placeId,
+            onOpenUrl = urlLauncher::open,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
+
+    fullscreenIndex?.let { idx ->
+        com.novawerk.berlinfoodmap.ui.components.FullscreenPhotoPager(
+            photos = photos,
+            initialIndex = idx,
+            onDismiss = { fullscreenIndex = null },
+        )
+    }
+}
+
+// region Hero --------------------------------------------------------------
+
+@Composable
+private fun HeroCover(photos: List<String>, onTap: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(320.dp)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .then(if (photos.isNotEmpty()) Modifier.clickable { onTap() } else Modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (photos.isNotEmpty()) {
+            AsyncImage(
+                model = photos.first(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            Icon(
+                Icons.Filled.Restaurant,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(80.dp),
+            )
+        }
+    }
+}
+
+/**
+ * Material 3 multi-browse carousel for photo browsing — anchors a large
+ * focused item with smaller peeking neighbours, letting users scrub through
+ * the gallery without leaving the detail screen. Tap any tile to enter the
+ * fullscreen pager at that index.
+ *
+ * Spec: https://m3.material.io/components/carousel/overview
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PhotoCarousel(photos: List<String>, onTap: (Int) -> Unit) {
+    val state = rememberCarouselState { photos.size }
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 4.dp, bottom = 12.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.photos_label),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "${photos.size}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        HorizontalMultiBrowseCarousel(
+            state = state,
+            preferredItemWidth = 240.dp,
+            itemSpacing = 8.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp),
+        ) { index ->
+            AsyncImage(
+                model = photos[index],
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .maskClip(MaterialTheme.shapes.extraLarge)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable { onTap(index) },
+            )
+        }
+    }
+}
+
+// endregion
+
+// region Title + chips ----------------------------------------------------
+
+@Composable
+private fun TitleBlock(restaurant: Restaurant) {
+    Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = restaurant.name.zh,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            if (restaurant.featured) {
+                Spacer(Modifier.width(10.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(50),
+                ) {
+                    Icon(
+                        Icons.Filled.Star,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .size(20.dp),
+                    )
+                }
+            }
+        }
+        if (restaurant.name.en.isNotBlank() && restaurant.name.en != restaurant.name.zh) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = restaurant.name.en,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @Composable
-private fun GoogleDataSection(
-    gd: GooglePlaceData,
-    onOpenUrl: (String) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // Rating row
-        gd.rating?.let { rating ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Star,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = rating.toFormattedRating(),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                gd.userRatingsTotal?.let { count ->
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(Res.string.rating_count, count),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+private fun ChipsRow(restaurant: Restaurant) {
+    val rating = restaurant.googleData?.rating
+    val count = restaurant.googleData?.userRatingsTotal
+    if (rating == null && restaurant.tags.isEmpty() && restaurant.priceRange == null) return
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (rating != null) {
+            RatingChip(rating = rating, count = count)
         }
-
-        // Weekly hours
-        if (gd.weekdayText.isNotEmpty()) {
-            Row(verticalAlignment = Alignment.Top) {
-                Icon(
-                    Icons.Filled.Schedule,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(Modifier.width(8.dp))
-                Column {
-                    Text(
-                        text = stringResource(Res.string.opening_hours),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    gd.weekdayText.forEach { line ->
-                        Text(line, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
+        restaurant.tags.forEach { tag ->
+            FilledChip(label = tagDisplayName(tag))
         }
+        restaurant.priceRange?.let { price ->
+            FilledChip(label = price, emphasised = true)
+        }
+    }
+}
 
-        // Website link
-        gd.website?.let { website ->
-            TextButton(
-                onClick = { onOpenUrl(website) },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.OpenInNew,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
-                Spacer(Modifier.width(8.dp))
+@Composable
+private fun RatingChip(rating: Double, count: Int?) {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = RoundedCornerShape(50),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Icon(
+                Icons.Filled.Star,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.size(16.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = rating.toFormattedRating(),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+            )
+            if (count != null) {
+                Spacer(Modifier.width(6.dp))
                 Text(
-                    text = stringResource(Res.string.open_website),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Start,
+                    text = "($count)",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.75f),
                 )
             }
         }
     }
 }
+
+@Composable
+private fun FilledChip(label: String, emphasised: Boolean = false) {
+    val container = if (emphasised) {
+        MaterialTheme.colorScheme.secondaryContainer
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+    val content = if (emphasised) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    Surface(color = container, shape = RoundedCornerShape(50)) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = if (emphasised) FontWeight.SemiBold else FontWeight.Medium,
+            color = content,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+        )
+    }
+}
+
+// endregion
+
+// region Quick actions ----------------------------------------------------
+
+@Composable
+private fun StickyActionBar(
+    phone: String?,
+    website: String?,
+    latitude: Double,
+    longitude: Double,
+    placeId: String?,
+    onOpenUrl: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Documented Maps URL scheme for *viewing* a place — opens the business
+    // card in Google Maps so the user can read it, then choose for themselves
+    // whether to start navigation. Going straight into directions felt too
+    // aggressive (users sometimes just want to verify the spot first).
+    // Spec: https://developers.google.com/maps/documentation/urls/get-started#search-action
+    val mapsUrl = remember(placeId, latitude, longitude) {
+        buildString {
+            append("https://www.google.com/maps/search/?api=1")
+            append("&query=").append(latitude).append(',').append(longitude)
+            if (placeId != null) {
+                append("&query_place_id=").append(placeId)
+            }
+        }
+    }
+    val surface = MaterialTheme.colorScheme.surface
+    Column(modifier = modifier.fillMaxWidth()) {
+        // Soft top-fade so the bar reads cleanly over busy content while
+        // scrolling — no hard divider line.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(28.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0f to Color.Transparent,
+                            1f to surface,
+                        ),
+                    ),
+                ),
+        )
+        Surface(color = surface, modifier = Modifier.fillMaxWidth()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .navigationBarsPadding(),
+            ) {
+                SatelliteAction(
+                    icon = Icons.Filled.Phone,
+                    labelRes = Res.string.action_call,
+                    enabled = phone != null,
+                    onClick = { phone?.let { onOpenUrl("tel:$it") } },
+                )
+                PrimaryAction(
+                    icon = Icons.Filled.Map,
+                    labelRes = Res.string.action_directions,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onOpenUrl(mapsUrl) },
+                )
+                SatelliteAction(
+                    icon = Icons.Filled.Language,
+                    labelRes = Res.string.action_website,
+                    enabled = website != null,
+                    onClick = { website?.let(onOpenUrl) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrimaryAction(
+    icon: ImageVector,
+    labelRes: StringResource,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        shape = RoundedCornerShape(28.dp),
+        modifier = modifier
+            .height(72.dp)
+            .clickable(onClick = onClick),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(22.dp),
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = stringResource(labelRes),
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SatelliteAction(
+    icon: ImageVector,
+    labelRes: StringResource,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val container = if (enabled) MaterialTheme.colorScheme.secondaryContainer
+    else MaterialTheme.colorScheme.surfaceContainerHigh
+    val content = if (enabled) MaterialTheme.colorScheme.onSecondaryContainer
+    else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+    Surface(
+        color = container,
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier
+            .size(width = 72.dp, height = 72.dp)
+            .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier),
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(22.dp))
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(labelRes),
+                color = content,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+}
+
+// endregion
+
+// region Editorial quote --------------------------------------------------
+
+@Composable
+private fun EditorialQuote(text: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = SECTION_SHAPE,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Text(
+                text = "“",
+                fontSize = 44.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 32.sp,
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.5f),
+                modifier = Modifier.padding(end = 8.dp, top = 4.dp),
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+}
+
+// endregion
+
+// region Hours card -------------------------------------------------------
+
+@Composable
+private fun HoursCard(periods: List<String>, weekdayText: List<String>) {
+    if (periods.isEmpty() && weekdayText.isEmpty()) return
+    val status = remember(periods) { computeOpeningStatus(periods) }
+    val nowMow = remember(periods) { currentBerlinMinuteOfWeek() }
+    var expanded by remember { mutableStateOf(false) }
+
+    // Open is the happy path — keep the card neutral so it doesn't compete
+    // with the closed/error state. Only "Closed" gets the alarming tint.
+    // The status headline still picks up an accent colour to read at a glance.
+    val (container, onContainer, headlineColor) = when (status) {
+        is OpeningStatus.Open, OpeningStatus.AlwaysOpen -> Triple(
+            MaterialTheme.colorScheme.surfaceContainerHigh,
+            MaterialTheme.colorScheme.onSurface,
+            // Bold + headlineSmall already carries the emphasis; no need
+            // for a tinted colour that would clash with the neutral card.
+            MaterialTheme.colorScheme.onSurface,
+        )
+        is OpeningStatus.Closed -> Triple(
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.onErrorContainer,
+            MaterialTheme.colorScheme.onErrorContainer,
+        )
+        OpeningStatus.Unknown -> Triple(
+            MaterialTheme.colorScheme.surfaceContainerHigh,
+            MaterialTheme.colorScheme.onSurface,
+            MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+
+    Surface(
+        color = container,
+        shape = SECTION_SHAPE,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = statusHeadline(status),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = headlineColor,
+                )
+                Spacer(Modifier.weight(1f))
+                if (weekdayText.isNotEmpty()) {
+                    Surface(
+                        color = onContainer.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(50),
+                        modifier = Modifier.clickable { expanded = !expanded },
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    if (expanded) Res.string.hours_hide else Res.string.hours_view_full,
+                                ),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = onContainer,
+                            )
+                            Icon(
+                                imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = null,
+                                tint = onContainer,
+                                modifier = Modifier.size(18.dp).padding(start = 2.dp),
+                            )
+                        }
+                    }
+                }
+            }
+            // Primary subline: today's hours (always shown when we have weekday data),
+            // so users see "Today 12:00–22:00" even when the venue is currently open.
+            val today = remember(weekdayText, nowMow) {
+                todayHoursLine(weekdayText, mowToDayIndex(nowMow))
+            }
+            todaySubline(status, today)?.let { line ->
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = line,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = onContainer.copy(alpha = 0.9f),
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+            // Secondary subline: countdown ("Closes in 25 min" / "Opens 12:00").
+            countdownSubline(status, nowMow)?.let { line ->
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = line,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = onContainer.copy(alpha = 0.75f),
+                )
+            }
+
+            if (expanded && weekdayText.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+                HorizontalDivider(color = onContainer.copy(alpha = 0.18f))
+                Spacer(Modifier.height(12.dp))
+                WeekHoursList(
+                    weekdayText = weekdayText,
+                    todayIndex = mowToDayIndex(nowMow),
+                    color = onContainer,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeekHoursList(weekdayText: List<String>, todayIndex: Int, color: Color) {
+    val mondayBasedToday = (todayIndex + 6) % 7
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        weekdayText.forEachIndexed { index, line ->
+            val isToday = index == mondayBasedToday
+            val parts = line.split(":", limit = 2).map { it.trim() }
+            val label = parts.getOrNull(0) ?: ""
+            val hours = parts.getOrNull(1) ?: ""
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isToday) color else color.copy(alpha = 0.75f),
+                )
+                Text(
+                    text = hours,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isToday) color else color.copy(alpha = 0.75f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun statusHeadline(status: OpeningStatus): String = when (status) {
+    OpeningStatus.AlwaysOpen -> stringResource(Res.string.open_24h)
+    is OpeningStatus.Open -> stringResource(Res.string.open_now)
+    is OpeningStatus.Closed -> stringResource(Res.string.closed_now)
+    OpeningStatus.Unknown -> stringResource(Res.string.opening_hours)
+}
+
+/**
+ * "Today 12:00–22:00" / "Closed today" / null — the always-visible hours line.
+ * Returns null when we genuinely don't know (no weekdayText) or when the venue
+ * is 24/7 (the headline already says "Open 24 hours").
+ */
+@Composable
+private fun todaySubline(status: OpeningStatus, todayHours: String?): String? {
+    if (status == OpeningStatus.AlwaysOpen) return null
+    return when {
+        todayHours == null -> if (status == OpeningStatus.Unknown) {
+            stringResource(Res.string.hours_unknown)
+        } else null
+        todayHours.isClosedHours() -> stringResource(Res.string.closed_today)
+        else -> stringResource(Res.string.today_hours, todayHours)
+    }
+}
+
+/** "Closes 22:00" / "Opens in 25 min" / null — the secondary countdown. */
+@Composable
+private fun countdownSubline(status: OpeningStatus, nowMow: Int): String? = when (status) {
+    OpeningStatus.AlwaysOpen, OpeningStatus.Unknown -> null
+    is OpeningStatus.Open -> if (status.minutesUntilClose <= 60) {
+        stringResource(Res.string.closes_in_min, status.minutesUntilClose)
+    } else {
+        stringResource(Res.string.closes_at, formatTimeFromNow(status.closeMow, status.minutesUntilClose, nowMow))
+    }
+    is OpeningStatus.Closed -> if (status.minutesUntilOpen <= 60) {
+        stringResource(Res.string.opens_in_min, status.minutesUntilOpen)
+    } else {
+        stringResource(Res.string.opens_at, formatTimeFromNow(status.nextOpenMow, status.minutesUntilOpen, nowMow))
+    }
+}
+
+/**
+ * Pull just the time portion of today's `weekdayText` line — drops the leading
+ * "Monday: " / "Friday: " label that would otherwise duplicate the date context.
+ */
+private fun todayHoursLine(weekdayText: List<String>, sundayBasedTodayIndex: Int): String? {
+    if (weekdayText.isEmpty()) return null
+    val mondayBased = (sundayBasedTodayIndex + 6) % 7
+    val raw = weekdayText.getOrNull(mondayBased) ?: return null
+    return raw.split(":", limit = 2).getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }
+}
+
+/** Heuristic: Google's `weekdayText` uses "Closed" (or localised equivalent) for off-days. */
+private fun String.isClosedHours(): Boolean {
+    val s = lowercase()
+    return s == "closed" || s == "geschlossen" || contains("休息") || contains("打烊")
+}
+
+@Composable
+private fun formatTimeFromNow(targetMow: Int, deltaMinutes: Int, nowMow: Int): String {
+    val time = mowToTimeOfDay(targetMow)
+    val timeStr = formatTime(time.hour, time.minute)
+    val minutesLeftToday = 1440 - (nowMow % 1440)
+    return when {
+        deltaMinutes < minutesLeftToday -> timeStr
+        deltaMinutes < minutesLeftToday + 1440 ->
+            stringResource(Res.string.tomorrow_at, timeStr)
+        else -> {
+            val dayName = stringResource(weekdayLongRes(mowToDayIndex(targetMow)))
+            stringResource(Res.string.weekday_at, dayName, timeStr)
+        }
+    }
+}
+
+private fun formatTime(hour: Int, minute: Int): String {
+    val h = hour.toString().padStart(2, '0')
+    val m = minute.toString().padStart(2, '0')
+    return "$h:$m"
+}
+
+private fun weekdayLongRes(sundayBasedIndex: Int): StringResource = when (sundayBasedIndex) {
+    0 -> Res.string.weekday_long_sun
+    1 -> Res.string.weekday_long_mon
+    2 -> Res.string.weekday_long_tue
+    3 -> Res.string.weekday_long_wed
+    4 -> Res.string.weekday_long_thu
+    5 -> Res.string.weekday_long_fri
+    else -> Res.string.weekday_long_sat
+}
+
+// endregion
+
+// region Address + description + photos + footer --------------------------
+
+@Composable
+private fun AddressCard(restaurant: Restaurant) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = SECTION_SHAPE,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(14.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.Place,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(8.dp).size(20.dp),
+                    )
+                }
+                Spacer(Modifier.width(14.dp))
+                Column {
+                    Text(
+                        restaurant.address.addressLine1,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    restaurant.address.addressLine2?.let {
+                        Text(it, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = "${restaurant.address.postalCode} ${restaurant.address.city} · ${restaurant.address.district}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            restaurant.chain?.let { chain ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = RoundedCornerShape(14.dp),
+                    ) {
+                        Icon(
+                            Icons.Filled.Storefront,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(8.dp).size(20.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Text(
+                        text = buildString {
+                            append(chain.brand)
+                            chain.branch?.let { append(" · ").append(it) }
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DescriptionCard(zh: String, en: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = SECTION_SHAPE,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            if (zh.isNotBlank()) {
+                Text(zh, style = MaterialTheme.typography.bodyMedium)
+            }
+            if (en.isNotBlank()) {
+                if (zh.isNotBlank()) Spacer(Modifier.height(8.dp))
+                Text(
+                    en,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Footer(restaurant: Restaurant) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Filled.Visibility,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp),
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = "${restaurant.viewCount}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        restaurant.googleData?.userRatingsTotal?.let { count ->
+            Spacer(Modifier.width(16.dp))
+            Text(
+                text = stringResource(Res.string.rating_count, count),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+// endregion
 
 private fun Double.toFormattedRating(): String {
     val rounded = (this * 10).toInt() / 10.0
     val whole = rounded.toInt()
     val tenth = ((rounded - whole) * 10 + 0.5).toInt()
     return if (tenth == 0) "$whole.0" else "$whole.$tenth"
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun TagsAndPriceRow(restaurant: Restaurant) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        restaurant.tags.forEach { tag ->
-            SuggestionChip(
-                onClick = {},
-                label = { Text(tagDisplayName(tag), style = MaterialTheme.typography.bodySmall) },
-            )
-        }
-        restaurant.priceRange?.let { price ->
-            Spacer(Modifier.width(2.dp))
-            Text(
-                text = price,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 6.dp),
-            )
-        }
-    }
 }

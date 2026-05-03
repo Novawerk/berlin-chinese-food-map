@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AirlineSeatFlat
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
@@ -32,6 +33,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
+import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 
 // Cover decode size for the 44 dp NearbyCard thumbnail (rendered side × 4
@@ -53,6 +55,25 @@ internal fun NearbyCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
     ) {
+        val isClosed = rememberIsCurrentlyClosed(restaurant.googleData?.periods.orEmpty())
+        // Closed venues fade their text — the swapped-in moon thumbnail does
+        // most of the visual work, the dimmer text reinforces it.
+        val nameColor = if (isClosed) {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+        val secondaryColor = if (isClosed) {
+            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
+        val tagColor = if (isClosed) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
+
         Row(
             modifier = Modifier.padding(6.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -66,8 +87,14 @@ internal fun NearbyCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center,
             ) {
-                if (coverUrl != null) {
-                    AsyncImage(
+                when {
+                    isClosed -> Icon(
+                        Icons.Filled.AirlineSeatFlat,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(22.dp),
+                    )
+                    coverUrl != null -> AsyncImage(
                         model = ImageRequest.Builder(ctx)
                             .data(coverUrl)
                             .size(NEARBY_COVER_PX, NEARBY_COVER_PX)
@@ -77,8 +104,7 @@ internal fun NearbyCard(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
                     )
-                } else {
-                    Icon(
+                    else -> Icon(
                         Icons.Filled.Restaurant,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -92,6 +118,7 @@ internal fun NearbyCard(
                     Text(
                         text = restaurant.name.zh,
                         style = MaterialTheme.typography.titleSmall,
+                        color = nameColor,
                         maxLines = 1,
                         modifier = Modifier.weight(1f, fill = false),
                     )
@@ -101,14 +128,15 @@ internal fun NearbyCard(
                             Icons.Filled.Star,
                             contentDescription = null,
                             modifier = Modifier.size(12.dp),
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                            else MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
                 Text(
                     text = restaurant.name.en,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = secondaryColor,
                     maxLines = 1,
                 )
                 val displayTags = restaurant.cardTags()
@@ -118,7 +146,7 @@ internal fun NearbyCard(
                     Text(
                         text = tagLine,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = tagColor,
                         maxLines = 1,
                     )
                 }
