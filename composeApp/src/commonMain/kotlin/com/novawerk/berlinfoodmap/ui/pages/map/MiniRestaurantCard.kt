@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AirlineSeatFlat
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -30,6 +32,7 @@ import coil3.Image
 import coil3.compose.LocalPlatformContext
 import coil3.compose.asPainter
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
+import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 
 /**
@@ -50,6 +53,12 @@ internal fun MiniRestaurantCard(
     restaurant: Restaurant,
     coverImage: Image?,
 ) {
+    val isClosed = rememberIsCurrentlyClosed(restaurant.googleData?.periods.orEmpty())
+    val nameColor = if (isClosed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    else MaterialTheme.colorScheme.onSurface
+    val secondaryColor = if (isClosed) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+    else MaterialTheme.colorScheme.onSurfaceVariant
+
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(10.dp))
@@ -57,28 +66,31 @@ internal fun MiniRestaurantCard(
             .padding(start = 6.dp, end = 10.dp, top = 6.dp, bottom = 6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (coverImage != null) {
-                val ctx = LocalPlatformContext.current
-                val painter = remember(coverImage, ctx) { coverImage.asPainter(ctx) }
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape),
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            CircleShape,
-                        ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center,
+            ) {
+                when {
+                    isClosed -> Icon(
+                        imageVector = Icons.Filled.AirlineSeatFlat,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    coverImage != null -> {
+                        val ctx = LocalPlatformContext.current
+                        val painter = remember(coverImage, ctx) { coverImage.asPainter(ctx) }
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                    else -> Icon(
                         imageVector = Icons.Filled.Restaurant,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -94,14 +106,15 @@ internal fun MiniRestaurantCard(
                             Icons.Filled.Star,
                             contentDescription = null,
                             modifier = Modifier.size(12.dp),
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                            else MaterialTheme.colorScheme.primary,
                         )
                         Spacer(Modifier.width(3.dp))
                     }
                     Text(
                         text = restaurant.name.zh,
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = nameColor,
                         maxLines = 1,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -112,7 +125,7 @@ internal fun MiniRestaurantCard(
                     Text(
                         text = labels.joinToString(" · "),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = secondaryColor,
                         maxLines = 1,
                     )
                 }
