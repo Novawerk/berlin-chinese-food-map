@@ -222,7 +222,19 @@ fun MapScreen(
 
         RestaurantSearchBar(
             repository = repository,
-            onRestaurantClick = onNavigateDetail,
+            onRestaurantClick = { id ->
+                viewModel.allRestaurants.firstOrNull { it.id == id }?.let { r ->
+                    scope.launch {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(r.latitude, r.longitude),
+                                16f,
+                            ),
+                        )
+                    }
+                }
+                onNavigateDetail(id)
+            },
             modifier = Modifier.align(Alignment.TopCenter),
         )
 
