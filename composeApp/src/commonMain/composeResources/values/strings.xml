@@ -98,16 +98,8 @@
 
     <!-- Team section -->
     <string name="team_title">The team behind</string>
-    <string name="team_description">Berlin Food Map is a collaboration between a Berlin product studio and a community of Chinese-speaking food lovers in the city. One writes the code, the other knows where to eat.</string>
-
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">Product · Design · Engineering</string>
-    <string name="team_novawerk_bio">A small Berlin-based product studio. We build the app, the data pipeline, and the admin tools — making sure the engineering side is solid so the editorial team can focus on the food rather than the plumbing.</string>
-
     <string name="team_manmanyou_name">柏林慢慢游 · Berlin Manmanyou</string>
     <string name="team_manmanyou_role">Community · Content · Curation</string>
-    <string name="team_manmanyou_bio">A grassroots collective of Berlin\'s Chinese-speaking food lovers — the editors, scouts, and tasters who walk into the restaurants, vet the data, and write the recommendations you read inside the app.</string>
-
-    <string name="team_thanks_title">And everyone else</string>
-    <string name="team_thanks">This map exists because hundreds of eaters have shared a tip, corrected an address, or pointed us at a place we had never heard of. Thank you. If you\'d like to join in, start with the contribute section above.</string>
 </resources>

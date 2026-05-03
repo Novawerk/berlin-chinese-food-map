@@ -1,13 +1,11 @@
 package com.novawerk.berlinfoodmap.ui.pages.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,8 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.novawerk.berlinfoodmap.ui.components.MenuRow
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.settings
@@ -36,31 +34,12 @@ import berlinfoodmap.composeapp.generated.resources.privacy_policy
 import berlinfoodmap.composeapp.generated.resources.icon_credits
 import berlinfoodmap.composeapp.generated.resources.icon_credits_value
 import berlinfoodmap.composeapp.generated.resources.contribute_title
-import berlinfoodmap.composeapp.generated.resources.contribute_intro
-import berlinfoodmap.composeapp.generated.resources.contribute_what_title
-import berlinfoodmap.composeapp.generated.resources.contribute_what_1
-import berlinfoodmap.composeapp.generated.resources.contribute_what_2
-import berlinfoodmap.composeapp.generated.resources.contribute_what_3
-import berlinfoodmap.composeapp.generated.resources.contribute_what_4
-import berlinfoodmap.composeapp.generated.resources.contribute_how_title
-import berlinfoodmap.composeapp.generated.resources.contribute_step_1
-import berlinfoodmap.composeapp.generated.resources.contribute_step_2
-import berlinfoodmap.composeapp.generated.resources.contribute_step_3
-import berlinfoodmap.composeapp.generated.resources.contribute_after_title
-import berlinfoodmap.composeapp.generated.resources.contribute_after
-import berlinfoodmap.composeapp.generated.resources.contribute_action
 import berlinfoodmap.composeapp.generated.resources.team_title
-import berlinfoodmap.composeapp.generated.resources.team_description
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
-import berlinfoodmap.composeapp.generated.resources.team_novawerk_bio
 import berlinfoodmap.composeapp.generated.resources.team_manmanyou_name
 import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_bio
-import berlinfoodmap.composeapp.generated.resources.team_thanks_title
-import berlinfoodmap.composeapp.generated.resources.team_thanks
 
-private const val GITHUB_REPO_URL = "https://github.com/Novawerk/berlin-chinese-food-map"
 private const val NOVAWERK_URL = "https://novawerk.io"
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +52,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
 ) {
     var showContributeSheet by remember { mutableStateOf(false) }
-    var showTeamSheet by remember { mutableStateOf(false) }
+    val urlLauncher = rememberUrlLauncher()
 
     Scaffold(
         topBar = {
@@ -88,7 +67,7 @@ fun SettingsScreen(
                     }
                 },
             )
-        }
+        },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -139,7 +118,6 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
 
             // About section
             Text(
@@ -147,17 +125,29 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = 12.dp),
             )
-
             MenuRow(
                 title = stringResource(Res.string.contribute_title),
                 onClick = { showContributeSheet = true },
             )
+
+            // Team section
+            Text(
+                text = stringResource(Res.string.team_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            )
             MenuRow(
-                title = stringResource(Res.string.team_title),
-                onClick = { showTeamSheet = true },
+                title = stringResource(Res.string.team_novawerk_name),
+                supportingText = stringResource(Res.string.team_novawerk_role),
+                trailingIcon = Icons.Filled.OpenInNew,
+                onClick = { urlLauncher.open(NOVAWERK_URL) },
+            )
+            MenuRow(
+                title = stringResource(Res.string.team_manmanyou_name),
+                supportingText = stringResource(Res.string.team_manmanyou_role),
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
 
             // Version row
             Row(
@@ -207,197 +197,6 @@ fun SettingsScreen(
     }
 
     if (showContributeSheet) {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ModalBottomSheet(
-            onDismissRequest = { showContributeSheet = false },
-            sheetState = sheetState,
-        ) {
-            ContributeSheetContent()
-        }
-    }
-
-    if (showTeamSheet) {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ModalBottomSheet(
-            onDismissRequest = { showTeamSheet = false },
-            sheetState = sheetState,
-        ) {
-            TeamSheetContent()
-        }
-    }
-}
-
-@Composable
-private fun MenuRow(title: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 14.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-private fun ContributeSheetContent() {
-    val urlLauncher = rememberUrlLauncher()
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp),
-    ) {
-        Text(
-            text = stringResource(Res.string.contribute_title),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 12.dp),
-        )
-
-        BodyParagraph(Res.string.contribute_intro)
-
-        Spacer(Modifier.height(16.dp))
-        SubsectionTitle(Res.string.contribute_what_title)
-        BulletItem(Res.string.contribute_what_1)
-        BulletItem(Res.string.contribute_what_2)
-        BulletItem(Res.string.contribute_what_3)
-        BulletItem(Res.string.contribute_what_4)
-
-        Spacer(Modifier.height(16.dp))
-        SubsectionTitle(Res.string.contribute_how_title)
-        BulletItem(Res.string.contribute_step_1)
-        BulletItem(Res.string.contribute_step_2)
-        BulletItem(Res.string.contribute_step_3)
-
-        Spacer(Modifier.height(16.dp))
-        SubsectionTitle(Res.string.contribute_after_title)
-        BodyParagraph(Res.string.contribute_after)
-
-        Spacer(Modifier.height(20.dp))
-        FilledTonalButton(
-            onClick = { urlLauncher.open(GITHUB_REPO_URL) },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(stringResource(Res.string.contribute_action))
-        }
-    }
-}
-
-@Composable
-private fun TeamSheetContent() {
-    val urlLauncher = rememberUrlLauncher()
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp),
-    ) {
-        Text(
-            text = stringResource(Res.string.team_title),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 12.dp),
-        )
-
-        BodyParagraph(Res.string.team_description)
-
-        Spacer(Modifier.height(12.dp))
-        TeamMemberCard(
-            name = stringResource(Res.string.team_novawerk_name),
-            role = stringResource(Res.string.team_novawerk_role),
-            bio = stringResource(Res.string.team_novawerk_bio),
-            onClick = { urlLauncher.open(NOVAWERK_URL) },
-        )
-        Spacer(Modifier.height(8.dp))
-        TeamMemberCard(
-            name = stringResource(Res.string.team_manmanyou_name),
-            role = stringResource(Res.string.team_manmanyou_role),
-            bio = stringResource(Res.string.team_manmanyou_bio),
-            onClick = null,
-        )
-
-        Spacer(Modifier.height(20.dp))
-        SubsectionTitle(Res.string.team_thanks_title)
-        BodyParagraph(Res.string.team_thanks)
-    }
-}
-
-@Composable
-private fun SubsectionTitle(res: StringResource) {
-    Text(
-        text = stringResource(res),
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
-    )
-}
-
-@Composable
-private fun BodyParagraph(res: StringResource) {
-    Text(
-        text = stringResource(res),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(vertical = 4.dp),
-    )
-}
-
-@Composable
-private fun BulletItem(res: StringResource) {
-    Text(
-        text = stringResource(res),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(vertical = 4.dp),
-    )
-}
-
-@Composable
-private fun TeamMemberCard(
-    name: String,
-    role: String,
-    bio: String,
-    onClick: (() -> Unit)?,
-) {
-    val shape = RoundedCornerShape(16.dp)
-    val surfaceModifier = if (onClick != null) {
-        Modifier.fillMaxWidth().clickable(onClick = onClick)
-    } else {
-        Modifier.fillMaxWidth()
-    }
-    Surface(
-        modifier = surfaceModifier,
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = shape,
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(
-                text = name,
-                style = MaterialTheme.typography.titleSmall,
-                color = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = role,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
-            )
-            Text(
-                text = bio,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+        ContributeBottomSheet(onDismiss = { showContributeSheet = false })
     }
 }

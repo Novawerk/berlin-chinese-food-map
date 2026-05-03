@@ -98,16 +98,8 @@
 
     <!-- Team section -->
     <string name="team_title">幕后团队</string>
-    <string name="team_description">柏林中餐地图由一家柏林的产品工作室和一群华语美食爱好者共同打造——一边写代码，一边带你找到真正值得排队的那家店。</string>
-
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">产品 · 设计 · 开发</string>
-    <string name="team_novawerk_bio">一家扎根柏林的小型产品工作室。我们负责 App、数据流水线和管理后台的搭建，把工程的事做扎实，让编辑团队可以专心琢磨那些餐桌上的事。</string>
-
     <string name="team_manmanyou_name">柏林慢慢游</string>
     <string name="team_manmanyou_role">社区 · 内容 · 策划</string>
-    <string name="team_manmanyou_bio">一群活跃在柏林的华语美食爱好者，是这份地图真正的编辑、探店人和味觉把关人。他们用脚步丈量每一家餐厅、校对每一条数据，也写下你在 App 里读到的每一段推荐。</string>
-
-    <string name="team_thanks_title">还有同桌的你们</string>
-    <string name="team_thanks">这份地图能存在，是因为数百位食客分享过线索、更正过地址，或者把我们带到了从未听过的小馆子。谢谢你们。如果你也想加入，从上方「如何贡献数据」开始就好。</string>
 </resources>
