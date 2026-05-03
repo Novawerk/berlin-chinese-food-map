@@ -114,7 +114,8 @@
     <string name="team_novawerk_bio">Novawerk is an independent product studio based in Berlin, focused on building non-profit apps in the age of AI.\n\nWe think builders in this new era shouldn\'t only use AI for things that make money — what matters more is using today\'s productivity to address the scenarios no one else is going to. When one person can now do the engineering work of ten, the small things that never had a business model behind them — a tool that serves a single language community, a piece of public data nobody had bandwidth to compile — can finally get built properly.\n\nThat\'s what Novawerk does.</string>
     <string name="team_novawerk_visit">Visit website</string>
 
-    <string name="team_manmanyou_name">柏林慢慢游 · Berlin Manmanyou</string>
-    <string name="team_manmanyou_role">Community · Content · Curation</string>
-    <string name="team_manmanyou_bio">「柏林慢慢游」(Berlin Manmanyou — literally \'wander Berlin slowly\') is a grassroots community of Chinese-speaking food lovers and city explorers in Berlin. They share what they eat, where they go, and the small details that make a place worth a second visit.\n\nThe recommendations and curation you read inside Berlin Food Map come from this community — from WeChat group chats, market walks, and the occasional disagreement over which place really has the best beef noodles.</string>
+    <string name="team_manmanyou_name">柏林慢慢游 · Berlin Slowtour</string>
+    <string name="team_manmanyou_role">Slow walks · City content</string>
+    <string name="team_manmanyou_bio">「柏林慢慢游」(Berlin Slowtour) is a Berlin-based slow-travel community. Every month they organize a deep walking tour of a different Berlin neighborhood (Kiez), digging into its history, architecture, culture, and local stories — they\'ve already walked Kreuzberg, Schöneberg, Pankow, Prenzlauer Berg, and many other corners of the city.\n\nAlongside the neighborhood walks, they put together a systematic catalogue of Berlin\'s Chinese restaurants — 200+ entries — which seeded the data behind Berlin Food Map.\n\nTheir walking notes and event announcements live on Xiaohongshu at @Berlin_Slowtour.</string>
+    <string name="team_manmanyou_visit">View on Xiaohongshu</string>
 </resources>
