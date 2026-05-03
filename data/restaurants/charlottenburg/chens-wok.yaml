@@ -1,7 +1,11 @@
 name:
   en: Chen’s Wok
   zh: 老陈一品香
-tags: []
+tags:
+  - NOODLES
+  - CANTONESE
+  - DIM_SUM
+  - HOTPOT
 address:
   addressLine1: Otto-Suhr-Allee 11-13
   postalCode: "10585"

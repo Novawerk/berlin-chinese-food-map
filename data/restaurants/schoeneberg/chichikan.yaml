@@ -1,7 +1,8 @@
 name:
   en: Chichikan
   zh: 吃吃看
-tags: []
+tags:
+  - FUSION
 address:
   addressLine1: Goltzstraße 52
   postalCode: "10781"

@@ -1,7 +1,10 @@
 name:
   en: Lychee
   zh: Lychee
-tags: []
+tags:
+  - NOODLES
+  - DUMPLINGS
+  - FUSION
 address:
   addressLine1: Bayerische Str. 9
   postalCode: "10707"

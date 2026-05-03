@@ -1,7 +1,10 @@
 name:
   en: Tangs Kantine
   zh: 唐记
-tags: []
+tags:
+  - SICHUAN
+  - SHANGHAINESE
+  - DIM_SUM
 address:
   addressLine1: Dieffenbachstraße 18
   postalCode: "10967"

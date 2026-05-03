@@ -1,7 +1,10 @@
 name:
   en: Jing Yang
   zh: 新景阳
-tags: []
+tags:
+  - NOODLES
+  - DUMPLINGS
+  - SHANGHAINESE
 address:
   addressLine1: Albrechtstr. 125
   postalCode: "12165"
