@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
@@ -645,13 +646,13 @@ private fun MiniRestaurantCard(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(28.dp)
+                        .size(44.dp)
                         .clip(CircleShape),
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .size(28.dp)
+                        .size(44.dp)
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant,
                             CircleShape,
@@ -662,7 +663,7 @@ private fun MiniRestaurantCard(
                         imageVector = Icons.Filled.Restaurant,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(22.dp),
                     )
                 }
             }
@@ -686,9 +687,10 @@ private fun MiniRestaurantCard(
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
-                restaurant.tags.firstOrNull()?.let { tag ->
+                if (restaurant.tags.isNotEmpty()) {
+                    val labels = restaurant.tags.map { tagDisplayName(it) }
                     Text(
-                        text = tagDisplayName(tag),
+                        text = labels.joinToString(" · "),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
@@ -724,7 +726,7 @@ private fun NearbyCard(
 ) {
     Card(
         modifier = Modifier
-            .width(260.dp)
+            .width(280.dp)
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -732,38 +734,81 @@ private fun NearbyCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Square cover thumbnail. Generic Material icon as fallback so a
+            // freshly added restaurant without a placeId still renders cleanly.
+            val coverUrl = restaurant.previewImageUrl()
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (coverUrl != null) {
+                    AsyncImage(
+                        model = coverUrl,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    Icon(
+                        Icons.Filled.Restaurant,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(28.dp),
+                    )
+                }
+            }
+            Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = restaurant.name.zh,
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = restaurant.name.zh,
+                        style = MaterialTheme.typography.titleSmall,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                    if (restaurant.featured) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(
+                            Icons.Filled.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
                 Text(
                     text = restaurant.name.en,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                 )
+                if (restaurant.tags.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    val tagLine = restaurant.tags.map { tagDisplayName(it) }.joinToString(" · ")
+                    Text(
+                        text = tagLine,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 2,
+                    )
+                }
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.Place,
                         contentDescription = null,
-                        modifier = Modifier.size(12.dp),
-                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(11.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.width(2.dp))
                     Text(
-                        text = buildString {
-                            append(restaurant.address.district)
-                            restaurant.tags.firstOrNull()?.let { primary ->
-                                append(" · ")
-                                append(tagDisplayName(primary))
-                            }
-                        },
+                        text = restaurant.address.district,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
@@ -773,7 +818,7 @@ private fun NearbyCard(
                     Icon(
                         Icons.Filled.Visibility,
                         contentDescription = null,
-                        modifier = Modifier.size(12.dp),
+                        modifier = Modifier.size(11.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.width(2.dp))
