@@ -21,6 +21,11 @@ jobs:
         working-directory: scripts/sync-to-firestore
         run: npm ci
 
+      # Fail fast on tag drift before we burn API quota on the sync.
+      - name: Validate tag taxonomy
+        working-directory: scripts/sync-to-firestore
+        run: node check-tags.mjs
+
       - name: Sync to Firestore
         working-directory: scripts/sync-to-firestore
         env:

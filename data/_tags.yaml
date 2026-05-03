@@ -1,0 +1,44 @@
+# Restaurant tag taxonomy — single source of truth.
+#
+# A restaurant carries 1~3 tags (see _schema.yaml > tags). The first tag
+# is treated as the primary one for default filter behaviour.
+#
+# Add or rename tags here, then run
+#   node scripts/sync-to-firestore/check-tags.mjs
+# to verify the Kotlin enum, the admin TS list, and the sync script's
+# KNOWN_TAGS set still match. CI runs the same check before sync.
+#
+# Display names below feed the admin form; the mobile app reads its
+# strings from composeApp/.../composeResources/values{,-zh}/strings.xml
+# (those need to be edited by hand for now — if the count of tags grows
+# significantly, code-gen the strings.xml entries from this file too).
+
+regional:
+  SICHUAN:        { en: Sichuan,       zh: 川菜 }
+  CANTONESE:      { en: Cantonese,     zh: 粤菜 }
+  NORTHERN:       { en: Northern,      zh: 北方菜 }
+  NORTHEASTERN:   { en: Northeastern,  zh: 东北菜 }
+  SHANGHAINESE:   { en: Shanghainese,  zh: 江浙沪 }
+  HUNAN:          { en: Hunan,         zh: 湘菜 }
+  XINJIANG:       { en: Xinjiang,      zh: 新疆菜 }
+  TAIWANESE:      { en: Taiwanese,     zh: 台菜 }
+  MUSLIM:         { en: Halal,         zh: 清真 }
+  # MONGOLIAN refers to the German "Mongolisches Buffet / Grill" format —
+  # a self-serve raw-ingredients-to-grill-station setup that's mostly a
+  # German-Asian-restaurant invention rather than authentic Mongolian
+  # cuisine. Berlin has a handful of these as a recognisable category.
+  MONGOLIAN:      { en: Mongolian Grill, zh: 蒙古烤肉 }
+
+format:
+  HOTPOT:         { en: Hotpot,         zh: 火锅 }
+  BBQ:            { en: BBQ,            zh: 烧烤 }
+  NOODLES:        { en: Noodles,        zh: 面食 }
+  DUMPLINGS:      { en: Dumplings,      zh: 饺子 }
+  DIM_SUM:        { en: Dim Sum,        zh: 点心 }
+  MALATANG:       { en: Malatang,       zh: 麻辣烫 }
+  VEGETARIAN:     { en: Vegetarian,     zh: 素食 }
+  BREAKFAST:      { en: Breakfast,      zh: 早餐 }
+  TEA_HOUSE:      { en: Tea House,      zh: 茶寮 }
+  BAKERY:         { en: Bakery,         zh: 烘焙 }
+  STREET_FOOD:    { en: Street Food,    zh: 小吃 }
+  FUSION:         { en: Modern Chinese, zh: 创新中餐 }
