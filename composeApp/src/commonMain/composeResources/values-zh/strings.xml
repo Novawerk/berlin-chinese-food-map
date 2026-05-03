@@ -82,11 +82,10 @@
 
     <!-- Contributors section -->
     <string name="contributors_title">数据贡献者</string>
-    <string name="contributors_seed_title">首先要感谢「柏林慢慢游」</string>
-    <string name="contributors_seed_body">早在 App 还没诞生之前，「柏林慢慢游」团队就用脚步丈量了柏林的中餐版图。他们一家家走访、拍照、试吃，亲手整理出本地图最初的那批数据——更重要的是，这整个项目都是被他们启发的。下面所有的一切，都是建立在他们打下的地基之上。</string>
-    <string name="contributors_intro">下面的名单则直接来自仓库的 git 历史——每次有人提交餐厅数据的改动时会自动刷新。如果你也贡献过却没出现在这里，欢迎提 Issue，我们会补上。</string>
-    <string name="contributors_count">git 历史中的 %1$d 位</string>
-    <string name="contributors_empty">git 中还没有其他贡献者——欢迎成为第一位！</string>
+    <string name="contributors_intro">下面的名单直接来自仓库的 git 历史——每次有人提交餐厅数据的改动时会自动刷新。如果你也贡献过却没出现在这里，欢迎提 Issue，我们会补上。</string>
+    <string name="contributors_count">%1$d 位贡献者</string>
+    <string name="contributors_empty">还没有贡献者——欢迎成为第一位！</string>
+    <string name="contributors_thanks_manmanyou">特别感谢「柏林慢慢游」团队完成了第一轮探店走访与初始数据收集，也启发了这个项目。</string>
 
     <!-- Contribute section -->
     <string name="contribute_title">如何贡献数据</string>

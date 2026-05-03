@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -26,11 +24,10 @@ import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.contributors_title
-import berlinfoodmap.composeapp.generated.resources.contributors_seed_title
-import berlinfoodmap.composeapp.generated.resources.contributors_seed_body
 import berlinfoodmap.composeapp.generated.resources.contributors_intro
 import berlinfoodmap.composeapp.generated.resources.contributors_count
 import berlinfoodmap.composeapp.generated.resources.contributors_empty
+import berlinfoodmap.composeapp.generated.resources.contributors_thanks_manmanyou
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,15 +50,8 @@ fun ContributorsBottomSheet(onDismiss: () -> Unit) {
             Text(
                 text = stringResource(Res.string.contributors_title),
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 12.dp),
             )
-
-            // Highlighted credit for the team that seeded the data and inspired
-            // the project. They aren't in git history, so they get a dedicated
-            // card pinned above the auto-generated list.
-            SeedThanksCard()
-
-            Spacer(Modifier.height(20.dp))
 
             Text(
                 text = stringResource(Res.string.contributors_intro),
@@ -94,28 +84,14 @@ fun ContributorsBottomSheet(onDismiss: () -> Unit) {
                     )
                 }
             }
-        }
-    }
-}
 
-@Composable
-private fun SeedThanksCard() {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+            Spacer(Modifier.height(20.dp))
+            HorizontalDivider()
             Text(
-                text = stringResource(Res.string.contributors_seed_title),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.contributors_seed_body),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                text = stringResource(Res.string.contributors_thanks_manmanyou),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 16.dp),
             )
         }
     }
