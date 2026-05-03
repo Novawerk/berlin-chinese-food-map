@@ -8,13 +8,13 @@ export function Footer() {
 
   return (
     <footer className="mt-auto border-t border-border bg-muted/30">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-between sm:px-6">
-        <p className="text-sm text-muted-foreground">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 sm:flex-row sm:justify-between sm:px-6">
+        <p className="text-base text-muted-foreground">
           &copy; {new Date().getFullYear()} Novawerk.{" "}
           {t("All rights reserved.", "保留所有权利。")}
         </p>
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-5 text-base text-muted-foreground">
           <Link
             href="/changelog"
             className="transition-colors hover:text-foreground"

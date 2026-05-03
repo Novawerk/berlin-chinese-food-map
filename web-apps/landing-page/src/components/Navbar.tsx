@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useLanguage } from "@/lib/language";
 import { Button } from "@/components/ui/button";
@@ -17,60 +18,90 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl">🍜</span>
-          <span className="text-lg font-bold">
-            {t("Berlin Food Map", "柏林中餐地图")}
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <Image
+            src="/logo.png"
+            alt=""
+            width={40}
+            height={40}
+            priority
+            className="h-9 w-9 rounded-lg sm:h-10 sm:w-10"
+          />
+          <span className="text-lg font-bold whitespace-nowrap sm:text-xl">
+            <span className="hidden sm:inline">
+              {t("Berlin Chinese Food", "柏林中餐地图")}
+            </span>
+            <span className="sm:hidden">
+              {t("BCF", "中餐地图")}
+            </span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              {t("Home", "首页")}
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <a href="/#story" className="hidden md:inline-flex">
+            <Button variant="ghost" className="text-base">
+              {t("Story", "故事")}
             </Button>
-          </Link>
-          <a href="/#roadmap" className="hidden sm:inline-flex">
-            <Button variant="ghost" size="sm">
+          </a>
+          <a href="/#features" className="hidden md:inline-flex">
+            <Button variant="ghost" className="text-base">
+              {t("Features", "功能")}
+            </Button>
+          </a>
+          <a href="/#roadmap" className="hidden md:inline-flex">
+            <Button variant="ghost" className="text-base">
               {t("Roadmap", "路线图")}
             </Button>
           </a>
-          <Link href="/changelog" className="hidden sm:inline-flex">
-            <Button variant="ghost" size="sm">
-              {t("Changelog", "更新日志")}
+          <a href="/#contribute" className="hidden md:inline-flex">
+            <Button variant="ghost" className="text-base">
+              {t("Contribute", "贡献")}
             </Button>
-          </Link>
+          </a>
           <a
             href="https://github.com/Novawerk/berlin-chinese-food-map/issues/new?template=restaurant-submission.yml"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button variant="outline" size="sm">
-              {t("Submit a restaurant", "提交餐厅")}
-            </Button>
-          </a>
-          <a
-            href="https://github.com/Novawerk/berlin-chinese-food-map"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex"
-          >
-            <Button variant="ghost" size="sm">
-              GitHub
+            <Button
+              variant="default"
+              className="h-11 gap-1.5 rounded-full px-4 text-base shadow-sm sm:px-5"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              <span className="hidden sm:inline">
+                {t("Submit a restaurant", "提交餐厅")}
+              </span>
+              <span className="sm:hidden">
+                {t("Submit", "提交")}
+              </span>
             </Button>
           </a>
 
           <div className="mx-1 h-5 w-px bg-border" />
 
-          <Button variant="outline" size="sm" onClick={toggleLang}>
+          <Button variant="outline" className="text-base" onClick={toggleLang}>
             {lang === "en" ? "中文" : "EN"}
           </Button>
 
           {mounted && (
             <Button
               variant="outline"
-              size="icon-sm"
+              size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="Toggle theme"
             >
