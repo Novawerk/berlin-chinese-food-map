@@ -180,6 +180,8 @@
 
     <!-- Search -->
     <string name="search_hint">搜索餐厅...</string>
+    <string name="search_prompt_title">按名字搜索</string>
+    <string name="search_prompt_subtitle">输入几个字（中文、英文或德文）即可找到餐厅。</string>
     <string name="map_loading">正在加载地图…</string>
     <string name="all">全部</string>
     <string name="no_results">未找到餐厅</string>

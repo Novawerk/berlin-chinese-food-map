@@ -180,6 +180,8 @@
 
     <!-- Search -->
     <string name="search_hint">Search restaurants...</string>
+    <string name="search_prompt_title">Search by name</string>
+    <string name="search_prompt_subtitle">Type a few characters in Chinese, English, or German to find a restaurant.</string>
     <string name="map_loading">Loading map…</string>
     <string name="all">All</string>
     <string name="no_results">No restaurants found</string>

@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -12,7 +11,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MyLocation
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,9 +22,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.filter_title
 import berlinfoodmap.composeapp.generated.resources.map_loading
-import berlinfoodmap.composeapp.generated.resources.search_hint
 import coil3.compose.LocalPlatformContext
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
+import com.novawerk.berlinfoodmap.ui.pages.search.RestaurantSearchBar
 import eu.buney.maps.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -39,7 +37,6 @@ import org.jetbrains.compose.resources.stringResource
 fun MapScreen(
     repository: RestaurantRepository,
     onNavigateDetail: (String) -> Unit,
-    onNavigateSearch: () -> Unit,
 ) {
     // VM is bound to the current NavBackStackEntry — survives recompose +
     // configuration changes; cleared when the destination leaves the back
@@ -193,26 +190,10 @@ fun MapScreen(
             }
         }
 
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            readOnly = true,
-            enabled = false,
-            placeholder = { Text(stringResource(Res.string.search_hint)) },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clickable { onNavigateSearch() },
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                disabledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
-            shape = MaterialTheme.shapes.extraLarge,
+        RestaurantSearchBar(
+            repository = repository,
+            onRestaurantClick = onNavigateDetail,
+            modifier = Modifier.align(Alignment.TopCenter),
         )
 
         if (viewModel.visibleRestaurants.isNotEmpty()) {
