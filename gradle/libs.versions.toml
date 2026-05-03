@@ -5,6 +5,14 @@ android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activity = "1.10.1"
 androidx-lifecycle = "2.9.2"
+# App version: source of truth for both Android (manifest) and iOS
+# (Config.xcconfig). `app-versionCode` auto-bumps on every push to main
+# via .github/workflows/bump-version.yml; `app-versionName` is
+# hand-edited for releases. CI builds can override either via the
+# VERSION_CODE / VERSION_NAME environment variables.
+app-versionCode = "1"
+app-versionName = "1.0.0"
+buildkonfig = "0.18.0"
 
 composeMultiplatform = "1.10.3"
 datastore = "1.2.1"
@@ -63,3 +71,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

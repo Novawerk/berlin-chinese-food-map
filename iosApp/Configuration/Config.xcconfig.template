@@ -3,5 +3,8 @@ TEAM_ID=
 PRODUCT_NAME=Berlin Food Map
 PRODUCT_BUNDLE_IDENTIFIER=com.novawerk.berlinfoodmap
 
+// CURRENT_PROJECT_VERSION = Android versionCode; MARKETING_VERSION = versionName.
+// Both auto-synced from gradle/libs.versions.toml by `./gradlew syncVersionToIos`
+// (run automatically by .github/workflows/bump-version.yml on every push to main).
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0.0

@@ -1,3 +1,5 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -5,6 +7,14 @@ val secretsFile = rootProject.file("secrets.properties")
 val secrets = Properties().apply {
     if (secretsFile.exists()) load(secretsFile.inputStream())
 }
+
+// App version: env-var override (CI uses this) → version catalog. Read
+// once here so both the Android manifest and the BuildKonfig block see
+// the same numbers without diverging.
+val appVersionName: String = System.getenv("VERSION_NAME")
+    ?: libs.versions.app.versionName.get()
+val appVersionCode: Int = System.getenv("VERSION_CODE")?.toIntOrNull()
+    ?: libs.versions.app.versionCode.get().toInt()
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -14,6 +24,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -91,8 +102,8 @@ android {
         applicationId = "com.novawerk.berlinfoodmap"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
         manifestPlaceholders["MAPS_API_KEY"] = secrets.getProperty("MAPS_API_KEY", "")
     }
     signingConfigs {
@@ -120,6 +131,40 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+// Exposes `BuildKonfig.VERSION_NAME` and `BuildKonfig.VERSION_CODE` to
+// commonMain — used by the Settings screen so the displayed version
+// always matches whatever Android+iOS were built with, no risk of the
+// hardcoded UI string drifting from the actual build.
+buildkonfig {
+    packageName = "com.novawerk.berlinfoodmap"
+    defaultConfigs {
+        buildConfigField(STRING, "VERSION_NAME", appVersionName)
+        buildConfigField(INT, "VERSION_CODE", appVersionCode.toString())
+    }
+}
+
+// Pushes the canonical version (libs.versions.toml) into the iOS
+// xcconfig so xcodebuild picks it up. Run from CI after a version bump
+// (see .github/workflows/bump-version.yml). No-op when the xcconfig is
+// missing — first-time iOS contributors copy the template.
+tasks.register("syncVersionToIos") {
+    description = "Sync app version from version catalog into iosApp Config.xcconfig."
+    val versionCode = libs.versions.app.versionCode.get()
+    val versionName = libs.versions.app.versionName.get()
+    val xcconfigFile = rootProject.file("iosApp/Configuration/Config.xcconfig")
+    doLast {
+        if (!xcconfigFile.exists()) {
+            println("Skipped: ${xcconfigFile.relativeTo(rootProject.projectDir)} not found.")
+            return@doLast
+        }
+        val content = xcconfigFile.readText()
+            .replace(Regex("CURRENT_PROJECT_VERSION=.*"), "CURRENT_PROJECT_VERSION=$versionCode")
+            .replace(Regex("MARKETING_VERSION=.*"), "MARKETING_VERSION=$versionName")
+        xcconfigFile.writeText(content)
+        println("Synced iOS version: $versionName ($versionCode)")
     }
 }
 
