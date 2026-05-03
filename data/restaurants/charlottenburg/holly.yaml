@@ -1,7 +1,9 @@
 name:
   en: Holly
   zh: 好利私房菜
-tags: []
+tags:
+  - SICHUAN
+  - BBQ
 address:
   addressLine1: Schustehrusstraße 3
   postalCode: "10585"

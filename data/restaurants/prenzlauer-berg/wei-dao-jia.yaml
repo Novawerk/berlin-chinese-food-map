@@ -1,7 +1,9 @@
 name:
   en: Wei Dao Jia
   zh: 味道佳
-tags: []
+tags:
+  - SICHUAN
+  - NOODLES
 address:
   addressLine1: Oderberger Str. 27
   postalCode: "10435"

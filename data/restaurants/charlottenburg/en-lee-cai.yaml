@@ -1,7 +1,10 @@
 name:
   en: En Lee Cai
   zh: 恩李菜
-tags: []
+tags:
+  - CANTONESE
+  - DUMPLINGS
+  - NOODLES
 address:
   addressLine1: Kurfürstendamm 218
   postalCode: "10719"

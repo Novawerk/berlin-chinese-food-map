@@ -1,7 +1,9 @@
 name:
   en: Royal Garden
   zh: 帝苑
-tags: []
+tags:
+  - MONGOLIAN
+  - BBQ
 address:
   addressLine1: Osdorfer Str. 26
   postalCode: "12207"

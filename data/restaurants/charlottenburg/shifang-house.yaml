@@ -1,7 +1,8 @@
 name:
   en: Shifang House
   zh: 食坊居
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Rankestr. 32
   postalCode: "10789"

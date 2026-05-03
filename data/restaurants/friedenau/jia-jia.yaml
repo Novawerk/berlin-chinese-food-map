@@ -1,7 +1,9 @@
 name:
   en: Jia Jia
   zh: 佳家
-tags: []
+tags:
+  - NORTHEASTERN
+  - BBQ
 address:
   addressLine1: Lefèvrestraße 1
   postalCode: "12161"

@@ -1,7 +1,8 @@
 name:
   en: Ming Jia
   zh: Ming Jia
-tags: []
+tags:
+  - CANTONESE
 address:
   addressLine1: Schloßstraße 32
   postalCode: "14059"

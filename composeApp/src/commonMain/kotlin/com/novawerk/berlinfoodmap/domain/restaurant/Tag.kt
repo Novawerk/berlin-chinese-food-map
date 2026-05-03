@@ -17,6 +17,9 @@ enum class Tag {
     // Regional cuisines
     SICHUAN, CANTONESE, NORTHERN, NORTHEASTERN,
     SHANGHAINESE, HUNAN, XINJIANG, TAIWANESE, MUSLIM,
+    // German-Berlin "Mongolisches Buffet / Grill" — a local invention,
+    // not authentic Mongolian cuisine, but recognisable as its own category.
+    MONGOLIAN,
 
     // Formats / what they serve
     HOTPOT, BBQ, NOODLES, DUMPLINGS, DIM_SUM, MALATANG,
@@ -35,6 +38,7 @@ val TAG_FAMILY: Map<Tag, TagFamily> = mapOf(
     Tag.XINJIANG to TagFamily.REGIONAL,
     Tag.TAIWANESE to TagFamily.REGIONAL,
     Tag.MUSLIM to TagFamily.REGIONAL,
+    Tag.MONGOLIAN to TagFamily.REGIONAL,
 
     Tag.HOTPOT to TagFamily.FORMAT,
     Tag.BBQ to TagFamily.FORMAT,

@@ -28,6 +28,7 @@ export const REGIONAL_TAGS = [
   "XINJIANG",
   "TAIWANESE",
   "MUSLIM",
+  "MONGOLIAN",
 ] as const;
 
 export const FORMAT_TAGS = [

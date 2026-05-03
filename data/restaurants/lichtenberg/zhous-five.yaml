@@ -1,7 +1,9 @@
 name:
   en: Zhou's Five
   zh: Zhou's Five
-tags: []
+tags:
+  - MONGOLIAN
+  - BBQ
 address:
   addressLine1: Marktstraße 6
   postalCode: "10317"

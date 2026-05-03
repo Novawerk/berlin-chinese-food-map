@@ -1,7 +1,10 @@
 name:
   en: You Mi
   zh: 优米
-tags: []
+tags:
+  - SICHUAN
+  - NOODLES
+  - CANTONESE
 address:
   addressLine1: Nürnberger Str. 28
   postalCode: "10789"

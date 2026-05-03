@@ -1,7 +1,9 @@
 name:
   en: King-Men
   zh: King-Men
-tags: []
+tags:
+  - CANTONESE
+  - NOODLES
 address:
   addressLine1: Falkenseer Chaussee 217
   postalCode: "13583"

@@ -1,7 +1,9 @@
 name:
   en: Wiling
   zh: 威玲
-tags: []
+tags:
+  - SICHUAN
+  - NOODLES
 address:
   addressLine1: Bundespl. 12
   postalCode: "10715"

@@ -1,7 +1,10 @@
 name:
   en: Hua Li Du
   zh: 华丽都
-tags: []
+tags:
+  - SHANGHAINESE
+  - DUMPLINGS
+  - NOODLES
 address:
   addressLine1: Dietzgenstraße 11A
   postalCode: "13156"

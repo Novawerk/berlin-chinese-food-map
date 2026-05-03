@@ -1,7 +1,8 @@
 name:
   en: Shanshan
   zh: 姗姗小屋
-tags: []
+tags:
+  - HUNAN
 address:
   addressLine1: Gleimstraße 24
   postalCode: "10437"

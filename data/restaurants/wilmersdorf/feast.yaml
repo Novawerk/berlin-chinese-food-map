@@ -1,7 +1,9 @@
 name:
   en: Feast
   zh: 王家一号
-tags: []
+tags:
+  - SICHUAN
+  - NORTHERN
 address:
   addressLine1: Meierottostraße 1
   postalCode: "10719"

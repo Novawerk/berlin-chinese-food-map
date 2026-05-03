@@ -30,6 +30,7 @@ import berlinfoodmap.composeapp.generated.resources.tag_fusion
 import berlinfoodmap.composeapp.generated.resources.tag_hotpot
 import berlinfoodmap.composeapp.generated.resources.tag_hunan
 import berlinfoodmap.composeapp.generated.resources.tag_malatang
+import berlinfoodmap.composeapp.generated.resources.tag_mongolian
 import berlinfoodmap.composeapp.generated.resources.tag_muslim
 import berlinfoodmap.composeapp.generated.resources.tag_noodles
 import berlinfoodmap.composeapp.generated.resources.tag_northeastern
@@ -165,6 +166,7 @@ fun tagDisplayName(tag: Tag): String = when (tag) {
     Tag.XINJIANG -> stringResource(Res.string.tag_xinjiang)
     Tag.TAIWANESE -> stringResource(Res.string.tag_taiwanese)
     Tag.MUSLIM -> stringResource(Res.string.tag_muslim)
+    Tag.MONGOLIAN -> stringResource(Res.string.tag_mongolian)
     Tag.HOTPOT -> stringResource(Res.string.tag_hotpot)
     Tag.BBQ -> stringResource(Res.string.tag_bbq)
     Tag.NOODLES -> stringResource(Res.string.tag_noodles)

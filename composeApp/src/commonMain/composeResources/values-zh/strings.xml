@@ -49,6 +49,7 @@
     <string name="tag_xinjiang">新疆菜</string>
     <string name="tag_taiwanese">台菜</string>
     <string name="tag_muslim">清真</string>
+    <string name="tag_mongolian">蒙古烤肉</string>
 
     <!-- Tags: formats -->
     <string name="tag_hotpot">火锅</string>
