@@ -8,6 +8,17 @@ A community-driven, non-profit digital guide to Chinese restaurants in Berlin. B
 
 **By [Novawerk](https://github.com/Novawerk)** — Open-source apps, made with care.
 
+## Screenshots
+
+<p align="center">
+  <img src="art/appstore-screenshots/01-map-en.png" width="200" alt="Map view with cuisine-tagged POI markers" />
+  <img src="art/appstore-screenshots/03-filter-en.png" width="200" alt="Filter sheet — 22-tag taxonomy across regional cuisines" />
+  <img src="art/appstore-screenshots/04-detail-en.png" width="200" alt="Restaurant detail sheet with photos and actions" />
+  <img src="art/appstore-screenshots/06-settings-en.png" width="200" alt="Settings — appearance, language, team, privacy" />
+</p>
+
+<p align="center"><sub>Map · Filter · Detail · Settings (English UI · iPhone 6.5")</sub></p>
+
 ## Project Status
 
 **MVP development in progress.** POC for all four pillars was validated in Q1 2026; the project is now in Phase 2 of the roadmap (polished map UX, restaurant detail screen, data pipeline maturation).

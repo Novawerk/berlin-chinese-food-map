@@ -8,6 +8,17 @@
 
 **由 [Novawerk](https://github.com/Novawerk) 打造** — 开源应用，用心制作。
 
+## 应用截图
+
+<p align="center">
+  <img src="art/appstore-screenshots/01-map-zh.png" width="200" alt="地图：带菜系标签的 POI 标记" />
+  <img src="art/appstore-screenshots/03-filter-zh.png" width="200" alt="筛选面板 · 22 项菜系标签" />
+  <img src="art/appstore-screenshots/04-detail-zh.png" width="200" alt="餐厅详情：照片画廊与一键操作" />
+  <img src="art/appstore-screenshots/06-settings-zh.png" width="200" alt="设置：主题、语言、团队、隐私" />
+</p>
+
+<p align="center"><sub>地图 · 筛选 · 详情 · 设置（中文界面 · iPhone 6.5"）</sub></p>
+
 ## 项目状态
 
 **MVP 开发进行中。** 四大核心模块的 POC 已于 2026 Q1 全部验证完毕；项目目前处于路线图第二阶段（精致地图 UX、餐厅详情页、数据流水线持续打磨）。
