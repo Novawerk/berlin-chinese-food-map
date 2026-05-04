@@ -6,6 +6,17 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Show your location on the Berlin Chinese Food Map so we can recommend nearby restaurants.</string>
+	<!-- Required even though we never request "always" location: Apple's
+	     static analysis flags any transitive dependency that references
+	     CLLocationManager's always-location APIs (Compass / GoogleMaps
+	     iOS SDK both touch them). The resulting App Store warning
+	     ITMS-90683 demands these strings even if the runtime never asks
+	     for that permission. The wording matches our actual ask
+	     ("when in use") since we never invoke the always-flow. -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Show your location on the Berlin Chinese Food Map so we can recommend nearby restaurants.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Show your location on the Berlin Chinese Food Map so we can recommend nearby restaurants.</string>
 	<!-- Surfaces MAPS_API_KEY from Configuration/Config.xcconfig as a
 	     Bundle key. iOSApp.swift reads it at startup and hands it to
 	     GMSServices.provideAPIKey. Keeping it out of source control via
