@@ -4,6 +4,11 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<!-- App uses only HTTPS / standard system crypto, so it's exempt from
+	     U.S. export compliance. Declaring here skips the per-build
+	     export-compliance prompt in App Store Connect. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Show your location on the Berlin Chinese Food Map so we can recommend nearby restaurants.</string>
 	<!-- Required even though we never request "always" location: Apple's

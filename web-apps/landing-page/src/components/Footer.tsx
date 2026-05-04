@@ -46,6 +46,12 @@ export function Footer() {
             Admin
           </a>
           <Link
+            href="/support"
+            className="transition-colors hover:text-foreground"
+          >
+            {t("Support", "支持")}
+          </Link>
+          <Link
             href="/privacy"
             className="transition-colors hover:text-foreground"
           >
