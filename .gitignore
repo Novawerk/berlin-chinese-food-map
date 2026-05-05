@@ -10,7 +10,6 @@ xcuserdata
 *.keystore
 *.p12
 secrets.properties
-GoogleService-Info.plist
 .env
 *.log
 hs_err_pid*.log
