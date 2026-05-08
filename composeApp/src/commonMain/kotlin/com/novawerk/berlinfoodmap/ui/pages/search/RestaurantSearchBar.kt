@@ -51,8 +51,10 @@ private const val MIN_QUERY_LENGTH = 2
 /**
  * M3 [SearchBar] wired to the restaurant repository. Lives at the top of the
  * map: collapsed it's a pill, tapping expands it in place into a full-screen
- * search overlay (no separate route). Search is name-only across ZH / EN / DE
- * and ignores any active map filters.
+ * search overlay (no separate route). Matches restaurant names across
+ * ZH / EN / DE *and* tag aliases (cuisine + format, e.g. "火锅", "川菜",
+ * "hotpot" — see [matchTagsForQuery]). Name hits rank above tag-only hits.
+ * Active map filters are ignored.
  *
  * Tapping a result fires [onRestaurantClick] and collapses the bar.
  */
@@ -84,11 +86,20 @@ fun RestaurantSearchBar(
             return@LaunchedEffect
         }
         delay(200)
-        results = allRestaurants.filter { restaurant ->
-            restaurant.name.zh.contains(trimmed, ignoreCase = true) ||
+        val matchedTags = matchTagsForQuery(trimmed)
+        val nameHits = mutableListOf<Restaurant>()
+        val tagOnlyHits = mutableListOf<Restaurant>()
+        for (restaurant in allRestaurants) {
+            val nameHit = restaurant.name.zh.contains(trimmed, ignoreCase = true) ||
                 restaurant.name.en.contains(trimmed, ignoreCase = true) ||
                 (restaurant.name.de?.contains(trimmed, ignoreCase = true) == true)
+            when {
+                nameHit -> nameHits += restaurant
+                matchedTags.isNotEmpty() && restaurant.tags.any { it in matchedTags } ->
+                    tagOnlyHits += restaurant
+            }
         }
+        results = nameHits + tagOnlyHits
     }
 
     val collapse = {

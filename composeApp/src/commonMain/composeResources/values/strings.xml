@@ -200,8 +200,8 @@
 
     <!-- Search -->
     <string name="search_hint">Search restaurants...</string>
-    <string name="search_prompt_title">Search by name</string>
-    <string name="search_prompt_subtitle">Type a few characters in Chinese, English, or German to find a restaurant.</string>
+    <string name="search_prompt_title">Find a restaurant</string>
+    <string name="search_prompt_subtitle">Search by name, cuisine, or category — try “Hotpot”, “Sichuan”, or part of a restaurant name.</string>
     <string name="map_loading">Loading map…</string>
     <string name="all">All</string>
     <string name="no_results">No restaurants found</string>
@@ -256,4 +256,19 @@
     <string name="team_manmanyou_role">Slow walks · City content</string>
     <string name="team_manmanyou_bio">「柏林慢慢游」(Berlin Slowtour) is a Berlin-based slow-travel community. Every month they organize a deep walking tour of a different Berlin neighborhood (Kiez), digging into its history, architecture, culture, and local stories — they\'ve already walked Kreuzberg, Schöneberg, Pankow, Prenzlauer Berg, and many other corners of the city.\n\nAlongside the neighborhood walks, they put together a systematic catalogue of Berlin\'s Chinese restaurants — 200+ entries — which seeded the data behind Berlin Food Map.\n\nTheir walking notes and event announcements live on Xiaohongshu at @Berlin_Slowtour.</string>
     <string name="team_manmanyou_visit">View on Xiaohongshu</string>
+
+    <!-- Splash screen -->
+    <string name="splash_brand_lockup">Novawerk × PinWO</string>
+
+    <!-- Onboarding (first-launch tour) -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get started</string>
+
+    <string name="onboarding_welcome_title">Berlin Chinese Food Map</string>
+    <string name="onboarding_welcome_subtitle">A non-profit guide to Chinese restaurants in Berlin — built and maintained by the community.</string>
+    <string name="onboarding_welcome_body">Every restaurant on this map was added by someone who actually eats there. The data lives as plain YAML files in a public GitHub repository — open-source, ad-free, and free of trackers. No accounts, no ads, no analytics. Just food.\n\nTwo independent teams keep the project alive — meet them next.</string>
+
+    <string name="onboarding_team_one_eyebrow">Team 1 of 2</string>
+    <string name="onboarding_team_two_eyebrow">Team 2 of 2</string>
 </resources>
