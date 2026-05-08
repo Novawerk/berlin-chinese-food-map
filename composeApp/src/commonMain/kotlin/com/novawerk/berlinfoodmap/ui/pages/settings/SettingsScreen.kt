@@ -13,10 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.BuildKonfig
+import com.novawerk.berlinfoodmap.domain.feedback.FeedbackRepository
 import com.novawerk.berlinfoodmap.ui.components.MenuRow
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.dark_mode
+import berlinfoodmap.composeapp.generated.resources.feedback_subtitle
+import berlinfoodmap.composeapp.generated.resources.feedback_title
 import berlinfoodmap.composeapp.generated.resources.language
 import berlinfoodmap.composeapp.generated.resources.system_default
 import berlinfoodmap.composeapp.generated.resources.light
@@ -40,12 +43,14 @@ import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
 fun SettingsScreen(
     currentDarkMode: String,
     currentLanguage: String?,
+    feedbackRepository: FeedbackRepository,
     onDarkModeChange: (String) -> Unit,
     onLanguageChange: (String?) -> Unit,
 ) {
     var showAboutSheet by remember { mutableStateOf(false) }
     var showNovawerkSheet by remember { mutableStateOf(false) }
     var showManmanyouSheet by remember { mutableStateOf(false) }
+    var showFeedbackSheet by remember { mutableStateOf(false) }
 
     // No top app bar — Settings is a tab destination reached via the bottom
     // navigation, not a pushed screen. The bottom-nav label already says
@@ -101,6 +106,13 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(24.dp))
         HorizontalDivider()
+
+        // Feedback — in-app form, no GitHub account required
+        MenuRow(
+            title = stringResource(Res.string.feedback_title),
+            supportingText = stringResource(Res.string.feedback_subtitle),
+            onClick = { showFeedbackSheet = true },
+        )
 
         // About — story, contribute, and contributors live in one merged sheet
         MenuRow(
@@ -182,5 +194,11 @@ fun SettingsScreen(
     }
     if (showManmanyouSheet) {
         ManmanyouBottomSheet(onDismiss = { showManmanyouSheet = false })
+    }
+    if (showFeedbackSheet) {
+        FeedbackBottomSheet(
+            repository = feedbackRepository,
+            onDismiss = { showFeedbackSheet = false },
+        )
     }
 }
