@@ -29,6 +29,7 @@ internal const val MARKER_COVER_PX = 128
 internal fun RestaurantMarker(
     restaurant: Restaurant,
     cover: MarkerCover?,
+    isFavorite: Boolean,
     descriptorCache: SnapshotStateMap<String, CachedMarkerDescriptor>,
     onClick: () -> Unit,
 ) {
@@ -40,17 +41,25 @@ internal fun RestaurantMarker(
     )
 
     val cached = descriptorCache[restaurant.id]
-    val icon: BitmapDescriptor = if (cached != null && cached.coverReady == coverReady) {
+    val icon: BitmapDescriptor = if (
+        cached != null &&
+        cached.coverReady == coverReady &&
+        cached.isFavorite == isFavorite
+    ) {
         cached.descriptor
     } else {
-        val rendered = rememberStableComposeBitmapDescriptor(restaurant.id, coverReady) {
+        val rendered = rememberStableComposeBitmapDescriptor(
+            restaurant.id, coverReady, isFavorite,
+        ) {
             MiniRestaurantCard(
                 restaurant = restaurant,
                 coverImage = (cover as? MarkerCover.Loaded)?.image,
+                isFavorite = isFavorite,
             )
         }
         SideEffect {
-            descriptorCache[restaurant.id] = CachedMarkerDescriptor(coverReady, rendered)
+            descriptorCache[restaurant.id] =
+                CachedMarkerDescriptor(coverReady, isFavorite, rendered)
         }
         rendered
     }

@@ -7,12 +7,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import eu.buney.maps.BitmapDescriptor
 
 /**
- * One bitmap descriptor + the cover-state it was rendered for. The
+ * One bitmap descriptor + the visual state it was rendered for. The
  * coverReady flag lets us evict the placeholder-pill descriptor once the
- * photo loads and replace it with the photo-pill descriptor.
+ * photo loads; the isFavorite flag re-rasterises the pill with/without
+ * the heart marker when the user toggles their saved set.
  */
 internal data class CachedMarkerDescriptor(
     val coverReady: Boolean,
+    val isFavorite: Boolean,
     val descriptor: BitmapDescriptor,
 )
 

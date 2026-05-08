@@ -12,6 +12,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
+import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
@@ -42,28 +43,53 @@ import kotlinx.coroutines.withContext
  */
 internal class MapViewModel(
     repository: RestaurantRepository,
+    private val favoritesRepository: FavoritesRepository,
     private val context: PlatformContext,
 ) : ViewModel() {
 
     var allRestaurants by mutableStateOf<List<Restaurant>>(emptyList())
         private set
 
-    var selectedCuisine by mutableStateOf<Tag?>(null)
+    /**
+     * Multi-select cuisine filter. Within a family, selections are OR-ed
+     * (any match in the set passes); across families, AND. Empty set means
+     * "no filter on this family". Same model for [selectedFormats].
+     */
+    var selectedCuisines by mutableStateOf<Set<Tag>>(emptySet())
         private set
 
-    var selectedFormat by mutableStateOf<Tag?>(null)
+    var selectedFormats by mutableStateOf<Set<Tag>>(emptySet())
+        private set
+
+    var favoritesOnly by mutableStateOf(false)
+        private set
+
+    /**
+     * "Editor's Picks only" filter — restaurants with the editorial
+     * `featured` flag set in the YAML data. The same flag drives the star
+     * indicator on cards and markers.
+     */
+    var featuredOnly by mutableStateOf(false)
+        private set
+
+    /** Local-favorites set, kept in sync with [FavoritesRepository]. */
+    var favorites by mutableStateOf<Set<String>>(emptySet())
         private set
 
     val restaurantsFiltered: List<Restaurant> by derivedStateOf {
         allRestaurants.filter { r ->
-            (selectedCuisine == null || selectedCuisine in r.tags) &&
-                (selectedFormat == null || selectedFormat in r.tags)
+            (selectedCuisines.isEmpty() || selectedCuisines.any { it in r.tags }) &&
+                (selectedFormats.isEmpty() || selectedFormats.any { it in r.tags }) &&
+                (!favoritesOnly || r.id in favorites) &&
+                (!featuredOnly || r.featured)
         }
     }
 
     val activeFilterCount: Int by derivedStateOf {
-        (if (selectedCuisine != null) 1 else 0) +
-            (if (selectedFormat != null) 1 else 0)
+        selectedCuisines.size +
+            selectedFormats.size +
+            (if (favoritesOnly) 1 else 0) +
+            (if (featuredOnly) 1 else 0)
     }
 
     var clusters by mutableStateOf<List<RestaurantCluster>>(emptyList())
@@ -97,6 +123,9 @@ internal class MapViewModel(
             repository.observeAll().collect { allRestaurants = it }
         }
         viewModelScope.launch {
+            favoritesRepository.observe().collect { favorites = it }
+        }
+        viewModelScope.launch {
             // React to filter changes by reconciling the cover cache: drop
             // entries no longer in the filter, kick off loads for newcomers.
             // Existing entries are kept so cluster/zoom changes don't reload.
@@ -104,17 +133,27 @@ internal class MapViewModel(
         }
     }
 
-    fun setCuisine(tag: Tag?) {
-        selectedCuisine = tag
+    fun setCuisines(tags: Set<Tag>) {
+        selectedCuisines = tags
     }
 
-    fun setFormat(tag: Tag?) {
-        selectedFormat = tag
+    fun setFormats(tags: Set<Tag>) {
+        selectedFormats = tags
+    }
+
+    fun toggleFavoritesOnly(value: Boolean) {
+        favoritesOnly = value
+    }
+
+    fun toggleFeaturedOnly(value: Boolean) {
+        featuredOnly = value
     }
 
     fun resetFilters() {
-        selectedCuisine = null
-        selectedFormat = null
+        selectedCuisines = emptySet()
+        selectedFormats = emptySet()
+        favoritesOnly = false
+        featuredOnly = false
     }
 
     fun updateVisibleBounds(bounds: LatLngBounds?) {

@@ -28,6 +28,24 @@
     <string name="filter_distance">距离</string>
     <string name="filter_title">筛选</string>
     <string name="filter_reset">重置</string>
+    <string name="filter_favorites_only">只看收藏</string>
+    <string name="filter_favorites_subtitle">只显示你收藏过的餐厅</string>
+    <string name="filter_featured_only">只看编辑精选</string>
+    <string name="filter_featured_subtitle">只显示编辑推荐的餐厅</string>
+    <string name="districts_title">街区</string>
+    <string name="districts_action">按街区浏览</string>
+    <string name="filter_done">完成</string>
+    <string name="filter_clear">清除</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_selected_count">已选 %1$d 项</string>
+    <string name="filter_apply">应用筛选</string>
+    <string name="filter_apply_count">应用 · 已选 %1$d 项</string>
+
+    <!-- Favorites -->
+    <string name="action_favorite">收藏</string>
+    <string name="action_unfavorite">已收藏</string>
+    <string name="favorites_empty_title">还没有收藏</string>
+    <string name="favorites_empty_subtitle">点击餐厅上的爱心，把它添加到收藏。</string>
 
     <!-- Detail page -->
     <string name="open_in_maps">在谷歌地图打开</string>

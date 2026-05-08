@@ -32,6 +32,7 @@ import berlinfoodmap.composeapp.generated.resources.settings
 @Composable
 fun App(component: AppComponent) {
     val settings = component.settingsRepository
+    val favoritesRepository = component.favoritesRepository
     val authService = component.authService
     val restaurantRepository = component.restaurantRepository
     val scope = rememberCoroutineScope()
@@ -132,6 +133,7 @@ fun App(component: AppComponent) {
                         composable<MapRoute> {
                             MapScreen(
                                 repository = restaurantRepository,
+                                favoritesRepository = favoritesRepository,
                                 onNavigateDetail = { id -> detailRestaurantId = id },
                             )
                         }
@@ -164,6 +166,7 @@ fun App(component: AppComponent) {
                         DetailScreen(
                             restaurantId = id,
                             repository = restaurantRepository,
+                            favoritesRepository = favoritesRepository,
                             authService = authService,
                         )
                     }

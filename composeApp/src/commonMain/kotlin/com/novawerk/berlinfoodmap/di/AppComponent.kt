@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.novawerk.berlinfoodmap.data.remote.FirebaseAuthService
 import com.novawerk.berlinfoodmap.data.remote.FirestoreRestaurantRepository
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
+import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.settings.SettingsRepository
 import me.tatarka.inject.annotations.Component
@@ -16,6 +17,7 @@ abstract class AppComponent(
     @get:Provides protected val dataStore: DataStore<Preferences>
 ) {
     abstract val settingsRepository: SettingsRepository
+    abstract val favoritesRepository: FavoritesRepository
     abstract val restaurantRepository: RestaurantRepository
     abstract val authService: AuthService
 

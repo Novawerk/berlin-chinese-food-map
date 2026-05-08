@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineSeatFlat
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -63,6 +64,7 @@ import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 internal fun MiniRestaurantCard(
     restaurant: Restaurant,
     coverImage: Image?,
+    isFavorite: Boolean = false,
 ) {
     val isClosed = rememberIsCurrentlyClosed(restaurant.googleData?.periods.orEmpty())
     val nameColor = if (isClosed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
@@ -134,6 +136,16 @@ internal fun MiniRestaurantCard(
                     if (restaurant.featured) {
                         Icon(
                             Icons.Filled.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                            else MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.width(3.dp))
+                    }
+                    if (isFavorite) {
+                        Icon(
+                            Icons.Filled.Favorite,
                             contentDescription = null,
                             modifier = Modifier.size(12.dp),
                             tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
