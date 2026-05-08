@@ -34,6 +34,8 @@
     <string name="filter_featured_subtitle">只显示编辑推荐的餐厅</string>
     <string name="districts_title">街区</string>
     <string name="districts_action">按街区浏览</string>
+    <string name="districts_subtitle">点击任意街区，地图会自动定位过去</string>
+    <string name="districts_count_label">%1$d 家</string>
     <string name="filter_done">完成</string>
     <string name="filter_clear">清除</string>
     <string name="filter_all">全部</string>
