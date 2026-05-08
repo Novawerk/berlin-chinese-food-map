@@ -30,7 +30,10 @@ around the 22-tag taxonomy + opening-hours signals landed in May 2026.
 - **Navigation** — Compose Navigation, type-safe `@Serializable` routes in `ui/navigation/Routes.kt`
 - **State** — `androidx.lifecycle.ViewModel` + Compose snapshot state
   (`mutableStateOf` / `derivedStateOf` / `mutableStateMapOf`). No StateFlow/LiveData boilerplate.
-- **Backend** — Firebase via `dev.gitlive:firebase-*` (Anonymous Auth + Firestore with persistent cache)
+- **Backend** — Firebase via `dev.gitlive:firebase-*` (Anonymous Auth, Firestore
+  with persistent cache, Analytics, Crashlytics). Crashlytics auto-collects on
+  both platforms once the SDK is on the classpath; Analytics events are routed
+  through the `AnalyticsService` interface (see DI section).
 - **Local storage** — Jetpack DataStore (currently for theme + language settings only)
 - **Maps** — `eu.buney.maps:kmp-maps-compose` (Google Maps on Android, MapKit on iOS)
 - **Images** — Coil 3 (`io.coil-kt.coil3:coil-compose` + `coil-network-ktor3`)
@@ -51,12 +54,13 @@ composeApp/src/
 │   ├── Platform.kt                 # expect declarations
 │   ├── di/                         # kotlin-inject AppComponent (process-singleton)
 │   ├── domain/
+│   │   ├── analytics/              # AnalyticsService interface (events + crash logs)
 │   │   ├── auth/                   # AuthService interface
 │   │   ├── common/                 # Localizable + preferred(locale) helper
 │   │   ├── restaurant/             # Restaurant, Tag, GooglePlaceData, OpeningStatus
 │   │   └── settings/               # SettingsRepository (DataStore-backed)
 │   ├── data/
-│   │   └── remote/                 # FirebaseAuthService, FirestoreRestaurantRepository
+│   │   └── remote/                 # FirebaseAuthService, FirestoreRestaurantRepository, FirebaseAnalyticsService
 │   └── ui/
 │       ├── theme/                  # Pinwo brand palette + Source Sans 3 typography
 │       ├── locale/                 # LocalAppLocale (expect/actual)
@@ -213,8 +217,13 @@ file under `ui/pages/map/`.** A handful of non-obvious things to know:
    POI dot. Closed restaurants render with a moon icon and faded text.
 7. Search supports Chinese, English, and German names.
 8. Dual-language UI (EN + ZH). German is restaurant-name-only.
-9. Non-profit, community-driven — no ads, no analytics, no third-party
-   tracking SDKs.
+9. Non-profit, community-driven — no ads, no third-party tracking SDKs.
+   Firebase Analytics + Crashlytics are the only first-party telemetry,
+   used to size the user base and triage crashes. Don't log restaurant
+   names, user-typed search queries, GPS coordinates, or any other PII —
+   restaurant ids and short tag/route strings only. The anonymous Firebase
+   uid is set as the Analytics user id and Crashlytics user id at startup
+   so reports group per install.
 
 ## Collaboration Model
 

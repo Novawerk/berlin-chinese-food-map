@@ -10,6 +10,8 @@
 		FB0001000000000000000001 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FB0001000000000000000002 /* FirebaseAuth */; };
 		FB0001000000000000000003 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FB0001000000000000000004 /* FirebaseCore */; };
 		FB0001000000000000000005 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FB0001000000000000000006 /* FirebaseFirestore */; };
+		FB0001000000000000000009 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FB000100000000000000000A /* FirebaseAnalytics */; };
+		FB000100000000000000000B /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = FB000100000000000000000C /* FirebaseCrashlytics */; };
 		GM0001000000000000000001 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = GM0001000000000000000002 /* GoogleMaps */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +53,8 @@
 				FB0001000000000000000003 /* FirebaseCore in Frameworks */,
 				FB0001000000000000000001 /* FirebaseAuth in Frameworks */,
 				FB0001000000000000000005 /* FirebaseFirestore in Frameworks */,
+				FB0001000000000000000009 /* FirebaseAnalytics in Frameworks */,
+				FB000100000000000000000B /* FirebaseCrashlytics in Frameworks */,
 				GM0001000000000000000001 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,6 +90,7 @@
 				0BFA0C43E6952352FB71E7E6 /* Sources */,
 				8602BF9C784AA91570F28B40 /* Frameworks */,
 				5A35392D3DC3348C4A86570F /* Resources */,
+				FB000100000000000000000D /* Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
@@ -99,6 +104,8 @@
 				FB0001000000000000000002 /* FirebaseAuth */,
 				FB0001000000000000000004 /* FirebaseCore */,
 				FB0001000000000000000006 /* FirebaseFirestore */,
+				FB000100000000000000000A /* FirebaseAnalytics */,
+				FB000100000000000000000C /* FirebaseCrashlytics */,
 				GM0001000000000000000002 /* GoogleMaps */,
 			);
 			productName = iosApp;
@@ -155,6 +162,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		FB000100000000000000000D /* Upload Crashlytics dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/iosApp/GoogleService-Info.plist",
+			);
+			name = "Upload Crashlytics dSYMs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		AEBC45CD50E377C4EAB5D50C /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -439,6 +467,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		FB000100000000000000000A /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		FB000100000000000000000C /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB0001000000000000000007 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		GM0001000000000000000002 /* GoogleMaps */ = {
 			isa = XCSwiftPackageProductDependency;

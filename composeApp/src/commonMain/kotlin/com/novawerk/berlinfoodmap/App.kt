@@ -16,6 +16,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import com.novawerk.berlinfoodmap.di.AppComponent
+import com.novawerk.berlinfoodmap.domain.analytics.AnalyticsService
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.navigation.*
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
@@ -43,6 +44,7 @@ fun App(component: AppComponent) {
     val authService = component.authService
     val restaurantRepository = component.restaurantRepository
     val feedbackRepository = component.feedbackRepository
+    val analytics = component.analyticsService
     val scope = rememberCoroutineScope()
 
     var darkMode by remember { mutableStateOf("system") }
@@ -71,6 +73,10 @@ fun App(component: AppComponent) {
         if (authService.getCurrentUid() == null) {
             runCatching { authService.signInAnonymously() }
         }
+        // Tag the Analytics user / Crashlytics session with the anon uid so
+        // crash reports group per-install and we can join Analytics events
+        // back to the same id. Cheap, fire-and-forget.
+        analytics.setUserId(authService.getCurrentUid())
     }
 
     setSingletonImageLoaderFactory { context ->
@@ -78,6 +84,24 @@ fun App(component: AppComponent) {
             .components { add(KtorNetworkFetcherFactory()) }
             .crossfade(true)
             .build()
+    }
+
+    LaunchedEffect(phase) {
+        when (phase) {
+            AppPhase.Splash -> analytics.logScreenView("Splash")
+            AppPhase.Onboarding -> analytics.logScreenView("Onboarding")
+            AppPhase.Main -> Unit // MainShell logs per-route inside the NavHost
+        }
+    }
+
+    LaunchedEffect(detailRestaurantId) {
+        detailRestaurantId?.let { id ->
+            analytics.logEvent(
+                name = "restaurant_open",
+                params = mapOf("restaurant_id" to id),
+            )
+            analytics.logScreenView("Detail")
+        }
     }
 
     CompositionLocalProvider(
@@ -100,15 +124,24 @@ fun App(component: AppComponent) {
                         favoritesRepository = favoritesRepository,
                         feedbackRepository = feedbackRepository,
                         authService = authService,
+                        analytics = analytics,
                         detailRestaurantId = detailRestaurantId,
                         onDetailIdChange = { detailRestaurantId = it },
                         onDarkModeChange = { newMode ->
                             darkMode = newMode
                             scope.launch { settings.setDarkMode(newMode) }
+                            analytics.logEvent(
+                                name = "dark_mode_change",
+                                params = mapOf("mode" to newMode),
+                            )
                         },
                         onLanguageChange = { newLang ->
                             language = newLang
                             scope.launch { settings.setLanguage(newLang) }
+                            analytics.logEvent(
+                                name = "language_change",
+                                params = mapOf("language" to (newLang ?: "system")),
+                            )
                         },
                     )
                 }
@@ -126,6 +159,7 @@ private fun MainShell(
     favoritesRepository: com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository,
     feedbackRepository: com.novawerk.berlinfoodmap.domain.feedback.FeedbackRepository,
     authService: com.novawerk.berlinfoodmap.domain.auth.AuthService,
+    analytics: AnalyticsService,
     detailRestaurantId: String?,
     onDetailIdChange: (String?) -> Unit,
     onDarkModeChange: (String) -> Unit,
@@ -134,6 +168,19 @@ private fun MainShell(
     val navController = rememberNavController()
     val currentEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentEntry?.destination?.route
+
+    LaunchedEffect(currentRoute) {
+        // Map nav routes to short, stable screen names. We don't pass the
+        // raw kotlinx-serialization route string because it includes the
+        // package prefix and reads as noise in the Analytics dashboard.
+        val screen = when {
+            currentRoute == null -> null
+            currentRoute.contains("MapRoute") -> "Map"
+            currentRoute.contains("SettingsRoute") -> "Settings"
+            else -> null
+        }
+        screen?.let { analytics.logScreenView(it) }
+    }
 
     val showBottomBar = currentRoute?.let {
         it.contains("MapRoute") || it.contains("SettingsRoute")

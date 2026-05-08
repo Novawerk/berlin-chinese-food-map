@@ -24,6 +24,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -85,6 +86,8 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.gitlive.firebase.auth)
             implementation(libs.gitlive.firebase.firestore)
+            implementation(libs.gitlive.firebase.analytics)
+            implementation(libs.gitlive.firebase.crashlytics)
             implementation(libs.kmp.maps.compose)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
