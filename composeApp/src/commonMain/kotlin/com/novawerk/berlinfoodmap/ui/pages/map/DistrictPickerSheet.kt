@@ -48,6 +48,31 @@ import org.jetbrains.compose.resources.stringResource
 private const val POPULAR_TOP_N = 3
 
 /**
+ * Ortsteile that sat in the Soviet sector during the 1961–1989 division.
+ * Used purely for visual variety in the picker — gives the non-popular
+ * cards a meaningful split (East = warm gold / Ampelmännchen-yellow,
+ * West = sage / Tiergarten-green) instead of one homogeneous neutral.
+ *
+ * Berlin's modern boroughs were reshuffled in 2001, but the districts
+ * stored in `Restaurant.address.district` are the original Ortsteile,
+ * so this list maps cleanly. Mitte (Ortsteil, not borough) was the
+ * Soviet-sector core — Museumsinsel, Brandenburger Tor — and counts as East.
+ */
+private val EAST_BERLIN_DISTRICTS: Set<String> = setOf(
+    "Mitte",
+    "Friedrichshain",
+    "Prenzlauer Berg",
+    "Pankow",
+    "Lichtenberg",
+    "Marzahn",
+    "Hellersdorf",
+    "Französisch Buchholz",
+    "Johannisthal",
+)
+
+private enum class CardVariant { Popular, East, West }
+
+/**
  * Bottom-sheet picker for Berlin neighbourhoods, laid out as a 2-column
  * grid. The top [POPULAR_TOP_N] districts (by restaurant count) get the
  * brand `primaryContainer` (PinwoPink) treatment with a star marker —
@@ -181,23 +206,31 @@ private fun DistrictCard(
     popular: Boolean,
     onClick: () -> Unit,
 ) {
-    // Popular tiles carry the brand: full `primary` (PinwoRed) with white
-    // text — they're the theme moment. Non-popular tiles sit on neutral
-    // `surfaceContainerHigh` (a step up from the sheet surface) with a
-    // brand-red `primary` accent for the count chip and star — keeps
-    // the theme present without painting every card pink, which read
-    // too washed-out against the cream surface.
-    val container = if (popular) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerHigh
+    // Three tiers:
+    //  - Popular: full `primary` (PinwoRed) with white text — the theme
+    //    moment. Always wins regardless of side.
+    //  - East: `tertiaryContainer` (PinwoGold) — warm yellow nodding to
+    //    the iconic GDR Ampelmännchen.
+    //  - West: `secondaryContainer` (PinwoSage) — sage green nodding to
+    //    West-Berlin parkland (Tiergarten, Grunewald).
+    // Brand-red accent on the count chip and star keeps the visual rhythm
+    // consistent across all three tiers.
+    val variant = when {
+        popular -> CardVariant.Popular
+        entry.name in EAST_BERLIN_DISTRICTS -> CardVariant.East
+        else -> CardVariant.West
     }
-    val onContainer = if (popular) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
+    val container = when (variant) {
+        CardVariant.Popular -> MaterialTheme.colorScheme.primary
+        CardVariant.East -> MaterialTheme.colorScheme.tertiaryContainer
+        CardVariant.West -> MaterialTheme.colorScheme.secondaryContainer
     }
-    val accent = if (popular) {
+    val onContainer = when (variant) {
+        CardVariant.Popular -> MaterialTheme.colorScheme.onPrimary
+        CardVariant.East -> MaterialTheme.colorScheme.onTertiaryContainer
+        CardVariant.West -> MaterialTheme.colorScheme.onSecondaryContainer
+    }
+    val accent = if (variant == CardVariant.Popular) {
         MaterialTheme.colorScheme.onPrimary
     } else {
         MaterialTheme.colorScheme.primary
