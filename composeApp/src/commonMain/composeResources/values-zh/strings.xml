@@ -236,4 +236,19 @@
     <string name="team_manmanyou_role">街区慢游 · 城市内容</string>
     <string name="team_manmanyou_bio">「柏林慢慢游」是柏林的一个深度慢游社群，每月组织一次走访某个柏林街区（Kiez），关注它的历史、建筑、文化与典故——目前已经一步步走过 Kreuzberg、Schöneberg、Pankow、Prenzlauer Berg 等多个区。\n\n除了街区慢游，他们还系统整理出一份《200 家柏林中餐目录》——「柏林中餐地图」最初的那批数据正是来自这份目录。\n\n走访笔记和活动通告发布在小红书 @Berlin_Slowtour。</string>
     <string name="team_manmanyou_visit">在小红书查看</string>
+
+    <!-- Splash screen -->
+    <string name="splash_brand_lockup">Novawerk × PinWO</string>
+
+    <!-- Onboarding (first-launch tour) -->
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_next">下一页</string>
+    <string name="onboarding_get_started">开始使用</string>
+
+    <string name="onboarding_welcome_title">柏林中餐地图</string>
+    <string name="onboarding_welcome_subtitle">一份由社区共同维护的柏林中餐指南——非盈利、无广告、无追踪。</string>
+    <string name="onboarding_welcome_body">地图上的每一家餐厅，都是真正在那里吃过饭的人添加的。所有数据以 YAML 文件的形式开放存放在公共的 GitHub 仓库里——开源、免费、不收集你的任何信息。没有账号、没有广告，也没有数据分析，只有食物。\n\n这个项目背后有两个独立团队在持续维护，下一页我们来逐一介绍。</string>
+
+    <string name="onboarding_team_one_eyebrow">团队 1 / 2</string>
+    <string name="onboarding_team_two_eyebrow">团队 2 / 2</string>
 </resources>

@@ -20,13 +20,20 @@ import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.navigation.*
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
+import com.novawerk.berlinfoodmap.ui.pages.onboarding.OnboardingScreen
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
+import com.novawerk.berlinfoodmap.ui.pages.splash.SplashScreen
 import com.novawerk.berlinfoodmap.ui.theme.AppTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.nav_map
 import berlinfoodmap.composeapp.generated.resources.settings
+
+private enum class AppPhase { Splash, Onboarding, Main }
+
+private const val SPLASH_DURATION_MS = 1000L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +45,7 @@ fun App(component: AppComponent) {
 
     var darkMode by remember { mutableStateOf("system") }
     var language by remember { mutableStateOf<String?>(null) }
-    var ready by remember { mutableStateOf(false) }
+    var phase by remember { mutableStateOf(AppPhase.Splash) }
 
     // Hoisted detail-sheet state — opening a restaurant updates this id and
     // shows a ModalBottomSheet over the current screen instead of navigating
@@ -49,7 +56,12 @@ fun App(component: AppComponent) {
     LaunchedEffect(Unit) {
         darkMode = settings.getDarkMode()
         language = settings.getLanguage()
-        ready = true
+        val onboardingShown = settings.getOnboardingShown()
+        // Hold the splash for a beat so the brand reads cleanly even on a
+        // fast warm start. The first composition is already on screen as the
+        // splash; this delay gates the transition to the next phase.
+        delay(SPLASH_DURATION_MS)
+        phase = if (onboardingShown) AppPhase.Main else AppPhase.Onboarding
         // Anonymous sign-in is needed for view/visit tracking but NOT for the
         // map or restaurant list to render — Firestore's persistent cache can
         // serve those reads while auth completes. Run it fire-and-forget so a
@@ -58,8 +70,6 @@ fun App(component: AppComponent) {
             runCatching { authService.signInAnonymously() }
         }
     }
-
-    if (!ready) return
 
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -73,102 +83,135 @@ fun App(component: AppComponent) {
     ) {
         key(language) {
             AppTheme(darkMode = darkMode) {
-                val navController = rememberNavController()
-                val currentEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = currentEntry?.destination?.route
-
-                val showBottomBar = currentRoute?.let {
-                    it.contains("MapRoute") || it.contains("SettingsRoute")
-                } ?: true
-
-                Scaffold(
-                    bottomBar = {
-                        if (showBottomBar) {
-                            // Override the default NavigationBar palette so the
-                            // selected pill uses the brand red instead of the
-                            // sage/olive secondary container — those default
-                            // tones read as a muddy green/purple here.
-                            val navItemColors = NavigationBarItemDefaults.colors(
-                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            NavigationBar(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                            ) {
-                                NavigationBarItem(
-                                    selected = currentRoute?.contains("MapRoute") == true,
-                                    onClick = {
-                                        navController.navigate(MapRoute) {
-                                            popUpTo(MapRoute) { inclusive = true }
-                                        }
-                                    },
-                                    icon = { Icon(Icons.Filled.Map, contentDescription = null) },
-                                    label = { Text(stringResource(Res.string.nav_map)) },
-                                    colors = navItemColors,
-                                )
-                                NavigationBarItem(
-                                    selected = currentRoute?.contains("SettingsRoute") == true,
-                                    onClick = {
-                                        navController.navigate(SettingsRoute) {
-                                            popUpTo(MapRoute)
-                                        }
-                                    },
-                                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-                                    label = { Text(stringResource(Res.string.settings)) },
-                                    colors = navItemColors,
-                                )
-                            }
-                        }
-                    }
-                ) { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = MapRoute,
-                        modifier = Modifier.padding(innerPadding),
-                    ) {
-                        composable<MapRoute> {
-                            MapScreen(
-                                repository = restaurantRepository,
-                                onNavigateDetail = { id -> detailRestaurantId = id },
-                            )
-                        }
-
-                        composable<SettingsRoute> {
-                            SettingsScreen(
-                                currentDarkMode = darkMode,
-                                currentLanguage = language,
-                                onDarkModeChange = { newMode ->
-                                    darkMode = newMode
-                                    scope.launch { settings.setDarkMode(newMode) }
-                                },
-                                onLanguageChange = { newLang ->
-                                    language = newLang
-                                    scope.launch { settings.setLanguage(newLang) }
-                                },
-                            )
-                        }
-                    }
-                }
-
-                detailRestaurantId?.let { id ->
-                    val sheetState = rememberModalBottomSheetState(
-                        skipPartiallyExpanded = true,
+                when (phase) {
+                    AppPhase.Splash -> SplashScreen()
+                    AppPhase.Onboarding -> OnboardingScreen(
+                        onComplete = {
+                            scope.launch { settings.setOnboardingShown(true) }
+                            phase = AppPhase.Main
+                        },
                     )
-                    ModalBottomSheet(
-                        onDismissRequest = { detailRestaurantId = null },
-                        sheetState = sheetState,
-                    ) {
-                        DetailScreen(
-                            restaurantId = id,
-                            repository = restaurantRepository,
-                            authService = authService,
-                        )
-                    }
+                    AppPhase.Main -> MainShell(
+                        darkMode = darkMode,
+                        language = language,
+                        restaurantRepository = restaurantRepository,
+                        authService = authService,
+                        detailRestaurantId = detailRestaurantId,
+                        onDetailIdChange = { detailRestaurantId = it },
+                        onDarkModeChange = { newMode ->
+                            darkMode = newMode
+                            scope.launch { settings.setDarkMode(newMode) }
+                        },
+                        onLanguageChange = { newLang ->
+                            language = newLang
+                            scope.launch { settings.setLanguage(newLang) }
+                        },
+                    )
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MainShell(
+    darkMode: String,
+    language: String?,
+    restaurantRepository: com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository,
+    authService: com.novawerk.berlinfoodmap.domain.auth.AuthService,
+    detailRestaurantId: String?,
+    onDetailIdChange: (String?) -> Unit,
+    onDarkModeChange: (String) -> Unit,
+    onLanguageChange: (String?) -> Unit,
+) {
+    val navController = rememberNavController()
+    val currentEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentEntry?.destination?.route
+
+    val showBottomBar = currentRoute?.let {
+        it.contains("MapRoute") || it.contains("SettingsRoute")
+    } ?: true
+
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                // Override the default NavigationBar palette so the
+                // selected pill uses the brand red instead of the
+                // sage/olive secondary container — those default
+                // tones read as a muddy green/purple here.
+                val navItemColors = NavigationBarItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ) {
+                    NavigationBarItem(
+                        selected = currentRoute?.contains("MapRoute") == true,
+                        onClick = {
+                            navController.navigate(MapRoute) {
+                                popUpTo(MapRoute) { inclusive = true }
+                            }
+                        },
+                        icon = { Icon(Icons.Filled.Map, contentDescription = null) },
+                        label = { Text(stringResource(Res.string.nav_map)) },
+                        colors = navItemColors,
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute?.contains("SettingsRoute") == true,
+                        onClick = {
+                            navController.navigate(SettingsRoute) {
+                                popUpTo(MapRoute)
+                            }
+                        },
+                        icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                        label = { Text(stringResource(Res.string.settings)) },
+                        colors = navItemColors,
+                    )
+                }
+            }
+        },
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = MapRoute,
+            modifier = Modifier.padding(innerPadding),
+        ) {
+            composable<MapRoute> {
+                MapScreen(
+                    repository = restaurantRepository,
+                    onNavigateDetail = { id -> onDetailIdChange(id) },
+                )
+            }
+
+            composable<SettingsRoute> {
+                SettingsScreen(
+                    currentDarkMode = darkMode,
+                    currentLanguage = language,
+                    onDarkModeChange = onDarkModeChange,
+                    onLanguageChange = onLanguageChange,
+                )
+            }
+        }
+    }
+
+    detailRestaurantId?.let { id ->
+        val sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        )
+        ModalBottomSheet(
+            onDismissRequest = { onDetailIdChange(null) },
+            sheetState = sheetState,
+        ) {
+            DetailScreen(
+                restaurantId = id,
+                repository = restaurantRepository,
+                authService = authService,
+            )
         }
     }
 }
