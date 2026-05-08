@@ -36,5 +36,18 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
     }
+
+    // In-app feedback. Anonymous users can submit (the app already mints an
+    // anonymous uid at startup), but only the uid on the document; only
+    // non-anonymous (admin) users can read or moderate.
+    match /feedback/{id} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 5000;
+      allow read, update, delete: if request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
   }
 }

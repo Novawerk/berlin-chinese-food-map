@@ -42,6 +42,7 @@ fun App(component: AppComponent) {
     val favoritesRepository = component.favoritesRepository
     val authService = component.authService
     val restaurantRepository = component.restaurantRepository
+    val feedbackRepository = component.feedbackRepository
     val scope = rememberCoroutineScope()
 
     var darkMode by remember { mutableStateOf("system") }
@@ -97,6 +98,7 @@ fun App(component: AppComponent) {
                         language = language,
                         restaurantRepository = restaurantRepository,
                         favoritesRepository = favoritesRepository,
+                        feedbackRepository = feedbackRepository,
                         authService = authService,
                         detailRestaurantId = detailRestaurantId,
                         onDetailIdChange = { detailRestaurantId = it },
@@ -122,6 +124,7 @@ private fun MainShell(
     language: String?,
     restaurantRepository: com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository,
     favoritesRepository: com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository,
+    feedbackRepository: com.novawerk.berlinfoodmap.domain.feedback.FeedbackRepository,
     authService: com.novawerk.berlinfoodmap.domain.auth.AuthService,
     detailRestaurantId: String?,
     onDetailIdChange: (String?) -> Unit,
@@ -196,6 +199,7 @@ private fun MainShell(
                 SettingsScreen(
                     currentDarkMode = darkMode,
                     currentLanguage = language,
+                    feedbackRepository = feedbackRepository,
                     onDarkModeChange = onDarkModeChange,
                     onLanguageChange = onLanguageChange,
                 )
