@@ -141,6 +141,11 @@ val LocalExpressiveShapes = staticCompositionLocalOf { ExpressiveShapes() }
 val MaterialTheme.expressiveShapes: ExpressiveShapes
     @Composable get() = LocalExpressiveShapes.current
 
+// Exposed so non-MaterialTheme consumers (the GoogleMap style JSON, in
+// particular) can pick a dark variant without re-deriving the user's
+// system/light/dark preference.
+val LocalIsDarkTheme = staticCompositionLocalOf { false }
+
 @Composable
 private fun expressiveShapes() = ExpressiveShapes(
     circle = MaterialShapes.Circle.toShape(),
@@ -164,7 +169,10 @@ fun AppTheme(
     }
     val colorScheme = if (isDarkTheme) brandDarkColorScheme() else brandLightColorScheme()
 
-    CompositionLocalProvider(LocalExpressiveShapes provides expressiveShapes()) {
+    CompositionLocalProvider(
+        LocalExpressiveShapes provides expressiveShapes(),
+        LocalIsDarkTheme provides isDarkTheme,
+    ) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
             typography = pinwoTypography(),
