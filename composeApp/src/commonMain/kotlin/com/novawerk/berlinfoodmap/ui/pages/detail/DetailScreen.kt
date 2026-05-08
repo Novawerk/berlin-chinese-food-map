@@ -53,7 +53,6 @@ import berlinfoodmap.composeapp.generated.resources.opens_in_min
 import berlinfoodmap.composeapp.generated.resources.opening_hours
 import berlinfoodmap.composeapp.generated.resources.photo_count
 import berlinfoodmap.composeapp.generated.resources.photos_label
-import berlinfoodmap.composeapp.generated.resources.rating_count
 import berlinfoodmap.composeapp.generated.resources.tomorrow_at
 import berlinfoodmap.composeapp.generated.resources.weekday_at
 import berlinfoodmap.composeapp.generated.resources.weekday_long_fri
@@ -196,16 +195,7 @@ fun DetailScreen(
 
             // Reserve space for the sticky bottom action bar so the last
             // visible section is fully scrollable above it.
-            Column(
-                modifier = Modifier.padding(
-                    start = 20.dp,
-                    end = 20.dp,
-                    bottom = 120.dp,
-                ),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-            ) {
-                Footer(restaurant = r)
-            }
+            Spacer(Modifier.height(120.dp))
         }
 
         // Sticky action bar — pinned to the bottom of the sheet, fades in over
@@ -376,11 +366,39 @@ private fun ChipsRow(restaurant: Restaurant) {
         if (rating != null) {
             RatingChip(rating = rating, count = count)
         }
+        ViewCountChip(count = restaurant.viewCount)
         restaurant.tags.forEach { tag ->
             FilledChip(label = tagDisplayName(tag))
         }
         restaurant.priceRange?.let { price ->
             FilledChip(label = price, emphasised = true)
+        }
+    }
+}
+
+@Composable
+private fun ViewCountChip(count: Int) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(50),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Icon(
+                Icons.Filled.Visibility,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = "$count",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }
@@ -931,35 +949,6 @@ private fun DescriptionCard(text: String) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(20.dp),
         )
-    }
-}
-
-@Composable
-private fun Footer(restaurant: Restaurant) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            Icons.Filled.Visibility,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp),
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = "${restaurant.viewCount}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        restaurant.googleData?.userRatingsTotal?.let { count ->
-            Spacer(Modifier.width(16.dp))
-            Text(
-                text = stringResource(Res.string.rating_count, count),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 

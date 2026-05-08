@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineSeatFlat
 import androidx.compose.material.icons.filled.Restaurant
@@ -25,8 +24,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.Image
 import coil3.compose.LocalPlatformContext
@@ -62,9 +72,28 @@ internal fun MiniRestaurantCard(
 
     Box(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(10.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(10.dp))
-            .padding(start = 6.dp, end = 10.dp, top = 6.dp, bottom = 6.dp),
+            // 0.75 alpha on the fill keeps the bubble readable while letting
+            // the underlying map (roads, neighbouring labels, transit icons)
+            // show through, so a card never fully occludes an icon next to
+            // it. Foreground content (cover, name, tags) stays fully opaque.
+            .background(
+                MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
+                MarkerBubbleShape,
+            )
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                MarkerBubbleShape,
+            )
+            // Bottom padding leaves the tail area clear so content stays above
+            // the pointer triangle (the bubble itself extends `MARKER_TAIL_HEIGHT`
+            // below the body).
+            .padding(
+                start = 6.dp,
+                end = 10.dp,
+                top = 6.dp,
+                bottom = 6.dp + MARKER_TAIL_HEIGHT,
+            ),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -132,5 +161,51 @@ internal fun MiniRestaurantCard(
                 }
             }
         }
+    }
+}
+
+private val MARKER_CORNER_RADIUS = 10.dp
+private val MARKER_TAIL_WIDTH = 10.dp
+private val MARKER_TAIL_HEIGHT = 6.dp
+
+/**
+ * Speech-bubble outline for restaurant markers — rounded rectangle body with
+ * a downward-pointing triangular tail centered horizontally. The bitmap's
+ * `Marker(anchor = (0.5f, 1f))` puts the tail tip exactly on the
+ * restaurant's lat/lng, so the bubble visually points to the road.
+ *
+ * Body and tail are merged via `Path.op(Union)` into one closed path so the
+ * 1dp border traces the whole outline (body + tail) without an interior seam.
+ */
+private val MarkerBubbleShape: Shape = object : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline = with(density) {
+        val cr = MARKER_CORNER_RADIUS.toPx()
+        val tw = MARKER_TAIL_WIDTH.toPx()
+        val th = MARKER_TAIL_HEIGHT.toPx()
+        val bodyBottom = size.height - th
+        val centerX = size.width / 2f
+        val tailLeft = (centerX - tw / 2f).coerceAtLeast(cr)
+        val tailRight = (centerX + tw / 2f).coerceAtMost(size.width - cr)
+        val tipX = (tailLeft + tailRight) / 2f
+
+        val body = Path().apply {
+            addRoundRect(
+                RoundRect(
+                    rect = Rect(0f, 0f, size.width, bodyBottom),
+                    cornerRadius = CornerRadius(cr, cr),
+                ),
+            )
+        }
+        val tail = Path().apply {
+            moveTo(tailLeft, bodyBottom)
+            lineTo(tipX, size.height)
+            lineTo(tailRight, bodyBottom)
+            close()
+        }
+        Outline.Generic(Path().apply { op(body, tail, PathOperation.Union) })
     }
 }

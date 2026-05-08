@@ -111,7 +111,10 @@ fun MapScreen(
     }
 
     val density = LocalDensity.current
-    val clusterRadiusPx = with(density) { 72.dp.toPx() }
+    // Bumped from 72dp — reduces the "scattered cluster of 2" pattern at
+    // city zoom by merging tight pairs into bigger groups, while still
+    // letting individual pills surface at neighbourhood zoom.
+    val clusterRadiusPx = with(density) { 84.dp.toPx() }
 
     // Push viewport bounds into the data VM only when the camera settles.
     // The bottom LazyRow reads `visibleRestaurants` derived from these
@@ -268,13 +271,16 @@ fun MapScreen(
             }
         }
 
-        // 76dp clears the trimmed NearbyCard (44dp cover + 12dp card padding +
-        // 12dp LazyRow bottom inset) by ~8dp. When no card row is showing
-        // (empty viewport) the FABs sit close to the bottom edge.
-        val cardOffset = if (viewModel.visibleRestaurants.isNotEmpty()) 76.dp else 24.dp
-        SmallFloatingActionButton(
+        // Lift the FABs clear of the bottom NearbyCard row. NearbyCard is
+        // ~68dp tall and sits 12dp above the screen bottom; an extra 24dp
+        // of breathing room above it puts the FAB visibly above the cards
+        // (no horizontal/vertical overlap) without floating too high.
+        // When no card row is showing (empty viewport) the FAB sits close
+        // to the bottom edge.
+        val cardOffset = if (viewModel.visibleRestaurants.isNotEmpty()) 104.dp else 24.dp
+        FloatingActionButton(
             onClick = {
-                if (controlVm.isLocating) return@SmallFloatingActionButton
+                if (controlVm.isLocating) return@FloatingActionButton
                 scope.launch {
                     when (val result = controlVm.ensureFreshLocation()) {
                         is LocationOutcome.Available -> cameraPositionState.animate(
@@ -292,14 +298,18 @@ fun MapScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = cardOffset),
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            // `secondary` (PinwoWine, deeper red) instead of `primary`
+            // (PinwoRed) so the FABs read as app actions distinct from the
+            // brand-red POI / cluster markers on the map. Same pattern as
+            // the StickyActionBar's primary action.
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
         ) {
             if (controlVm.isLocating) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    strokeWidth = 2.5.dp,
                 )
             } else {
                 Icon(Icons.Filled.MyLocation, contentDescription = "Locate me")
@@ -316,10 +326,10 @@ fun MapScreen(
                 .align(Alignment.BottomStart)
                 .padding(start = 16.dp, bottom = cardOffset),
         ) {
-            SmallFloatingActionButton(
+            FloatingActionButton(
                 onClick = { filterSheetOpen = true },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
             ) {
                 Icon(
                     Icons.Filled.FilterList,

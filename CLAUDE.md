@@ -108,10 +108,12 @@ To launch on a connected device after install:
   `stringResource(Res.string.*)`. **No hardcoded UI text.**
 - **Theming:** Use `MaterialTheme.colorScheme.*` everywhere — never
   hardcode colours in UI files. Pinwo palette is defined in
-  `ui/theme/AppTheme.kt`. Brand-red `primary` is reserved for POI
-  markers, FABs, and brand emphasis. The bottom sticky-action bar's
-  primary action uses `secondary` (deeper red) so it doesn't collide
-  visually with the map pins.
+  `ui/theme/AppTheme.kt`. Brand-red `primary` is reserved for map
+  content — POI marker pins, cluster badges, brand emphasis on cards.
+  Floating UI actions on the map (the locate/filter FABs, the
+  StickyActionBar's primary action) use `secondary` (PinwoWine,
+  deeper red) so they read as app chrome rather than blending into
+  the cluster dots.
 - **Compose-state-first VMs:** ViewModels expose `mutableStateOf` /
   `mutableStateListOf` / `derivedStateOf` properties directly. UI reads
   them in composition — Compose's snapshot system subscribes
