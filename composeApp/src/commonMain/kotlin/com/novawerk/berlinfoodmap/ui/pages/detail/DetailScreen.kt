@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
@@ -37,6 +39,8 @@ import androidx.compose.ui.unit.sp
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.action_call
 import berlinfoodmap.composeapp.generated.resources.action_directions
+import berlinfoodmap.composeapp.generated.resources.action_favorite
+import berlinfoodmap.composeapp.generated.resources.action_unfavorite
 import berlinfoodmap.composeapp.generated.resources.action_website
 import berlinfoodmap.composeapp.generated.resources.closed_now
 import berlinfoodmap.composeapp.generated.resources.closed_today
@@ -65,6 +69,8 @@ import berlinfoodmap.composeapp.generated.resources.weekday_long_wed
 import coil3.compose.AsyncImage
 import com.novawerk.berlinfoodmap.domain.auth.AuthService
 import com.novawerk.berlinfoodmap.domain.common.preferred
+import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
+import kotlinx.coroutines.launch
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.domain.restaurant.OpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
@@ -89,11 +95,17 @@ private val SECTION_SHAPE = RoundedCornerShape(28.dp)
 fun DetailScreen(
     restaurantId: String,
     repository: RestaurantRepository,
+    favoritesRepository: FavoritesRepository,
     authService: AuthService,
 ) {
     var restaurant by remember(restaurantId) { mutableStateOf<Restaurant?>(null) }
     var loading by remember(restaurantId) { mutableStateOf(true) }
     val urlLauncher = rememberUrlLauncher()
+    val scope = rememberCoroutineScope()
+
+    val favorites by favoritesRepository.observe()
+        .collectAsState(initial = emptySet())
+    val isFavorite = restaurantId in favorites
 
     LaunchedEffect(restaurantId) {
         restaurant = repository.getById(restaurantId)
@@ -134,6 +146,10 @@ fun DetailScreen(
         ) {
             HeroCover(
                 photos = photos,
+                isFavorite = isFavorite,
+                onFavoriteClick = {
+                    scope.launch { favoritesRepository.toggle(restaurantId) }
+                },
                 onTap = { fullscreenIndex = 0 },
             )
 
@@ -223,7 +239,12 @@ fun DetailScreen(
 // region Hero --------------------------------------------------------------
 
 @Composable
-private fun HeroCover(photos: List<String>, onTap: () -> Unit) {
+private fun HeroCover(
+    photos: List<String>,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
+    onTap: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -245,6 +266,54 @@ private fun HeroCover(photos: List<String>, onTap: () -> Unit) {
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(80.dp),
+            )
+        }
+
+        FavoriteToggle(
+            isFavorite = isFavorite,
+            onClick = onFavoriteClick,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp, end = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun FavoriteToggle(
+    isFavorite: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Pill button on a translucent dark scrim — readable against any cover
+    // photo without competing with brand surfaces. The heart fills with
+    // brand red when saved; outline icon when not, matching the standard
+    // save-pattern users expect.
+    Surface(
+        color = Color.Black.copy(alpha = 0.45f),
+        shape = RoundedCornerShape(50),
+        modifier = modifier.clickable(onClick = onClick),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Icon(
+                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = stringResource(
+                    if (isFavorite) Res.string.action_unfavorite else Res.string.action_favorite,
+                ),
+                tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.White,
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = stringResource(
+                    if (isFavorite) Res.string.action_unfavorite else Res.string.action_favorite,
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
             )
         }
     }

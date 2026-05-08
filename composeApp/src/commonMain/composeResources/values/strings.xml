@@ -28,6 +28,26 @@
     <string name="filter_distance">Distance</string>
     <string name="filter_title">Filters</string>
     <string name="filter_reset">Reset</string>
+    <string name="filter_favorites_only">Favorites only</string>
+    <string name="filter_favorites_subtitle">Show only the places you saved</string>
+    <string name="filter_featured_only">Editor\'s picks only</string>
+    <string name="filter_featured_subtitle">Show only featured restaurants</string>
+    <string name="districts_title">Neighborhoods</string>
+    <string name="districts_action">Browse by area</string>
+    <string name="districts_subtitle">Tap a neighborhood — the map will jump there</string>
+    <string name="districts_count_label">%1$d places</string>
+    <string name="filter_done">Done</string>
+    <string name="filter_clear">Clear</string>
+    <string name="filter_all">All</string>
+    <string name="filter_selected_count">%1$d selected</string>
+    <string name="filter_apply">Apply filters</string>
+    <string name="filter_apply_count">Apply · %1$d active</string>
+
+    <!-- Favorites -->
+    <string name="action_favorite">Save</string>
+    <string name="action_unfavorite">Saved</string>
+    <string name="favorites_empty_title">No favorites yet</string>
+    <string name="favorites_empty_subtitle">Tap the heart on any restaurant to save it here.</string>
 
     <!-- Detail page -->
     <string name="open_in_maps">Open in Google Maps</string>

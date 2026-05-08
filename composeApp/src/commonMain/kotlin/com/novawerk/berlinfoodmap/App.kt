@@ -39,6 +39,7 @@ private const val SPLASH_DURATION_MS = 1000L
 @Composable
 fun App(component: AppComponent) {
     val settings = component.settingsRepository
+    val favoritesRepository = component.favoritesRepository
     val authService = component.authService
     val restaurantRepository = component.restaurantRepository
     val scope = rememberCoroutineScope()
@@ -95,6 +96,7 @@ fun App(component: AppComponent) {
                         darkMode = darkMode,
                         language = language,
                         restaurantRepository = restaurantRepository,
+                        favoritesRepository = favoritesRepository,
                         authService = authService,
                         detailRestaurantId = detailRestaurantId,
                         onDetailIdChange = { detailRestaurantId = it },
@@ -119,6 +121,7 @@ private fun MainShell(
     darkMode: String,
     language: String?,
     restaurantRepository: com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository,
+    favoritesRepository: com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository,
     authService: com.novawerk.berlinfoodmap.domain.auth.AuthService,
     detailRestaurantId: String?,
     onDetailIdChange: (String?) -> Unit,
@@ -184,6 +187,7 @@ private fun MainShell(
             composable<MapRoute> {
                 MapScreen(
                     repository = restaurantRepository,
+                    favoritesRepository = favoritesRepository,
                     onNavigateDetail = { id -> onDetailIdChange(id) },
                 )
             }
@@ -210,6 +214,7 @@ private fun MainShell(
             DetailScreen(
                 restaurantId = id,
                 repository = restaurantRepository,
+                favoritesRepository = favoritesRepository,
                 authService = authService,
             )
         }

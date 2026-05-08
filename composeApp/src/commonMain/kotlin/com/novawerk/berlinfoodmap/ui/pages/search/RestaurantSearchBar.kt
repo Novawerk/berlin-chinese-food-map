@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.back
+import berlinfoodmap.composeapp.generated.resources.districts_action
 import berlinfoodmap.composeapp.generated.resources.no_results
 import berlinfoodmap.composeapp.generated.resources.search_hint
 import berlinfoodmap.composeapp.generated.resources.search_prompt_subtitle
@@ -61,6 +63,7 @@ private const val MIN_QUERY_LENGTH = 2
 fun RestaurantSearchBar(
     repository: RestaurantRepository,
     onRestaurantClick: (String) -> Unit,
+    onBrowseDistricts: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var query by remember { mutableStateOf("") }
@@ -149,13 +152,32 @@ fun RestaurantSearchBar(
                         Icon(Icons.Filled.Search, contentDescription = null)
                     }
                 },
-                trailingIcon = if (expanded && query.isNotEmpty()) {
-                    {
-                        IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Filled.Close, contentDescription = null)
+                trailingIcon = when {
+                    expanded && query.isNotEmpty() -> {
+                        {
+                            IconButton(onClick = { query = "" }) {
+                                Icon(Icons.Filled.Close, contentDescription = null)
+                            }
                         }
                     }
-                } else null,
+                    !expanded -> {
+                        // Districts shortcut lives here — searching by name and
+                        // jumping to a neighbourhood are both navigational
+                        // primitives, so it makes sense to surface them on the
+                        // same chrome rather than as a separate FAB.
+                        {
+                            IconButton(onClick = onBrowseDistricts) {
+                                Icon(
+                                    Icons.Filled.Place,
+                                    contentDescription = stringResource(
+                                        Res.string.districts_action,
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                    else -> null
+                },
             )
         },
     ) {

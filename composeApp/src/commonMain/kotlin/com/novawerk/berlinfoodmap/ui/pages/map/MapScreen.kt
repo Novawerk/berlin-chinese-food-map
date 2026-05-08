@@ -25,6 +25,7 @@ import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.filter_title
 import berlinfoodmap.composeapp.generated.resources.map_loading
 import coil3.compose.LocalPlatformContext
+import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.ui.pages.search.RestaurantSearchBar
 import eu.buney.maps.*
@@ -38,6 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun MapScreen(
     repository: RestaurantRepository,
+    favoritesRepository: FavoritesRepository,
     onNavigateDetail: (String) -> Unit,
 ) {
     // VM is bound to the current NavBackStackEntry — survives recompose +
@@ -49,7 +51,9 @@ fun MapScreen(
     // It's the application-scoped Coil context (Android: app Context,
     // iOS: empty marker), so no leak risk from the long lifetime.
     val platformContext = LocalPlatformContext.current
-    val viewModel: MapViewModel = viewModel { MapViewModel(repository, platformContext) }
+    val viewModel: MapViewModel = viewModel {
+        MapViewModel(repository, favoritesRepository, platformContext)
+    }
     // Map-control state (location + freshness) lives in its own VM, separate
     // from the restaurant pipeline. Each VM has independent lifecycle and
     // dependencies; both bind to the same NavBackStackEntry so they survive
@@ -58,6 +62,7 @@ fun MapScreen(
     val restaurantsFiltered = viewModel.restaurantsFiltered
 
     var filterSheetOpen by remember { mutableStateOf(false) }
+    var districtSheetOpen by remember { mutableStateOf(false) }
     var mapLoaded by remember { mutableStateOf(false) }
     val myLocationIcon = remember(mapLoaded) {
         if (mapLoaded) {
@@ -165,6 +170,7 @@ fun MapScreen(
                     RestaurantMarker(
                         restaurant = restaurant,
                         cover = markerCovers[restaurant.id],
+                        isFavorite = restaurant.id in viewModel.favorites,
                         descriptorCache = descriptorCache,
                         onClick = { onNavigateDetail(restaurant.id) },
                     )
@@ -238,6 +244,7 @@ fun MapScreen(
                 }
                 onNavigateDetail(id)
             },
+            onBrowseDistricts = { districtSheetOpen = true },
             modifier = Modifier.align(Alignment.TopCenter),
         )
 
@@ -254,6 +261,7 @@ fun MapScreen(
                 items(viewModel.visibleRestaurants, key = { it.id }) { restaurant ->
                     NearbyCard(
                         restaurant = restaurant,
+                        isFavorite = restaurant.id in viewModel.favorites,
                         onClick = {
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             scope.launch {
@@ -278,6 +286,14 @@ fun MapScreen(
         // When no card row is showing (empty viewport) the FAB sits close
         // to the bottom edge.
         val cardOffset = if (viewModel.visibleRestaurants.isNotEmpty()) 104.dp else 24.dp
+        // FABs use a neutral elevated surface (`surfaceContainerHigh`) with a
+        // dark `onSurface` icon — quiet chrome that sits on top of the map
+        // without competing with brand-red markers or the warm-cream
+        // background. This is the standard "neutral floating action" pattern
+        // (cf. Google Maps' locate FAB).
+        val fabContainer = MaterialTheme.colorScheme.surfaceContainerHigh
+        val fabContent = MaterialTheme.colorScheme.onSurface
+
         FloatingActionButton(
             onClick = {
                 if (controlVm.isLocating) return@FloatingActionButton
@@ -298,17 +314,13 @@ fun MapScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = cardOffset),
-            // `secondary` (PinwoWine, deeper red) instead of `primary`
-            // (PinwoRed) so the FABs read as app actions distinct from the
-            // brand-red POI / cluster markers on the map. Same pattern as
-            // the StickyActionBar's primary action.
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary,
+            containerColor = fabContainer,
+            contentColor = fabContent,
         ) {
             if (controlVm.isLocating) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    color = fabContent,
                     strokeWidth = 2.5.dp,
                 )
             } else {
@@ -328,8 +340,8 @@ fun MapScreen(
         ) {
             FloatingActionButton(
                 onClick = { filterSheetOpen = true },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
+                containerColor = fabContainer,
+                contentColor = fabContent,
             ) {
                 Icon(
                     Icons.Filled.FilterList,
@@ -347,28 +359,39 @@ fun MapScreen(
     if (filterSheetOpen) {
         FilterSheet(
             allRestaurants = viewModel.allRestaurants,
-            selectedCuisine = viewModel.selectedCuisine,
-            selectedFormat = viewModel.selectedFormat,
-            // Cuisine + format: pick → auto-dismiss. Reset stays in the
-            // sheet so the user can clear without reopening.
-            onCuisineSelected = {
-                viewModel.setCuisine(it)
+            favorites = viewModel.favorites,
+            selectedCuisines = viewModel.selectedCuisines,
+            selectedFormats = viewModel.selectedFormats,
+            favoritesOnly = viewModel.favoritesOnly,
+            featuredOnly = viewModel.featuredOnly,
+            // Single commit point — sheet draft becomes live filter only
+            // here, then dismiss. Sheet swipe / scrim cancels the draft.
+            onApply = { fav, featured, cuisines, formats ->
+                viewModel.toggleFavoritesOnly(fav)
+                viewModel.toggleFeaturedOnly(featured)
+                viewModel.setCuisines(cuisines)
+                viewModel.setFormats(formats)
                 filterSheetOpen = false
             },
-            onFormatSelected = {
-                viewModel.setFormat(it)
-                filterSheetOpen = false
-            },
+            onDismiss = { filterSheetOpen = false },
+        )
+    }
+
+    if (districtSheetOpen) {
+        DistrictPickerSheet(
+            // Pass the full list — district browsing is "where in Berlin
+            // do I want to look", independent of current filters. The
+            // filter state stays applied after the camera jump.
+            restaurants = viewModel.allRestaurants,
             onDistrictSelected = { center ->
                 scope.launch {
                     cameraPositionState.animate(
                         CameraUpdateFactory.newLatLngZoom(center, 14f),
                     )
                 }
-                filterSheetOpen = false
+                districtSheetOpen = false
             },
-            onReset = viewModel::resetFilters,
-            onDismiss = { filterSheetOpen = false },
+            onDismiss = { districtSheetOpen = false },
         )
     }
 }

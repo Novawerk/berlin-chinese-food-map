@@ -110,10 +110,14 @@ To launch on a connected device after install:
   hardcode colours in UI files. Pinwo palette is defined in
   `ui/theme/AppTheme.kt`. Brand-red `primary` is reserved for map
   content — POI marker pins, cluster badges, brand emphasis on cards.
-  Floating UI actions on the map (the locate/filter FABs, the
-  StickyActionBar's primary action) use `secondary` (PinwoWine,
-  deeper red) so they read as app chrome rather than blending into
-  the cluster dots.
+  Map FABs (locate, filter) use neutral `surfaceContainerHigh` +
+  `onSurface` for quiet chrome that won't compete with markers; an
+  earlier iteration used `secondary` (too heavy) and then `tertiary`
+  (olive read as off-brand). The DetailScreen StickyActionBar's
+  primary action still uses `secondary` (PinwoWine) for visual
+  weight inside a content surface. The "browse by district"
+  shortcut lives in the search bar trailing icon — districts are a
+  navigational primitive, same family as searching by name.
 - **Compose-state-first VMs:** ViewModels expose `mutableStateOf` /
   `mutableStateListOf` / `derivedStateOf` properties directly. UI reads
   them in composition — Compose's snapshot system subscribes

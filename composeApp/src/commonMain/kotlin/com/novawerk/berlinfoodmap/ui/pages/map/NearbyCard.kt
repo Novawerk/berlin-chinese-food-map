@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineSeatFlat
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
@@ -47,6 +48,7 @@ private const val NEARBY_COVER_PX = 192
 @Composable
 internal fun NearbyCard(
     restaurant: Restaurant,
+    isFavorite: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -133,6 +135,16 @@ internal fun NearbyCard(
                         Spacer(Modifier.width(4.dp))
                         Icon(
                             Icons.Filled.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                            else MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    if (isFavorite) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(
+                            Icons.Filled.Favorite,
                             contentDescription = null,
                             modifier = Modifier.size(12.dp),
                             tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
