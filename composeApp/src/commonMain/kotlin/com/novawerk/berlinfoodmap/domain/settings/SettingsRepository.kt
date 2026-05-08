@@ -2,6 +2,7 @@ package com.novawerk.berlinfoodmap.domain.settings
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,7 @@ open class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val DARK_MODE = stringPreferencesKey("dark_mode")
         val LANGUAGE = stringPreferencesKey("language")
         val VIEW_MODE = stringPreferencesKey("view_mode")
+        val ONBOARDING_SHOWN = booleanPreferencesKey("onboarding_shown")
     }
 
     suspend fun getDarkMode(): String =
@@ -39,5 +41,12 @@ open class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setViewMode(value: String) {
         dataStore.edit { it[VIEW_MODE] = value }
+    }
+
+    suspend fun getOnboardingShown(): Boolean =
+        dataStore.data.map { it[ONBOARDING_SHOWN] ?: false }.first()
+
+    suspend fun setOnboardingShown(value: Boolean) {
+        dataStore.edit { it[ONBOARDING_SHOWN] = value }
     }
 }
