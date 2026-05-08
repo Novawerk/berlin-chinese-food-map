@@ -19,17 +19,17 @@ import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_name
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_bio
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_visit
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_bio
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_visit
 
-private const val MANMANYOU_XHS_URL =
+private const val PINWO_XHS_URL =
     "https://www.xiaohongshu.com/user/profile/6251a0cc000000001000cc43"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManmanyouBottomSheet(onDismiss: () -> Unit) {
+fun PinwoBottomSheet(onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val urlLauncher = rememberUrlLauncher()
 
@@ -45,27 +45,27 @@ fun ManmanyouBottomSheet(onDismiss: () -> Unit) {
                 .padding(bottom = 32.dp),
         ) {
             Text(
-                text = stringResource(Res.string.team_manmanyou_name),
+                text = stringResource(Res.string.team_pinwo_name),
                 style = MaterialTheme.typography.headlineSmall,
             )
             Text(
-                text = stringResource(Res.string.team_manmanyou_role),
+                text = stringResource(Res.string.team_pinwo_role),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
             )
             Text(
-                text = stringResource(Res.string.team_manmanyou_bio),
+                text = stringResource(Res.string.team_pinwo_bio),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
             Spacer(Modifier.height(20.dp))
             FilledTonalButton(
-                onClick = { urlLauncher.open(MANMANYOU_XHS_URL) },
+                onClick = { urlLauncher.open(PINWO_XHS_URL) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(stringResource(Res.string.team_manmanyou_visit))
+                Text(stringResource(Res.string.team_pinwo_visit))
             }
         }
     }

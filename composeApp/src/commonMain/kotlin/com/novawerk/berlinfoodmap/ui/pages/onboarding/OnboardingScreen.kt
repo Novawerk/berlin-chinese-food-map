@@ -46,9 +46,9 @@ import berlinfoodmap.composeapp.generated.resources.onboarding_team_two_eyebrow
 import berlinfoodmap.composeapp.generated.resources.onboarding_welcome_body
 import berlinfoodmap.composeapp.generated.resources.onboarding_welcome_subtitle
 import berlinfoodmap.composeapp.generated.resources.onboarding_welcome_title
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_bio
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_name
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_bio
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_bio
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
@@ -97,9 +97,9 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 )
                 2 -> TeamPage(
                     eyebrow = Res.string.onboarding_team_two_eyebrow,
-                    name = Res.string.team_manmanyou_name,
-                    role = Res.string.team_manmanyou_role,
-                    bio = Res.string.team_manmanyou_bio,
+                    name = Res.string.team_pinwo_name,
+                    role = Res.string.team_pinwo_role,
+                    bio = Res.string.team_pinwo_bio,
                 )
             }
         }

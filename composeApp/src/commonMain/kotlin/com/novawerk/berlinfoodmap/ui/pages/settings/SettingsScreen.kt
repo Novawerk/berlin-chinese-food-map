@@ -32,8 +32,8 @@ import berlinfoodmap.composeapp.generated.resources.about_subtitle
 import berlinfoodmap.composeapp.generated.resources.team_title
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_name
-import berlinfoodmap.composeapp.generated.resources.team_manmanyou_role
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +45,7 @@ fun SettingsScreen(
 ) {
     var showAboutSheet by remember { mutableStateOf(false) }
     var showNovawerkSheet by remember { mutableStateOf(false) }
-    var showManmanyouSheet by remember { mutableStateOf(false) }
+    var showPinwoSheet by remember { mutableStateOf(false) }
 
     // No top app bar — Settings is a tab destination reached via the bottom
     // navigation, not a pushed screen. The bottom-nav label already says
@@ -121,9 +121,9 @@ fun SettingsScreen(
             onClick = { showNovawerkSheet = true },
         )
         MenuRow(
-            title = stringResource(Res.string.team_manmanyou_name),
-            supportingText = stringResource(Res.string.team_manmanyou_role),
-            onClick = { showManmanyouSheet = true },
+            title = stringResource(Res.string.team_pinwo_name),
+            supportingText = stringResource(Res.string.team_pinwo_role),
+            onClick = { showPinwoSheet = true },
         )
 
         HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
@@ -180,7 +180,7 @@ fun SettingsScreen(
     if (showNovawerkSheet) {
         NovawerkBottomSheet(onDismiss = { showNovawerkSheet = false })
     }
-    if (showManmanyouSheet) {
-        ManmanyouBottomSheet(onDismiss = { showManmanyouSheet = false })
+    if (showPinwoSheet) {
+        PinwoBottomSheet(onDismiss = { showPinwoSheet = false })
     }
 }

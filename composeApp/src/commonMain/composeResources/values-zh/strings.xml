@@ -248,14 +248,14 @@
     <!-- Team section -->
     <string name="team_title">幕后团队</string>
     <string name="team_novawerk_name">Novawerk.io</string>
-    <string name="team_novawerk_role">产品 · 设计 · 开发</string>
-    <string name="team_novawerk_bio">Novawerk 是一个位于柏林的独立产品工作室，专注于在 AI 时代做非盈利 App。\n\n我们相信，新时代的构建者不应只把 AI 用来做能赚钱的事——更重要的是，要用今天的生产力去解决那些一直没人看见、却真实存在的场景。当一个人也能完成过去十个人的工程量时，那些没有商业模型支撑的小众需求——一份只服务某个语言群体的工具、一份本该有人整理却从没人愿意做的资料——终于可以被认真地做出来。\n\n这就是 Novawerk 在做的事。</string>
+    <string name="team_novawerk_role">做一些不赚钱、但有意义的事。</string>
+    <string name="team_novawerk_bio">Novawerk 是一个开放、非盈利的社区。我们存在的意义，是降低创造正向改变的门槛——帮助人们通过协作、创造与行动，把有意义的想法落地为真实的项目。\n\n好的想法不该只停留在概念里。当人们选择一起去做、去学、去贡献，而不是等别人来做的时候，真正的改变才会发生。\n\n三件事指引着我们的方向：创新应该为人和社会带来真实的正向影响，而不是追逐短期热点；不同背景、不同经验的人，都可以在真实的项目里一起协作、成长；每个人都有责任通过自己的行动、想法与参与，让世界往好的方向多一点。\n\n柏林中餐地图，就是在这个想法之下做出来的项目之一。</string>
     <string name="team_novawerk_visit">访问官网</string>
 
-    <string name="team_manmanyou_name">柏林慢慢游</string>
-    <string name="team_manmanyou_role">街区慢游 · 城市内容</string>
-    <string name="team_manmanyou_bio">「柏林慢慢游」是柏林的一个深度慢游社群，每月组织一次走访某个柏林街区（Kiez），关注它的历史、建筑、文化与典故——目前已经一步步走过 Kreuzberg、Schöneberg、Pankow、Prenzlauer Berg 等多个区。\n\n除了街区慢游，他们还系统整理出一份《200 家柏林中餐目录》——「柏林中餐地图」最初的那批数据正是来自这份目录。\n\n走访笔记和活动通告发布在小红书 @Berlin_Slowtour。</string>
-    <string name="team_manmanyou_visit">在小红书查看</string>
+    <string name="team_pinwo_name">PinWO</string>
+    <string name="team_pinwo_role">寻找你的新餐厅。</string>
+    <string name="team_pinwo_bio">PinWO 是一个柏林的华人美食品牌。他们精选这座城市的中餐厅，运营一个合作餐厅计划——为会员带来专属优惠和品鉴活动，也帮新来的人和在柏林住久了的人，一起发现那些值得反复造访的小馆子。\n\nPinWO 是「柏林中餐地图」的联合品牌伙伴——同一座城、同一个场景、互补的两种做法：他们为会员精选餐饮体验；「柏林中餐地图」则尽可能把柏林每一家中餐厅都标在地图上，免费、对所有人开放。</string>
+    <string name="team_pinwo_visit">在小红书查看</string>
 
     <!-- Splash screen -->
     <string name="splash_brand_lockup">Novawerk × PinWO</string>
