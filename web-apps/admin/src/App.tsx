@@ -1,6 +1,6 @@
 import { Resource } from "ra-core";
 import { Admin } from "@/components/admin";
-import { UtensilsCrossed, Users, FileText } from "lucide-react";
+import { UtensilsCrossed, Users, FileText, MessageSquare } from "lucide-react";
 import { dataProvider } from "./dataProvider";
 import { authProvider } from "./authProvider";
 import {
@@ -21,6 +21,11 @@ import {
   ChangelogCreate,
   ChangelogShow,
 } from "./resources/changelog";
+import {
+  FeedbackList,
+  FeedbackShow,
+  FeedbackEdit,
+} from "./resources/feedback";
 
 const App = () => (
   <Admin dataProvider={dataProvider} authProvider={authProvider}>
@@ -50,6 +55,13 @@ const App = () => (
       edit={ChangelogEdit}
       create={ChangelogCreate}
       show={ChangelogShow}
+    />
+    <Resource
+      name="feedback"
+      icon={MessageSquare}
+      list={FeedbackList}
+      show={FeedbackShow}
+      edit={FeedbackEdit}
     />
   </Admin>
 );

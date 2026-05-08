@@ -211,6 +211,26 @@
     <string name="icon_credits">Icon credits</string>
     <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
 
+    <!-- Feedback (in-app form for bug reports / ideas / restaurant tips) -->
+    <string name="feedback_title">Send feedback</string>
+    <string name="feedback_subtitle">Bugs, ideas, or a place we should add</string>
+    <string name="feedback_intro">We read every message. Tell us what\'s broken, suggest a feature, or recommend a restaurant we should add.</string>
+    <string name="feedback_category_label">Topic</string>
+    <string name="feedback_category_bug">Bug</string>
+    <string name="feedback_category_idea">Idea</string>
+    <string name="feedback_category_restaurant">Add a place</string>
+    <string name="feedback_category_other">Other</string>
+    <string name="feedback_message_label">Your message</string>
+    <string name="feedback_message_hint">Describe what happened, what you\'d like, or which restaurant…</string>
+    <string name="feedback_contact_label">Contact (optional)</string>
+    <string name="feedback_contact_hint">Email or WeChat — only if you\'d like a reply</string>
+    <string name="feedback_submit">Send</string>
+    <string name="feedback_submitting">Sending…</string>
+    <string name="feedback_success_title">Thanks!</string>
+    <string name="feedback_success_body">Your feedback is in. We read everything that comes through.</string>
+    <string name="feedback_close">Close</string>
+    <string name="feedback_error">Couldn\'t send. Check your connection and try again.</string>
+
     <!-- About entry (opens merged story / contribute / contributors sheet) -->
     <string name="about_title">About this project</string>
     <string name="about_subtitle">The story, how to help, and who built the data</string>
