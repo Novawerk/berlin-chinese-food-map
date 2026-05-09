@@ -291,4 +291,18 @@
 
     <string name="onboarding_team_one_eyebrow">Team 1 of 2</string>
     <string name="onboarding_team_two_eyebrow">Team 2 of 2</string>
+
+    <!-- Open-source licenses sheet -->
+    <string name="licenses_title">Open-source licenses</string>
+    <string name="licenses_subtitle">How this project is licensed</string>
+    <string name="licenses_intro">Berlin Chinese Food Map — including the app code and the restaurant data — is open-source on GitHub. The full licence text is public; this screen lists the essentials and the attributions for the third-party libraries we depend on.</string>
+    <string name="licenses_copyright">© 2025–2026 Novawerk and contributors</string>
+
+    <string name="licenses_code_title">This project — MIT License</string>
+    <string name="licenses_code_body">Everything in this repository — the Kotlin Multiplatform app, the web apps, the pipeline scripts, and the restaurant data — is licensed under the MIT License. You may use, copy, modify, and redistribute the project freely, including for commercial use, as long as you keep the original copyright notice and this permission notice with any substantial portions you reuse.</string>
+    <string name="licenses_code_view">View MIT License text</string>
+
+    <string name="licenses_thirdparty_title">Third-party libraries</string>
+    <string name="licenses_thirdparty_body">This app is built on open-source libraries — Compose Multiplatform, Material 3, AndroidX, Coil, Ktor, kotlinx-datetime, kotlin-inject, gitlive Firebase KMP, kmp-maps-compose, Compass, and the Firebase + Google Maps SDKs. Each is distributed under its own licence (Apache-2.0 or MIT). The full list, with attributions, lives in the GitHub repository.</string>
+    <string name="licenses_thirdparty_view">View attributions on GitHub</string>
 </resources>

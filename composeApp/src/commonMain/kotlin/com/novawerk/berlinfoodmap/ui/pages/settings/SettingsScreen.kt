@@ -37,6 +37,8 @@ import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
 import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
+import berlinfoodmap.composeapp.generated.resources.licenses_title
+import berlinfoodmap.composeapp.generated.resources.licenses_subtitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,7 @@ fun SettingsScreen(
     var showNovawerkSheet by remember { mutableStateOf(false) }
     var showPinwoSheet by remember { mutableStateOf(false) }
     var showFeedbackSheet by remember { mutableStateOf(false) }
+    var showLicensesSheet by remember { mutableStateOf(false) }
 
     // No top app bar — Settings is a tab destination reached via the bottom
     // navigation, not a pushed screen. The bottom-nav label already says
@@ -140,6 +143,17 @@ fun SettingsScreen(
 
         HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
 
+        // Open-source licenses — required for compliance, surfaces both
+        // the project's own licence (AGPL-3.0 + CC BY 4.0 dual model) and
+        // a pointer to third-party attributions on GitHub.
+        MenuRow(
+            title = stringResource(Res.string.licenses_title),
+            supportingText = stringResource(Res.string.licenses_subtitle),
+            onClick = { showLicensesSheet = true },
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+
         // Version row
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -200,5 +214,8 @@ fun SettingsScreen(
             repository = feedbackRepository,
             onDismiss = { showFeedbackSheet = false },
         )
+    }
+    if (showLicensesSheet) {
+        LicensesBottomSheet(onDismiss = { showLicensesSheet = false })
     }
 }

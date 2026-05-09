@@ -189,4 +189,4 @@ For data contributions (adding/editing restaurants, adding tags), see [`data/REA
 
 This project is licensed under the [MIT License](LICENSE).
 
-Copyright (c) 2025-2026 [Novawerk](https://github.com/Novawerk). You are free to use, modify, and distribute this software, as long as the original copyright notice is included.
+Copyright (c) 2025-2026 [Novawerk](https://github.com/Novawerk) and contributors. You're free to use, modify, and distribute this software, as long as the original copyright notice is included.
