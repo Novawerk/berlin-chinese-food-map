@@ -10,7 +10,7 @@ androidx-lifecycle = "2.9.2"
 # via .github/workflows/bump-version.yml; `app-versionName` is
 # hand-edited for releases. CI builds can override either via the
 # VERSION_CODE / VERSION_NAME environment variables.
-app-versionCode = "29"
+app-versionCode = "30"
 app-versionName = "1.0.0"
 buildkonfig = "0.18.0"
 
