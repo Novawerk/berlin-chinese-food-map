@@ -30,7 +30,7 @@
     <string name="filter_reset">Reset</string>
     <string name="filter_favorites_only">Favorites only</string>
     <string name="filter_favorites_subtitle">Show only the places you saved</string>
-    <string name="filter_featured_only">Editor\'s picks only</string>
+    <string name="filter_featured_only">Editor's picks only</string>
     <string name="filter_featured_subtitle">Show only featured restaurants</string>
     <string name="districts_title">Neighborhoods</string>
     <string name="districts_action">Browse by area</string>
@@ -155,13 +155,13 @@
     <string name="tag_malatang_desc">Pick-your-own skewers in a numbing-spicy broth, cooked to order.</string>
     <string name="tag_vegetarian_desc">Fully vegetarian or with strong vegetarian options.</string>
     <string name="tag_breakfast_desc">Soy milk, fried dough, congee — Chinese breakfast classics.</string>
-    <string name="tag_tea_house_desc">Tea-led — pu\'er, oolong, slow brewing.</string>
+    <string name="tag_tea_house_desc">Tea-led — pu'er, oolong, slow brewing.</string>
     <string name="tag_bakery_desc">Pineapple buns, egg tarts, milk bread — Chinese-style baking.</string>
     <string name="tag_street_food_desc">Quick bites, snacks, takeaway-friendly.</string>
     <string name="tag_fusion_desc">Modern, cross-style cooking — Chinese roots, contemporary plates.</string>
 
     <!-- District descriptions (Berlin neighbourhoods) -->
-    <string name="district_desc_mitte">Berlin\'s historic core — Brandenburg Gate, Museum Island, central everything.</string>
+    <string name="district_desc_mitte">Berlin's historic core — Brandenburg Gate, Museum Island, central everything.</string>
     <string name="district_desc_charlottenburg">Old West Berlin — KaDeWe, Kurfürstendamm, City West shopping.</string>
     <string name="district_desc_friedrichshain">East Berlin nightlife — clubs, street art, young energy.</string>
     <string name="district_desc_kreuzberg">Multicultural and lively — Turkish kitchens, hip cafés, late-night bars.</string>
@@ -169,14 +169,14 @@
     <string name="district_desc_prenzlauer_berg">Gentrified family neighbourhood — playgrounds, cafés, brunch spots.</string>
     <string name="district_desc_schoeneberg">Quiet and storied — gay village, old Jewish history, pleasant streets.</string>
     <string name="district_desc_wedding">Working-class roots, gentrifying fast — affordable, diverse food.</string>
-    <string name="district_desc_tiergarten">Berlin\'s central park district — embassies and government quarter.</string>
-    <string name="district_desc_moabit">Workers\' housing on a Spree island — strong immigrant communities.</string>
+    <string name="district_desc_tiergarten">Berlin's central park district — embassies and government quarter.</string>
+    <string name="district_desc_moabit">Workers' housing on a Spree island — strong immigrant communities.</string>
     <string name="district_desc_pankow">Northeast residential — quieter than its inner-city neighbours.</string>
     <string name="district_desc_spandau">Westernmost Berlin — feels almost like its own town.</string>
     <string name="district_desc_tempelhof">Around the old airport-turned-park — south-side residential.</string>
     <string name="district_desc_wilmersdorf">Old West-Berlin bourgeois — leafy, calm, large Iranian community.</string>
     <string name="district_desc_steglitz">Southwest residential and shopping — student-friendly Schloßstraße.</string>
-    <string name="district_desc_lichtenberg">East-Berlin Plattenbau and Berlin\'s largest Vietnamese community.</string>
+    <string name="district_desc_lichtenberg">East-Berlin Plattenbau and Berlin's largest Vietnamese community.</string>
     <string name="district_desc_marzahn">East-Berlin Plattenbau, Vietnamese groceries and food courts.</string>
     <string name="district_desc_hellersdorf">Far east-Berlin Plattenbau — residential edge of the city.</string>
     <string name="district_desc_reinickendorf">Northwest residential — quiet, lakes and forest nearby.</string>
@@ -214,22 +214,22 @@
     <!-- Feedback (in-app form for bug reports / ideas / restaurant tips) -->
     <string name="feedback_title">Send feedback</string>
     <string name="feedback_subtitle">Bugs, ideas, or a place we should add</string>
-    <string name="feedback_intro">We read every message. Tell us what\'s broken, suggest a feature, or recommend a restaurant we should add.</string>
+    <string name="feedback_intro">We read every message. Tell us what's broken, suggest a feature, or recommend a restaurant we should add.</string>
     <string name="feedback_category_label">Topic</string>
     <string name="feedback_category_bug">Bug</string>
     <string name="feedback_category_idea">Idea</string>
     <string name="feedback_category_restaurant">Add a place</string>
     <string name="feedback_category_other">Other</string>
     <string name="feedback_message_label">Your message</string>
-    <string name="feedback_message_hint">Describe what happened, what you\'d like, or which restaurant…</string>
+    <string name="feedback_message_hint">Describe what happened, what you'd like, or which restaurant…</string>
     <string name="feedback_contact_label">Contact (optional)</string>
-    <string name="feedback_contact_hint">Email or WeChat — only if you\'d like a reply</string>
+    <string name="feedback_contact_hint">Email or WeChat — only if you'd like a reply</string>
     <string name="feedback_submit">Send</string>
     <string name="feedback_submitting">Sending…</string>
     <string name="feedback_success_title">Thanks!</string>
     <string name="feedback_success_body">Your feedback is in. We read everything that comes through.</string>
     <string name="feedback_close">Close</string>
-    <string name="feedback_error">Couldn\'t send. Check your connection and try again.</string>
+    <string name="feedback_error">Couldn't send. Check your connection and try again.</string>
 
     <!-- About entry (opens merged story / contribute / contributors sheet) -->
     <string name="about_title">About this project</string>
@@ -237,31 +237,31 @@
 
     <!-- Project story section -->
     <string name="story_title">The story behind this project</string>
-    <string name="story_body">Berlin Food Map started from a simple frustration. Every time a friend visited, we\'d end up sending the same handful of restaurant recommendations over WeChat — losing photos, forgetting addresses, and disagreeing about which place really had the best beef noodles.\n\nWe tried a Google Maps list, then a shared spreadsheet, then a Notion doc. None of them captured what mattered: where to actually eat in Berlin if you grew up with Chinese food.\n\nSo we started this project. It\'s open-source, non-profit, and built around a simple idea — the people who eat at a place should be the ones describing it. The restaurant data lives as plain YAML files in a public GitHub repository, easy for anyone to read, fork, or improve. The app is free, ad-free, and stores nothing about you.\n\nIt\'s a love letter, really — to the small noodle shops, the family-run Sichuan kitchens, the late-night dumpling spots that don\'t show up in Google\'s top picks. If we\'ve helped you find your next favourite, that\'s the whole point.</string>
+    <string name="story_body">Berlin Food Map started from a simple frustration. Every time a friend visited, we'd end up sending the same handful of restaurant recommendations over WeChat — losing photos, forgetting addresses, and disagreeing about which place really had the best beef noodles.\n\nWe tried a Google Maps list, then a shared spreadsheet, then a Notion doc. None of them captured what mattered: where to actually eat in Berlin if you grew up with Chinese food.\n\nSo we started this project. It's open-source, non-profit, and built around a simple idea — the people who eat at a place should be the ones describing it. The restaurant data lives as plain YAML files in a public GitHub repository, easy for anyone to read, fork, or improve. The app is free, ad-free, and stores nothing about you.\n\nIt's a love letter, really — to the small noodle shops, the family-run Sichuan kitchens, the late-night dumpling spots that don't show up in Google's top picks. If we've helped you find your next favourite, that's the whole point.</string>
 
     <!-- Contributors section -->
     <string name="contributors_title">Data contributors</string>
-    <string name="contributors_intro">Pulled live from the project\'s git history — every commit that touches the restaurant data files. If you\'ve contributed and we missed you, open an issue and we\'ll fix it.</string>
+    <string name="contributors_intro">Pulled live from the project's git history — every commit that touches the restaurant data files. If you've contributed and we missed you, open an issue and we'll fix it.</string>
     <string name="contributors_count">%1$d contributors</string>
     <string name="contributors_empty">No contributors yet — be the first!</string>
 
     <!-- Contribute section -->
     <string name="contribute_title">How to contribute data</string>
-    <string name="contribute_intro">Berlin Food Map is a non-profit project, kept alive by the people who eat here. New places open every month, old favourites move or close, and no single team can keep up alone. If you\'ve spotted a noodle shop we\'re missing, an address that has gone stale, or a phone number nobody picks up — we\'d love a hand.</string>
+    <string name="contribute_intro">Berlin Food Map is a non-profit project, kept alive by the people who eat here. New places open every month, old favourites move or close, and no single team can keep up alone. If you've spotted a noodle shop we're missing, an address that has gone stale, or a phone number nobody picks up — we'd love a hand.</string>
 
     <string name="contribute_what_title">What you can share</string>
-    <string name="contribute_what_1">•  A restaurant we don\'t have yet — the name, address, and anything you remember.</string>
+    <string name="contribute_what_1">•  A restaurant we don't have yet — the name, address, and anything you remember.</string>
     <string name="contribute_what_2">•  Corrections — closed places, renamed shops, wrong opening hours, bad coordinates.</string>
     <string name="contribute_what_3">•  Cuisine and dish tags — Sichuan, Cantonese, Northeastern home-style; whatever helps the next person find their match.</string>
     <string name="contribute_what_4">•  Photos, a personal note, or a one-line recommendation we can quote.</string>
 
     <string name="contribute_how_title">How to send it</string>
-    <string name="contribute_step_1">1. The easy way — send a CSV, Excel, or Google Sheet to our team. One row per restaurant, columns however you like; we\'ll clean it up on our side.</string>
+    <string name="contribute_step_1">1. The easy way — send a CSV, Excel, or Google Sheet to our team. One row per restaurant, columns however you like; we'll clean it up on our side.</string>
     <string name="contribute_step_2">2. The hands-on way — open a pull request on GitHub. Restaurant data lives as YAML files in data/restaurants. Edit one, propose a change, and the CI pipeline syncs it live.</string>
-    <string name="contribute_step_3">3. The casual way — drop a message in the WeChat community group or tag us on Xiaohongshu. We\'ll add the tip to the review queue.</string>
+    <string name="contribute_step_3">3. The casual way — drop a message in the WeChat community group or tag us on Xiaohongshu. We'll add the tip to the review queue.</string>
 
     <string name="contribute_after_title">What happens next</string>
-    <string name="contribute_after">Every submission is reviewed by a real person, cross-checked with Google Places for hours and coordinates, and goes live on the next data sync — usually within a few days. Contributions are anonymous by default; if you\'d like a credit on the contributors list, just say so.</string>
+    <string name="contribute_after">Every submission is reviewed by a real person, cross-checked with Google Places for hours and coordinates, and goes live on the next data sync — usually within a few days. Contributions are anonymous by default; if you'd like a credit on the contributors list, just say so.</string>
 
     <string name="contribute_action">Open the GitHub repository</string>
 
@@ -269,7 +269,7 @@
     <string name="team_title">The team behind</string>
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">Not profitable, but meaningful.</string>
-    <string name="team_novawerk_bio">Novawerk is an open, non-profit community hub. We exist to lower the barriers to creating positive change — helping people turn meaningful ideas into real projects through collaboration, creativity, and action.\n\nGreat ideas shouldn\'t stay as concepts. Real change happens when people choose to build, learn, and contribute together, instead of waiting for someone else to do it.\n\nThree ideas guide what we do: innovation should create real positive change, not chase short-term trends; people of any background can grow through practical work on real projects together; and everyone shares the responsibility to care, contribute, and act.\n\nBerlin Food Map is one of the projects built under that idea.</string>
+    <string name="team_novawerk_bio">Novawerk is an open, non-profit community hub. We exist to lower the barriers to creating positive change — helping people turn meaningful ideas into real projects through collaboration, creativity, and action.\n\nGreat ideas shouldn't stay as concepts. Real change happens when people choose to build, learn, and contribute together, instead of waiting for someone else to do it.\n\nThree ideas guide what we do: innovation should create real positive change, not chase short-term trends; people of any background can grow through practical work on real projects together; and everyone shares the responsibility to care, contribute, and act.\n\nBerlin Food Map is one of the projects built under that idea.</string>
     <string name="team_novawerk_visit">Visit website</string>
 
     <string name="team_pinwo_name">PinWO</string>
