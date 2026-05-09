@@ -291,4 +291,18 @@
 
     <string name="onboarding_team_one_eyebrow">团队 1 / 2</string>
     <string name="onboarding_team_two_eyebrow">团队 2 / 2</string>
+
+    <!-- Open-source licenses sheet -->
+    <string name="licenses_title">开源许可</string>
+    <string name="licenses_subtitle">本项目的授权方式</string>
+    <string name="licenses_intro">柏林中餐地图——包括 App 代码与餐厅数据——以开源形式发布在 GitHub。完整许可证全文公开可查；本页列出关键信息以及我们依赖的第三方开源库署名。</string>
+    <string name="licenses_copyright">© 2025–2026 Novawerk 与贡献者</string>
+
+    <string name="licenses_code_title">本项目 — MIT 许可证</string>
+    <string name="licenses_code_body">本仓库内所有内容——Kotlin Multiplatform App、网页、同步脚本以及餐厅数据——均以 MIT 许可证发布。你可以自由使用、复制、修改、再分发本项目，也可用于商业用途，只需在重用任何实质性部分时保留原始的版权声明与本许可声明即可。</string>
+    <string name="licenses_code_view">查看 MIT 全文</string>
+
+    <string name="licenses_thirdparty_title">第三方依赖</string>
+    <string name="licenses_thirdparty_body">本 App 使用了一系列开源库——Compose Multiplatform、Material 3、AndroidX、Coil、Ktor、kotlinx-datetime、kotlin-inject、gitlive Firebase KMP、kmp-maps-compose、Compass，以及 Firebase 与 Google Maps SDK。它们各自以原始的开源协议（Apache-2.0 或 MIT）发布，完整清单与署名见 GitHub 仓库。</string>
+    <string name="licenses_thirdparty_view">在 GitHub 查看完整署名</string>
 </resources>
