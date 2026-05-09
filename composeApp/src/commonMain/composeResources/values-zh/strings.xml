@@ -272,13 +272,13 @@
     <string name="team_novawerk_bio">Novawerk 是一个开放、非盈利的社区。我们存在的意义，是降低创造正向改变的门槛——帮助人们通过协作、创造与行动，把有意义的想法落地为真实的项目。\n\n好的想法不该只停留在概念里。当人们选择一起去做、去学、去贡献，而不是等别人来做的时候，真正的改变才会发生。\n\n三件事指引着我们的方向：创新应该为人和社会带来真实的正向影响，而不是追逐短期热点；不同背景、不同经验的人，都可以在真实的项目里一起协作、成长；每个人都有责任通过自己的行动、想法与参与，让世界往好的方向多一点。\n\n柏林中餐地图，就是在这个想法之下做出来的项目之一。</string>
     <string name="team_novawerk_visit">访问官网</string>
 
-    <string name="team_pinwo_name">PinWO</string>
+    <string name="team_pinwo_name">Pinwo</string>
     <string name="team_pinwo_role">寻找你的新餐厅。</string>
-    <string name="team_pinwo_bio">PinWO 是一个柏林的华人美食品牌。他们精选这座城市的中餐厅，运营一个合作餐厅计划——为会员带来专属优惠和品鉴活动，也帮新来的人和在柏林住久了的人，一起发现那些值得反复造访的小馆子。\n\nPinWO 是「柏林中餐地图」的联合品牌伙伴——同一座城、同一个场景、互补的两种做法：他们为会员精选餐饮体验；「柏林中餐地图」则尽可能把柏林每一家中餐厅都标在地图上，免费、对所有人开放。</string>
+    <string name="team_pinwo_bio">Pinwo 是一个柏林的华人美食品牌。他们精选这座城市的中餐厅，运营一个合作餐厅计划——为会员带来专属优惠和品鉴活动，也帮新来的人和在柏林住久了的人，一起发现那些值得反复造访的小馆子。\n\nPinwo 是「柏林中餐地图」的联合品牌伙伴——同一座城、同一个场景、互补的两种做法：他们为会员精选餐饮体验；「柏林中餐地图」则尽可能把柏林每一家中餐厅都标在地图上，免费、对所有人开放。</string>
     <string name="team_pinwo_visit">在小红书查看</string>
 
     <!-- Splash screen -->
-    <string name="splash_brand_lockup">Novawerk × PinWO</string>
+    <string name="splash_brand_lockup">Novawerk × Pinwo</string>
 
     <!-- Onboarding (first-launch tour) -->
     <string name="onboarding_skip">跳过</string>

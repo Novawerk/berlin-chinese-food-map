@@ -272,13 +272,13 @@
     <string name="team_novawerk_bio">Novawerk is an open, non-profit community hub. We exist to lower the barriers to creating positive change — helping people turn meaningful ideas into real projects through collaboration, creativity, and action.\n\nGreat ideas shouldn't stay as concepts. Real change happens when people choose to build, learn, and contribute together, instead of waiting for someone else to do it.\n\nThree ideas guide what we do: innovation should create real positive change, not chase short-term trends; people of any background can grow through practical work on real projects together; and everyone shares the responsibility to care, contribute, and act.\n\nBerlin Food Map is one of the projects built under that idea.</string>
     <string name="team_novawerk_visit">Visit website</string>
 
-    <string name="team_pinwo_name">PinWO</string>
+    <string name="team_pinwo_name">Pinwo</string>
     <string name="team_pinwo_role">Find your new restaurant.</string>
-    <string name="team_pinwo_bio">PinWO is a Berlin-based Chinese dining brand. They curate restaurants across the city, run a partner program with member deals and tasting events, and help newcomers and long-timers alike find places worth coming back to.\n\nPinWO is our co-brand partner on Berlin Food Map — same city, same scene, complementary takes on it: they curate the dining experience for their members; Berlin Food Map maps every Chinese restaurant in Berlin we can find, free and open to anyone.</string>
+    <string name="team_pinwo_bio">Pinwo is a Berlin-based Chinese dining brand. They curate restaurants across the city, run a partner program with member deals and tasting events, and help newcomers and long-timers alike find places worth coming back to.\n\nPinwo is our co-brand partner on Berlin Food Map — same city, same scene, complementary takes on it: they curate the dining experience for their members; Berlin Food Map maps every Chinese restaurant in Berlin we can find, free and open to anyone.</string>
     <string name="team_pinwo_visit">View on Xiaohongshu</string>
 
     <!-- Splash screen -->
-    <string name="splash_brand_lockup">Novawerk × PinWO</string>
+    <string name="splash_brand_lockup">Novawerk × Pinwo</string>
 
     <!-- Onboarding (first-launch tour) -->
     <string name="onboarding_skip">Skip</string>
