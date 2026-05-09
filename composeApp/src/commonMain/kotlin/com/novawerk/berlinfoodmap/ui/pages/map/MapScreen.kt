@@ -116,10 +116,23 @@ fun MapScreen(
     }
 
     val density = LocalDensity.current
-    // Bumped from 72dp — reduces the "scattered cluster of 2" pattern at
-    // city zoom by merging tight pairs into bigger groups, while still
-    // letting individual pills surface at neighbourhood zoom.
-    val clusterRadiusPx = with(density) { 84.dp.toPx() }
+    // AABB-clustering parameters. Each pill has a per-restaurant width
+    // (estimated from name + tag chars, capped at MARKER_MAX_WIDTH); the
+    // body height is constant. We add a small visual padding so even
+    // adjacent-but-not-quite-touching pills cluster — the pre-fix
+    // complaint was that pills 1-2 px apart still read as overlapping.
+    val markerHeightPx = with(density) { MARKER_BODY_HEIGHT.toPx() }
+    val markerPaddingPx = with(density) { 6.dp.toPx() }
+    val markerMaxWidthPx = with(density) { MARKER_MAX_WIDTH.toPx() }
+    // Worst-case centre-to-centre overlap distance: two MARKER_MAX_WIDTH
+    // pills + padding. Used as the spatial-grid cell size.
+    val maxOverlapPx = markerMaxWidthPx + markerPaddingPx
+    val widthEstimator: (com.novawerk.berlinfoodmap.domain.restaurant.Restaurant) -> Float =
+        remember(density) {
+            { restaurant ->
+                with(density) { estimatedMarkerWidth(restaurant).toPx() }
+            }
+        }
 
     // Push viewport bounds into the data VM only when the camera settles.
     // The bottom LazyRow reads `visibleRestaurants` derived from these
@@ -139,9 +152,15 @@ fun MapScreen(
 
     // Recompute clusters on filter changes (immediate) and on zoom-idle
     // (lazy — pan is invariant under our screen-distance clustering).
-    LaunchedEffect(restaurantsFiltered, clusterRadiusPx) {
+    LaunchedEffect(restaurantsFiltered, markerHeightPx, markerPaddingPx, maxOverlapPx) {
         cameraPositionState.projection?.let { projection ->
-            viewModel.recomputeClusters(projection, clusterRadiusPx)
+            viewModel.recomputeClusters(
+                projection = projection,
+                widthEstimator = widthEstimator,
+                heightPx = markerHeightPx,
+                paddingPx = markerPaddingPx,
+                maxOverlapPx = maxOverlapPx,
+            )
         }
         snapshotFlow {
             cameraPositionState.isMoving to cameraPositionState.position.zoom
@@ -151,7 +170,13 @@ fun MapScreen(
             .distinctUntilChanged()
             .collect {
                 cameraPositionState.projection?.let { projection ->
-                    viewModel.recomputeClusters(projection, clusterRadiusPx)
+                    viewModel.recomputeClusters(
+                        projection = projection,
+                        widthEstimator = widthEstimator,
+                        heightPx = markerHeightPx,
+                        paddingPx = markerPaddingPx,
+                        maxOverlapPx = maxOverlapPx,
+                    )
                 }
             }
     }

@@ -196,12 +196,32 @@ internal class MapViewModel(
      * Default. Skips state writes when the new grouping is structurally
      * identical so pan-induced no-op recomputes don't cascade into marker
      * re-emissions.
+     *
+     * [widthEstimator] returns each restaurant's pill width in px. Caller
+     * computes this with `Density` in scope (composable side); the VM
+     * stays platform/density-agnostic. [maxOverlapPx] must be ≥ the
+     * largest possible center-to-center distance at which two pills can
+     * still overlap — see [clusterFromProjected].
      */
-    suspend fun recomputeClusters(projection: Projection, radiusPx: Float) {
+    suspend fun recomputeClusters(
+        projection: Projection,
+        widthEstimator: (Restaurant) -> Float,
+        heightPx: Float,
+        paddingPx: Float,
+        maxOverlapPx: Float,
+    ) {
         val current = restaurantsFiltered
         val projected = projectAll(current, projection)
+        val widths = FloatArray(current.size) { i -> widthEstimator(current[i]) }
         val next = withContext(Dispatchers.Default) {
-            clusterFromProjected(current, projected, radiusPx)
+            clusterFromProjected(
+                restaurants = current,
+                projected = projected,
+                widthsPx = widths,
+                heightPx = heightPx,
+                paddingPx = paddingPx,
+                maxOverlapPx = maxOverlapPx,
+            )
         }
         if (!sameClusterGrouping(next, clusters)) {
             clusters = next

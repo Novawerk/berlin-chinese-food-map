@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineSeatFlat
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -74,17 +76,17 @@ internal fun MiniRestaurantCard(
 
     Box(
         modifier = Modifier
-            // 0.75 alpha on the fill keeps the bubble readable while letting
-            // the underlying map (roads, neighbouring labels, transit icons)
-            // show through, so a card never fully occludes an icon next to
-            // it. Foreground content (cover, name, tags) stays fully opaque.
+            // Solid fill — the previous 0.75-alpha treatment let map labels
+            // bleed through and read as visual noise. Now that overlap is
+            // resolved by clustering (AABB-based, see `clusterFromProjected`)
+            // rather than by translucency, the pill renders fully opaque.
             .background(
-                MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
+                MaterialTheme.colorScheme.surface,
                 MarkerBubbleShape,
             )
             .border(
                 1.dp,
-                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                MaterialTheme.colorScheme.outlineVariant,
                 MarkerBubbleShape,
             )
             // Bottom padding leaves the tail area clear so content stays above
@@ -131,7 +133,10 @@ internal fun MiniRestaurantCard(
                 }
             }
             Spacer(Modifier.width(8.dp))
-            Column {
+            // Cap the text column width so long zh names + tag strings can't
+            // grow the pill arbitrarily — the AABB overlap check downstream
+            // is calibrated against this max. Names that exceed it ellipsize.
+            Column(modifier = Modifier.widthIn(max = MARKER_TEXT_COLUMN_MAX_WIDTH)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (restaurant.featured) {
                         Icon(
@@ -158,6 +163,7 @@ internal fun MiniRestaurantCard(
                         style = MaterialTheme.typography.labelMedium,
                         color = nameColor,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
@@ -169,6 +175,7 @@ internal fun MiniRestaurantCard(
                         style = MaterialTheme.typography.labelSmall,
                         color = secondaryColor,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -179,6 +186,55 @@ internal fun MiniRestaurantCard(
 private val MARKER_CORNER_RADIUS = 10.dp
 private val MARKER_TAIL_WIDTH = 10.dp
 private val MARKER_TAIL_HEIGHT = 6.dp
+
+// Layout constants exposed for clustering's AABB overlap calculation. The
+// pill is `start padding + icon + gap + textColumn + end padding` wide; the
+// text column is capped, the rest is fixed, so total width is bounded by
+// MARKER_BASE_WIDTH + MARKER_TEXT_COLUMN_MAX_WIDTH.
+private val MARKER_TEXT_COLUMN_MAX_WIDTH = 132.dp
+private val MARKER_BASE_WIDTH = 6.dp + 32.dp + 8.dp + 10.dp // start + icon + gap + end
+internal val MARKER_MAX_WIDTH = MARKER_BASE_WIDTH + MARKER_TEXT_COLUMN_MAX_WIDTH
+
+// The pill body (excluding the tail) is icon (32dp) + top/bottom padding
+// (6+6) = 44dp; tail adds another 6dp. Use the body height as the AABB
+// height since the tail is a thin triangle that doesn't visually clash
+// with neighbouring pills' bodies.
+internal val MARKER_BODY_HEIGHT = 44.dp
+
+/**
+ * Conservative pill-width estimate for a given restaurant, used by the
+ * clusterer to reason about visual overlap before the bitmap is rendered.
+ *
+ * Formula: base chrome width + max(name row, tag row), capped at
+ * [MARKER_MAX_WIDTH]. Per-character widths approximate the rendered
+ * `labelMedium` (zh name) and `labelSmall` (tag joiner) at typical
+ * typography sizes — fine-grained accuracy isn't needed because the
+ * clustering predicate already adds a safety padding.
+ */
+internal fun estimatedMarkerWidth(
+    restaurant: com.novawerk.berlinfoodmap.domain.restaurant.Restaurant,
+): androidx.compose.ui.unit.Dp {
+    val name = restaurant.name.zh
+    // Rough char widths in dp at the rendered text styles. CJK fonts are
+    // squarer than Latin, so we use the same ~14dp/char for the name row
+    // (labelMedium ≈ 14sp) and a slimmer ~9dp average for the tag row.
+    val nameWidth = (name.length * 14).dp +
+        (if (restaurant.featured) 15.dp else 0.dp) // star + gap
+    val tags = restaurant.cardTags()
+    val tagsText = if (tags.isEmpty()) {
+        ""
+    } else {
+        tags.joinToString(" · ") { tag ->
+            // Display labels are short enough that we approximate length
+            // by the tag's enum name; doesn't need to be exact.
+            tag.name
+        }
+    }
+    val tagsWidth = (tagsText.length * 9).dp
+    val textColumnWidth = maxOf(nameWidth, tagsWidth)
+        .coerceAtMost(MARKER_TEXT_COLUMN_MAX_WIDTH)
+    return (MARKER_BASE_WIDTH + textColumnWidth).coerceAtMost(MARKER_MAX_WIDTH)
+}
 
 /**
  * Speech-bubble outline for restaurant markers — rounded rectangle body with

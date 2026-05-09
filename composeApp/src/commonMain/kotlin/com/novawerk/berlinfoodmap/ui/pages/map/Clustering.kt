@@ -68,32 +68,48 @@ internal expect fun projectionPixelScale(): Float
  * [projectAll] (which must run on Main) to move clustering off the UI
  * thread.
  *
- * The screen is divided into square cells of side [radiusPx]. For each
- * point, any cluster within [radiusPx] of it must have its anchor in one
- * of the 9 surrounding cells. We probe only those cells instead of every
- * existing cluster, eliminating the O(n × k) blowup the naive algorithm
- * has when many markers are visible.
+ * **Predicate**: AABB rectangle overlap, not centre-to-centre distance.
+ * Each marker's footprint is a `widthsPx[i] × heightPx` box anchored at
+ * the bottom-centre of its lat/lng pin (anchor `(0.5, 1)`). Two markers
+ * cluster when their boxes — expanded by [paddingPx] on every side —
+ * intersect. This is what users actually perceive as "overlap": short
+ * names (narrow pills) tolerate closer neighbours than long names
+ * (wide pills), so a uniform circular radius either over- or
+ * under-clusters depending on name length.
+ *
+ * The screen is divided into square cells of side [maxOverlapPx]
+ * (= the largest possible centre-to-centre distance at which two
+ * markers can still touch). Any candidate that could overlap point i
+ * must have its anchor in one of i's 9 surrounding cells, so we probe
+ * only those — keeping the algorithm O(n) average.
  */
 internal fun clusterFromProjected(
     restaurants: List<Restaurant>,
     projected: List<ScreenPoint>,
-    radiusPx: Float,
+    widthsPx: FloatArray,
+    heightPx: Float,
+    paddingPx: Float,
+    maxOverlapPx: Float,
 ): List<RestaurantCluster> {
     require(restaurants.size == projected.size) {
         "restaurants and projected must have the same size"
     }
+    require(restaurants.size == widthsPx.size) {
+        "restaurants and widthsPx must have the same size"
+    }
     if (restaurants.isEmpty()) return emptyList()
 
-    val cellSize = radiusPx
-    val r2 = radiusPx * radiusPx
+    val cellSize = maxOverlapPx.coerceAtLeast(1f)
     val grid = HashMap<Long, MutableList<Int>>(restaurants.size)
     val anchorsX = FloatArray(restaurants.size)
     val anchorsY = FloatArray(restaurants.size)
+    val anchorWidths = FloatArray(restaurants.size)
     val buckets = ArrayList<MutableList<Restaurant>>(restaurants.size)
 
     for (i in restaurants.indices) {
         val r = restaurants[i]
         val pt = projected[i]
+        val w = widthsPx[i]
         val cx = (pt.x / cellSize).toInt()
         val cy = (pt.y / cellSize).toInt()
 
@@ -105,9 +121,17 @@ internal fun clusterFromProjected(
                 for (idx in candidates) {
                     val ax = anchorsX[idx]
                     val ay = anchorsY[idx]
-                    val ddx = pt.x - ax
-                    val ddy = pt.y - ay
-                    if (ddx * ddx + ddy * ddy <= r2) {
+                    val aw = anchorWidths[idx]
+                    // AABB overlap, anchor (0.5, 1): horizontal centres are
+                    // (pt.x, ax); vertical extents reach `heightPx` upward
+                    // from each anchor's y. Two boxes (expanded by padding)
+                    // overlap iff |dx| < (w_a + w_b)/2 + padding AND
+                    // |dy| < heightPx + padding.
+                    val ddx = if (pt.x >= ax) pt.x - ax else ax - pt.x
+                    val ddy = if (pt.y >= ay) pt.y - ay else ay - pt.y
+                    val xLimit = (w + aw) / 2f + paddingPx
+                    val yLimit = heightPx + paddingPx
+                    if (ddx < xLimit && ddy < yLimit) {
                         matched = idx
                         break@outer
                     }
@@ -122,6 +146,7 @@ internal fun clusterFromProjected(
             buckets.add(mutableListOf(r))
             anchorsX[newIdx] = pt.x
             anchorsY[newIdx] = pt.y
+            anchorWidths[newIdx] = w
             grid.getOrPut(cellKey(cx, cy)) { ArrayList(2) }.add(newIdx)
         }
     }

@@ -179,14 +179,22 @@ cache hits.
 
 ### Algorithm
 
-`Clustering.kt` implements a screen-distance grid clusterer:
+`Clustering.kt` implements a screen-AABB grid clusterer:
 
 1. Project every restaurant's lat/lng to screen pixels via the SDK's
    `Projection.toScreenLocation(...)`.
-2. Bucket into a uniform grid of `clusterRadiusPx`-side cells.
-3. For each point, scan only the 9 cells in its 3×3 neighbourhood.
-4. If a cluster anchor is within `clusterRadiusPx`, join it; otherwise
-   start a new cluster anchored at this point.
+2. Estimate each pill's width from its restaurant (name length + tag
+   row, capped at `MARKER_MAX_WIDTH`). Height is constant
+   (`MARKER_BODY_HEIGHT`).
+3. Bucket into a uniform grid of `maxOverlapPx`-side cells, where
+   `maxOverlapPx = MARKER_MAX_WIDTH + paddingPx` is the worst-case
+   centre-to-centre distance at which two pills can still overlap.
+4. For each point, scan only the 9 cells in its 3×3 neighbourhood.
+5. Predicate: AABB intersection on the (anchor 0.5, 1.0) box. Two
+   pills cluster iff `|dx| < (Wa+Wb)/2 + padding` AND
+   `|dy| < heightPx + padding`. Width-aware overlap (rather than a
+   uniform circular radius) is what makes 短名 + 长名 pairs cluster
+   when they actually visually overlap, not before.
 
 Average-case O(n). For our scale (~200 restaurants) the projection
 calls dominate.
@@ -222,11 +230,19 @@ per recompute. Imperceptible.
 `MapViewModel.recomputeClusters` is suspending:
 
 ```kotlin
-suspend fun recomputeClusters(projection: Projection, radiusPx: Float) {
+suspend fun recomputeClusters(
+    projection: Projection,
+    widthEstimator: (Restaurant) -> Float,
+    heightPx: Float,
+    paddingPx: Float,
+    maxOverlapPx: Float,
+) {
     val current = restaurantsFiltered
     val projected = projectAll(current, projection)              // Main
+    val widths = FloatArray(current.size) { widthEstimator(current[it]) }
     val next = withContext(Dispatchers.Default) {
-        clusterFromProjected(current, projected, radiusPx)       // Default
+        clusterFromProjected(current, projected, widths,         // Default
+            heightPx, paddingPx, maxOverlapPx)
     }
     if (!sameClusterGrouping(next, clusters)) {
         clusters = next
