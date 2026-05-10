@@ -37,8 +37,8 @@ const features = [
     icon: "🏷️",
     title: { en: "22-Tag Taxonomy", zh: "22 项菜系标签" },
     desc: {
-      en: "10 regional cuisines (川/粤/京…) + 12 formats (火锅/烤肉/小吃…). A tabbed filter sheet — Cuisine, Style, Neighbourhood — stacks them.",
-      zh: "10 个地方菜系（川/粤/京…）+ 12 种业态（火锅/烤肉/小吃…）。筛选面板分 菜系 / 业态 / 城区 三个 Tab，可任意叠加。",
+      en: "10 regional cuisines (川/粤/京…) + 12 formats (火锅/烤肉/小吃…). The filter sheet stacks Favourites · Editor's Picks · Open Now toggles with cuisine and format pickers — every selection is independent.",
+      zh: "10 个地方菜系（川/粤/京…）+ 12 种业态（火锅/烤肉/小吃…）。筛选面板把 仅看收藏 · 仅看精选 · 仅看营业中 三个开关与菜系、业态选择器堆叠在一起，互不干扰。",
     },
     span: 1,
     accent: "from-emerald-200/30 to-transparent",
@@ -47,8 +47,8 @@ const features = [
     icon: "🕒",
     title: { en: "Open-Now Signals", zh: "营业状态实时显示" },
     desc: {
-      en: "Structured opening periods power a real-time \"open now\" badge. Closed restaurants render with a moon icon and faded text.",
-      zh: "结构化营业时段驱动实时 \"营业中\" 标记，已打烊餐厅用月亮图标与淡色显示。",
+      en: "Structured opening periods power a real-time \"open now\" badge plus a one-tap filter that hides venues currently closed. Closed restaurants render with a moon icon and faded text.",
+      zh: "结构化营业时段驱动实时 \"营业中\" 标记，配合一键筛选隐藏当前已打烊的餐厅；歇业餐厅用月亮图标与淡色显示。",
     },
     span: 1,
     accent: "from-sky-200/30 to-transparent",
@@ -67,8 +67,8 @@ const features = [
     icon: "🌐",
     title: { en: "Bilingual & Privacy-First", zh: "中英双语 · 隐私优先" },
     desc: {
-      en: "Full Chinese / English UI, with German restaurant names. No ads, no analytics, no tracking SDKs — just an anonymous id for view counts.",
-      zh: "完整中英双语界面，餐厅名兼顾德文。无广告、无埋点、无第三方追踪 SDK，仅匿名 ID 用于浏览计数。",
+      en: "Full Chinese / English UI, with German restaurant names. No ads, no third-party tracking SDKs. First-party Firebase Analytics + Crashlytics log only restaurant ids and short route strings — never names, search queries, or GPS coordinates.",
+      zh: "完整中英双语界面，餐厅名兼顾德文。无广告、无第三方追踪 SDK；自家 Firebase Analytics + Crashlytics 仅记录餐厅 id 和短路由字符串——不记录餐厅名、搜索关键词、GPS 坐标。",
     },
     span: 2,
     accent: "from-brand/15 to-transparent",

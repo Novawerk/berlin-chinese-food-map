@@ -61,15 +61,28 @@ under `ui/pages/map/`.
 | | `MapViewModel` | `MapControlViewModel` |
 |---|---|---|
 | **Owns** | filters, restaurants, dense ids, marker covers | user location, freshness flag |
-| **Depends on** | `RestaurantRepository`, Coil `PlatformContext` | Compass `Geolocator` |
-| **Lifecycle** | tied to NavBackStackEntry; survives configuration changes | same |
+| **Depends on** | `RestaurantStore`, Coil `PlatformContext` | Compass `Geolocator` |
+| **Lifecycle** | `@AppScope` DI singleton (process-lifetime) | same |
 | **Could be tested without the other?** | Yes | Yes |
 
-Both bind to the same `NavBackStackEntry` via `viewModel { ... }`, so
-they survive configuration changes together but stay independent at the
-type level. If location features grow (continuous tracking, follow
-mode, last-visited bookmark), they grow inside `MapControlViewModel`
-without polluting the restaurant pipeline.
+Both are `@AppScope @Inject` classes provided by `AppComponent`, so
+each has a single instance for the whole process. They are touched at
+the top of `App()` — `val mapViewModel = component.mapViewModel` —
+which forces kotlin-inject to construct them during the splash hold
+and kicks their `init` blocks off in parallel: `MapViewModel` starts
+its Firestore + favourites observers and the cover prefetch via
+`RestaurantStore`; `MapControlViewModel` fires a best-effort first
+location fix.
+
+This used to be per-`NavBackStackEntry` `viewModel { ... }` scoping
+when the app had a `NavHost`. With the move to a single-`MainShell`
+overlay UI (no navigation graph), per-entry scoping no longer made
+sense — and instantiating in composition meant we couldn't run
+`init` ahead of first paint, so the map waited on a cold Firestore
+fetch every cold launch. App-scope singletons fix both. If location
+features grow (continuous tracking, follow mode, last-visited
+bookmark), they grow inside `MapControlViewModel` without polluting
+the restaurant pipeline.
 
 ### What stays in the composable
 
@@ -113,7 +126,7 @@ keys. **Each recomposition produces a new lambda instance**, so
 The `keys` parameter is effectively ignored.
 
 Visible symptom: any time the GoogleMap content lambda recomposes
-(camera reads, cluster updates, etc.), every marker's bitmap is
+(camera reads, dense-set updates, etc.), every marker's bitmap is
 re-rendered, and the marker briefly flickers because the Maps SDK has
 to swap its icon. iOS doesn't have this bug.
 
@@ -139,14 +152,14 @@ load-bearing reason markers don't flicker.
                                     │
                                     ▼
                  ┌──────────────────────────────────────┐
-                 │  MapViewModel.markerCovers           │  Survives configuration changes
-                 │  SnapshotStateMap<id, MarkerCover>   │  Survives cluster regroupings
-                 │  decoded coil3.Image per restaurant  │  Owned by the VM
+                 │  MapViewModel.markerCovers           │  Survives the app process
+                 │  SnapshotStateMap<id, MarkerCover>   │  Survives dot ↔ pill cycles
+                 │  decoded coil3.Image per restaurant  │  Owned by the @AppScope VM
                  └──────────────────┬───────────────────┘
                                     │
                                     ▼
                  ┌──────────────────────────────────────┐
-                 │  MarkerDescriptorCache               │  Survives cluster regroupings
+                 │  MarkerDescriptorCache               │  Survives dot ↔ pill cycles
                  │  Map<id, CachedMarkerDescriptor>     │  Owned by the composable (needs
                  │  rasterised pill BitmapDescriptor    │  ComposeView for rendering)
                  └──────────────────────────────────────┘
@@ -155,14 +168,16 @@ load-bearing reason markers don't flicker.
 Each layer solves a different problem:
 
 1. **Coil disk cache** — avoid network round-trip across sessions.
-2. **`markerCovers` (VM)** — avoid Coil's load + decode pass on cluster
-   regroupings. Loaded directly via `imageLoader.execute()`, not via
-   `AsyncImagePainter`, so there's no composable-bound state machine
-   and the cache lives wherever we want.
+2. **`markerCovers` (VM)** — avoid Coil's load + decode pass when a
+   restaurant flips between dot and pill on a zoom step. Loaded
+   directly via `imageLoader.execute()`, not via `AsyncImagePainter`,
+   so there's no composable-bound state machine and the cache lives
+   wherever we want.
 3. **`MarkerDescriptorCache`** — avoid the Compose-to-bitmap render
    (build off-screen `ComposeView`, measure, layout, draw to a
-   `Bitmap`) on cluster regroupings. ~3–5 ms per marker, multiplied
-   by however many restaurants flip single ↔ multi on a zoom step.
+   `Bitmap`) on dot ↔ pill transitions. ~3–5 ms per marker,
+   multiplied by however many restaurants flip variant on a zoom
+   step.
 
 `MiniRestaurantCard` wraps `coil3.Image.asPainter(ctx)` at rasterise
 time — cheap struct adapter, no decoding, no async work.
@@ -346,7 +361,7 @@ handles the camera pan in its own coroutine scope.
   control). If you find yourself touching both VMs from one feature,
   consider whether a third VM is appropriate before piling onto either.
 - **Considering removing `MarkerDescriptorCache`**: don't, unless you've
-  measured. We tried — the regression was visible (single↔multi cluster
+  measured. We tried — the regression was visible (dot ↔ pill
   transitions cost ~3–5 ms × N markers per zoom step, which is enough
   to feel hitchy on big zoom changes).
 - **Considering replacing `rememberStableComposeBitmapDescriptor` with

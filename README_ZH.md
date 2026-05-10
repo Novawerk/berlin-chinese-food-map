@@ -52,10 +52,10 @@
 ### 地图页
 
 - 自定义 Pinwo 品牌样式的 Google Map（去饱和米色底，仅 POI 用品牌红），默认聚焦柏林并自动显示当前位置（已授权时）。
-- **Marker 卡片**展示餐厅封面图 + 中文名 + 菜系/形态 tag。封面位图由 ViewModel 预加载，cluster 重组不会重新加载。歇业餐厅自动灰化并显示月亮图标（基于 Google `regularOpeningHours.periods` 结构化营业时间计算）。
-- **聚合算法**基于屏幕距离，仅在缩放停止时重新计算（pan 在算法上不变）。两阶段执行：projection 在 Main，grid 数学在 `Dispatchers.Default`。
+- **Marker 卡片**展示餐厅封面图 + 中文名 + 菜系/形态 tag。封面位图由 ViewModel 预加载，dot ↔ pill 折叠/展开切换不会触发重新加载。歇业餐厅自动灰化并显示月亮图标（基于 Google `regularOpeningHours.periods` 结构化营业时间计算）。收藏与编辑精选餐厅在卡片左上角悬浮一个红心 / 金星徽章。
+- **密集 marker 折叠（不再聚合）。** 每家餐厅都拥有独立 marker；当一个胶囊会与邻居视觉重叠时，两边都收缩成一个圆形小图——普通=红点，收藏=红心，编辑精选=金星——用户始终看到的是单个 POI。放大后小图重新展开成胶囊。两阶段执行：projection 在 Main，AABB 矩形重叠在 `Dispatchers.Default`。
 - **底部卡片行**列出当前视野内的餐厅 — 点击直接打开详情 sheet，地图状态保留。
-- **筛选 sheet（左下 FAB）** — 三个 tab（菜系 / 风味 / 街区），每行计数考虑另一家族的当前选择。菜系和风味是独立单选；街区行点击会让相机平移到该区中心点而不是过滤。
+- **筛选 sheet（左下 FAB）** — 三个快捷开关（仅看收藏 · 仅看编辑精选 · 仅看营业中）+ 菜系 / 风味两个分 Tab 选择器。"仅看营业中"会隐藏当前已打烊的餐厅，营业时间未知 / 24 小时 / 即将开门均通过。菜系与风味分类时，各行计数会考虑另一家族的当前选择。
 - **当前位置 FAB** — 缓存的位置 ≤ 60 秒内重复点击直接平移到缓存坐标，不再触发权限/传感器请求。
 
 ### 餐厅详情（模态 sheet）
@@ -78,7 +78,8 @@
 - **双语 UI** — 英文 / 简体中文。德文仅作餐厅名语言；UI 字符串只有 EN/ZH。
 - **深色模式** — 跟随系统 / 强制浅色 / 强制深色，由 DataStore 持久化。
 - **离线友好** — Firestore 持久化缓存让冷启动时地图和列表立刻渲染上次同步内容；封面图由 Coil disk cache 缓存。
-- **隐私优先** — 匿名 Firebase auth（用于 view-counter 文档稳定 id），无其他 PII，无广告，无埋点。
+- **暖启动地图** — `MapViewModel` 与 `MapControlViewModel` 都是 `@AppScope` 的 DI 进程级单例，在 `App()` 顶端被触达，所以它们的 Firestore 观察者和首次定位获取都在 splash hold 期间并行进行。splash 淡出时地图已经有数据和瓦片在内存中。
+- **隐私优先** — 匿名 Firebase auth（仅用于 view-counter 稳定 id），无第三方追踪 SDK，无广告。一方遥测（Firebase Analytics + Crashlytics）只记录餐厅 id 和短路由字符串 — 不记录餐厅名、用户输入的搜索词、GPS 坐标。匿名 Firebase uid 同时作为 Analytics user id 和 Crashlytics user id，便于按安装聚合。
 
 ## 项目结构
 
@@ -97,19 +98,21 @@
 
 ```
 composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
-├── App.kt                          # 根 composable + NavHost + 主题与语言注入
-├── di/                             # kotlin-inject AppComponent (KMP)
+├── App.kt                          # 根 composable，splash → onboarding → main，覆盖式 UI
+├── di/                             # kotlin-inject AppComponent（@AppScope 单例，KMP）
 ├── domain/
+│   ├── analytics/                  # AnalyticsService 接口（事件 + 崩溃日志）
 │   ├── auth/                       # AuthService 接口
 │   ├── common/                     # Localizable, preferred()
+│   ├── favorites/                  # FavoritesRepository
 │   ├── restaurant/                 # Restaurant, Tag, GooglePlaceData, OpeningStatus
 │   └── settings/                   # SettingsRepository (DataStore 实现)
 ├── data/
-│   └── remote/                     # FirebaseAuthService, FirestoreRestaurantRepository
+│   ├── remote/                     # FirebaseAuthService, FirestoreRestaurantRepository, FirebaseAnalyticsService
+│   └── store/                      # RestaurantStore — 地图的 app 级数据层
 └── ui/
     ├── theme/                      # AppTheme, Pinwo 品牌色板, Source Sans 3 字体
     ├── locale/                     # LocalAppLocale (expect/actual)
-    ├── navigation/                 # @Serializable Routes
     ├── components/                 # 共享组件 (TagChips, OpeningStatusBadge, …)
     └── pages/
         ├── map/                    # MapScreen + MapViewModel + MapControlViewModel + marker 管线
@@ -118,7 +121,12 @@ composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
         └── settings/               # SettingsScreen (主题 + 语言)
 ```
 
-**地图页的细节**详见 [`docs/MAP_PIPELINE.md`](docs/MAP_PIPELINE.md)：VM 拆分、聚合算法、marker 位图管线、为什么需要绕开库的 bug 自己写 `StableMarkerIcon`。
+地图与设置两个 Tab 由单一 `MainShell` 渲染，设置面板以浮层形式覆盖在
+活的地图之上，跨平台 `BackHandler` 负责返回地图。已没有 `NavHost` 也
+没有 `@Serializable Routes` — 之前的 Compose Navigation 路由图被移除，
+换成这套覆盖模型，让地图 composable 在 Tab 切换中保持挂载。
+
+**地图页的细节**详见 [`docs/MAP_PIPELINE.md`](docs/MAP_PIPELINE.md)：VM 单例化、密集 marker 折叠算法、marker 位图管线、为什么需要绕开库的 bug 自己写 `StableMarkerIcon`。
 
 ### 数据流水线
 
@@ -132,14 +140,14 @@ composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
 |----|------|
 | 编程语言 | Kotlin 2.2 |
 | UI | Compose Multiplatform 1.10 (Material Design 3 Expressive) |
-| 导航 | Compose Navigation，类型安全 `@Serializable` 路由 |
-| 状态 | `androidx.lifecycle.ViewModel` + Compose snapshot state (`mutableStateOf` / `derivedStateOf`) |
-| 后端 | Firebase（匿名 Auth + Firestore，通过 [`gitlive-firebase`](https://github.com/GitLiveApp/firebase-kotlin-sdk)） |
-| 本地存储 | Jetpack DataStore（仅设置项使用——收藏功能尚未接入） |
+| 导航 | 无——`MainShell` 用浮层方式渲染地图与设置，由跨平台 `BackHandler`（`org.jetbrains.compose.ui:ui-backhandler`）负责回退 |
+| 状态 | `androidx.lifecycle.ViewModel` + Compose snapshot state (`mutableStateOf` / `derivedStateOf`)；ViewModel 是 `@AppScope` 的 DI 进程级单例，由 `AppComponent` 提供，让地图在 splash 阶段就开始预热 |
+| 后端 | Firebase（匿名 Auth + Firestore + Analytics + Crashlytics，通过 [`gitlive-firebase`](https://github.com/GitLiveApp/firebase-kotlin-sdk)） |
+| 本地存储 | Jetpack DataStore（设置项 + 收藏） |
 | 地图 | [`eu.buney.maps:kmp-maps-compose`](https://github.com/buney-eu/maps)（Android 用 Google Maps SDK，iOS 用 MapKit） |
 | 图片加载 | [Coil 3](https://coil-kt.github.io/coil/) (`io.coil-kt.coil3`) + Ktor 网络 fetcher |
 | 定位 | [Compass](https://compass.jordond.dev/) (`dev.jordond.compass`)——内部处理权限流，KMP 友好 |
-| DI | [kotlin-inject](https://github.com/evant/kotlin-inject) + KSP，`@KmpComponentCreate` |
+| DI | [kotlin-inject](https://github.com/evant/kotlin-inject) + KSP，`@KmpComponentCreate`，自定义 `@AppScope` 实现进程级单例 |
 | 网络 | Ktor Client（Android 用 OkHttp，iOS 用 Darwin） |
 | 日期时间 | kotlinx-datetime + `kotlinx-datetime-names` 本地化星期/月份 |
 | 目标平台 | Android (SDK 24+，target SDK 36) / iOS（Swift wrapper，framework 名 `ComposeApp`） |

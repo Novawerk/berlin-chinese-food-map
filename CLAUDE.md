@@ -27,14 +27,22 @@ around the 22-tag taxonomy + opening-hours signals landed in May 2026.
 - **Kotlin** 2.2 — `kotlin.code.style=official`
 - **Compose Multiplatform** 1.10, **Material Design 3 Expressive**
   (`languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")`)
-- **Navigation** — Compose Navigation, type-safe `@Serializable` routes in `ui/navigation/Routes.kt`
+- **Navigation** — None. `MainShell` renders the Map and Settings tabs as
+  overlays in a single `Box`; the cross-platform `BackHandler` from
+  `org.jetbrains.compose.ui:ui-backhandler` returns from Settings to Map.
+  Compose Navigation + `@Serializable` routes were removed when the
+  shell collapsed to a single composable so the map keeps its state
+  across tab switches.
 - **State** — `androidx.lifecycle.ViewModel` + Compose snapshot state
   (`mutableStateOf` / `derivedStateOf` / `mutableStateMapOf`). No StateFlow/LiveData boilerplate.
+  ViewModels for the map (`MapViewModel`, `MapControlViewModel`) are
+  **`@AppScope` DI singletons** resolved by `AppComponent` — touched at
+  the top of `App()` so their `init` blocks run during the splash hold.
 - **Backend** — Firebase via `dev.gitlive:firebase-*` (Anonymous Auth, Firestore
   with persistent cache, Analytics, Crashlytics). Crashlytics auto-collects on
   both platforms once the SDK is on the classpath; Analytics events are routed
   through the `AnalyticsService` interface (see DI section).
-- **Local storage** — Jetpack DataStore (currently for theme + language settings only)
+- **Local storage** — Jetpack DataStore (settings + favorites)
 - **Maps** — `eu.buney.maps:kmp-maps-compose` (Google Maps on Android, MapKit on iOS)
 - **Images** — Coil 3 (`io.coil-kt.coil3:coil-compose` + `coil-network-ktor3`)
 - **Geolocation** — Compass (`dev.jordond.compass:geolocation` + `geolocation-mobile`).
@@ -50,21 +58,22 @@ around the 22-tag taxonomy + opening-hours signals landed in May 2026.
 ```
 composeApp/src/
 ├── commonMain/kotlin/com/novawerk/berlinfoodmap/
-│   ├── App.kt                      # Root composable, NavHost, theme + locale wiring
+│   ├── App.kt                      # Root composable, splash → onboarding → MainShell, overlay-based UI
 │   ├── Platform.kt                 # expect declarations
-│   ├── di/                         # kotlin-inject AppComponent (process-singleton)
+│   ├── di/                         # kotlin-inject AppComponent (@AppScope process-singletons)
 │   ├── domain/
 │   │   ├── analytics/              # AnalyticsService interface (events + crash logs)
 │   │   ├── auth/                   # AuthService interface
 │   │   ├── common/                 # Localizable + preferred(locale) helper
+│   │   ├── favorites/              # FavoritesRepository
 │   │   ├── restaurant/             # Restaurant, Tag, GooglePlaceData, OpeningStatus
 │   │   └── settings/               # SettingsRepository (DataStore-backed)
 │   ├── data/
-│   │   └── remote/                 # FirebaseAuthService, FirestoreRestaurantRepository, FirebaseAnalyticsService
+│   │   ├── remote/                 # FirebaseAuthService, FirestoreRestaurantRepository, FirebaseAnalyticsService
+│   │   └── store/                  # RestaurantStore (app-scoped data layer for the map)
 │   └── ui/
 │       ├── theme/                  # Pinwo brand palette + Source Sans 3 typography
 │       ├── locale/                 # LocalAppLocale (expect/actual)
-│       ├── navigation/             # @Serializable Routes
 │       ├── components/             # Shared UI (TagChips, OpeningStatusBadge, EmptyState, …)
 │       └── pages/
 │           ├── map/                # ★ See docs/MAP_PIPELINE.md — non-trivial pipeline
@@ -82,6 +91,9 @@ data/_tags.yaml                     # Tag taxonomy (single source of truth)
 docs/MAP_PIPELINE.md                # Map architecture deep-dive
 scripts/sync-to-firestore/          # CI sync + tag validator + ad-hoc tools
 ```
+
+There is no `ui/navigation/` directory — `Routes.kt` was removed when
+the app shell collapsed to a single overlay-based `MainShell`.
 
 ## Build Commands
 
@@ -138,10 +150,12 @@ To launch on a connected device after install:
   files (`LocationRequester` → deleted in favour of Compass; `MyLocationDotIcon`
   is still expect/actual; `StableMarkerIcon` is expect/actual to work around a
   library bug — see `docs/MAP_PIPELINE.md`).
-- **Navigation:** Type-safe routes with `@Serializable data object` /
-  `data class` in `ui/navigation/Routes.kt`. Detail is **not** a route —
-  it's a `ModalBottomSheet` overlaid on the current screen, so the map
-  state survives detail dismissal.
+- **Navigation:** None. `MainShell` shows the Map full-screen and
+  slides the Settings panel over the top when the bottom-nav Settings
+  tab is active; `BackHandler` returns to the Map. Detail is also a
+  `ModalBottomSheet` overlaid on the live map, so map state survives
+  detail dismissal. Don't reintroduce `NavHost` or `@Serializable`
+  routes — keeping the map permanently mounted is the whole point.
 - **Date formatting:** Use `kotlinx-datetime-names` for localised
   weekday/month names. Never hardcode date formats.
 
@@ -150,15 +164,25 @@ To launch on a connected device after install:
 - Single Gradle module (`:composeApp`).
 - **Domain layer:** models + repository interfaces. No Compose, no
   platform deps.
-- **Data layer:** local DataStore + remote Firestore implementations.
+- **Data layer:** local DataStore + remote Firestore implementations,
+  plus an app-scoped `RestaurantStore` (in `data/store/`) that holds
+  the live restaurant list, favorites set, and Coil-loaded cover
+  bitmaps so the map and detail surface read from one source.
 - **UI layer:** Compose screens, each non-trivial screen has a `ViewModel`
   next to it (e.g., `MapViewModel`, `MapControlViewModel`).
 - **Two-VM pattern on the map:** `MapViewModel` owns the restaurant
-  pipeline (filters, derived lists, clusters, cover cache).
-  `MapControlViewModel` owns the user's location + freshness.
-  Camera state stays in the composable because
+  pipeline (filters, derived lists, dense-marker ids, cover cache
+  reads). `MapControlViewModel` owns the user's location + freshness.
+  Both are `@AppScope` DI singletons resolved by `AppComponent`, not
+  per-NavBackStackEntry instances — they're touched at the top of
+  `App()` so their data observers warm up during the splash hold.
+  Camera state still stays in the composable because
   `rememberCameraPositionState` is composable-bound. See
   `docs/MAP_PIPELINE.md` for the full story.
+- **Splash + map render in parallel:** `MainShell` mounts during the
+  Splash phase too, hidden behind an opaque `SplashScreen` overlay.
+  Tile fetch, `onMapLoaded`, and the first `recomputeDenseIds` all
+  happen while the splash is still on-screen.
 - **Privacy-first:** local storage preferred, no unnecessary cloud sync.
   Anonymous Firebase auth gives view-counter docs a stable id; that's
   the only personal data we hold.
@@ -178,12 +202,16 @@ file under `ui/pages/map/`.** A handful of non-obvious things to know:
 - Cover photos are loaded via Coil's `imageLoader.execute()` directly,
   not via `AsyncImagePainter`. The cache lives in the VM
   (`MapViewModel.markerCovers: SnapshotStateMap<String, MarkerCover>`).
-- Clustering is screen-distance-based and **invariant under pan**, so
-  recompute fires only on zoom-idle, with a structural-equality short
-  circuit to skip writes when the grouping didn't actually change.
+- **No clustering.** Pills that would visually overlap collapse to
+  small circular markers (red dot / red heart / gold star) — see
+  `MarkerDot.kt`. The detection is AABB-based, screen-distance, and
+  **invariant under pan**, so recompute fires only on zoom-idle with a
+  set-equality short circuit. There is no `ClusterMarker` and no
+  numbered cluster badge.
 - Marker bitmap descriptors are cached in `MarkerDescriptorCache` so
-  cluster regroupings don't trigger re-rasterisation. Removing this
-  cache is measurable (~100–300 ms hitch on big zoom changes).
+  the dot ↔ pill transitions during zoom don't trigger re-rasterisation.
+  The dot variant has its own 3-entry shared cache
+  (`rememberMarkerDotDescriptorCache`).
 
 ## Data & Tag Taxonomy
 
@@ -207,14 +235,20 @@ file under `ui/pages/map/`.** A handful of non-obvious things to know:
 3. The 22-tag taxonomy is **canonical**. Don't extend it on a one-off
    basis; if a new tag is needed, follow the five-place update in
    `data/README.md`.
-4. Visit tracking and favourites are **not yet** wired into UI. The
-   `Visit` data class exists; the Firestore visit-count subcollection
-   exists. UI surfacing is on the roadmap.
+4. Favourites are wired through the UI (heart toggle on detail screen,
+   floating heart badge on the map pill, "Favourites only" filter
+   toggle, dedicated heart variant in the dense-marker dot). Visit
+   tracking still has a `Visit` data class + Firestore subcollection
+   but no UI surface yet.
 5. Anonymous Firebase auth is fire-and-forget at startup — Firestore's
    persistent cache serves the map and lists while auth completes, so
    first paint never waits on the network.
 6. Map pin visuals: cover photo + ZH name + tag chip in a pill, brand-red
-   POI dot. Closed restaurants render with a moon icon and faded text.
+   POI dot. Favourited and editor-picked venues get a floating
+   heart / star badge overhanging the pill's top-left corner. Closed
+   restaurants render with a moon icon and faded text. When a pill
+   would overlap another at the current zoom, both collapse to a
+   small circular marker (`MarkerDot`).
 7. Search supports Chinese, English, and German names.
 8. Dual-language UI (EN + ZH). German is restaurant-name-only.
 9. Non-profit, community-driven — no ads, no third-party tracking SDKs.

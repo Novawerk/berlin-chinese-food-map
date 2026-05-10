@@ -2,8 +2,8 @@
 
 import { useLanguage } from "@/lib/language";
 
-const LAST_UPDATED_EN = "May 4, 2026";
-const LAST_UPDATED_ZH = "2026 年 5 月 4 日";
+const LAST_UPDATED_EN = "May 10, 2026";
+const LAST_UPDATED_ZH = "2026 年 5 月 10 日";
 const CONTACT_EMAIL = "info@novawerk.io";
 
 export default function PrivacyPage() {
@@ -53,12 +53,19 @@ export default function PrivacyPage() {
                 "：当您打开某家餐厅的详情页时，应用会在该餐厅下写入一条记录，索引键为您的匿名用户 ID，内容仅包含时间戳与计数。我们仅用它来统计每家餐厅的独立访客数，绝不用于给您建立画像。由于记录只通过随机签发的匿名 ID 索引，我们无法将其追溯到您的姓名、邮箱或设备。"
               )}
             </li>
+            <li>
+              <strong>{t("First-party usage telemetry", "一方使用情况遥测")}</strong>
+              {t(
+                ": Firebase Analytics records the screen name as you move between Map / Settings / restaurant detail, and a small set of action events (open a restaurant, change theme or language, apply a filter). The only payloads are restaurant IDs and short route strings — never restaurant names, your search queries, or your GPS coordinates. Firebase Crashlytics records crash stack traces if the app crashes. Both are tagged with the same anonymous user ID above so we can size unique installs and triage crashes per install. Nothing in either feed identifies you personally.",
+                "：Firebase Analytics 会记录您在地图 / 设置 / 餐厅详情之间切换时的屏幕名，以及少量动作事件（打开一家餐厅、切换主题或语言、应用一次筛选）。事件载荷仅包含餐厅 ID 和短路由字符串——绝不包含餐厅名、您输入的搜索词，或您的 GPS 坐标。Firebase Crashlytics 仅在应用崩溃时记录崩溃堆栈。二者均以上述同一个匿名用户 ID 作为标识，便于按安装统计独立装机量与排查崩溃。两者都不包含任何能识别您本人的信息。"
+              )}
+            </li>
           </ul>
         </Section>
 
         <Section title={t("2. Information we do NOT collect", "2. 我们不收集的信息")}>
           <ul className="list-disc space-y-2 pl-6">
-            <li>{t("No advertising or analytics SDKs (no Google Analytics, no Facebook SDK, no Firebase Analytics).", "不集成广告或分析 SDK（没有 Google Analytics、Facebook SDK、Firebase Analytics 等）。")}</li>
+            <li>{t("No advertising SDKs and no third-party analytics SDKs (no Google Analytics, no Facebook SDK, etc.). The first-party Firebase Analytics + Crashlytics described above are the only telemetry, and they never receive your name, email, GPS, or search queries.", "不集成广告 SDK，也不集成任何第三方分析 SDK（没有 Google Analytics、Facebook SDK 等）。上文所述的一方 Firebase Analytics + Crashlytics 是仅有的遥测，且永不接收您的姓名、邮箱、GPS 或搜索关键词。")}</li>
             <li>{t("No third-party trackers, fingerprinting, or cross-app identifiers.", "没有第三方追踪、指纹识别或跨应用标识符。")}</li>
             <li>{t("No contacts, photos, microphone, or camera access.", "不读取通讯录、相册，也不访问麦克风或摄像头。")}</li>
             <li>{t("No purchase, payment, or financial information — the app is free and contains no in-app purchases.", "不收集购买、支付或财务信息 —— 应用完全免费且无任何内购。")}</li>
@@ -97,8 +104,8 @@ export default function PrivacyPage() {
             <li>
               <strong>{t("Firebase (Google LLC)", "Firebase（Google LLC）")}</strong>
               {t(
-                ": hosts the restaurant database (Cloud Firestore) and issues anonymous IDs (Firebase Authentication). See ",
-                "：托管餐厅数据库（Cloud Firestore）并签发匿名 ID（Firebase Authentication）。请参阅 "
+                ": hosts the restaurant database (Cloud Firestore), issues anonymous IDs (Firebase Authentication), and processes the limited usage telemetry and crash reports described in section 1 (Firebase Analytics, Firebase Crashlytics). See ",
+                "：托管餐厅数据库（Cloud Firestore），签发匿名 ID（Firebase Authentication），并处理第 1 节所述的有限使用情况遥测与崩溃报告（Firebase Analytics、Firebase Crashlytics）。请参阅 "
               )}
               <ExternalLink href="https://firebase.google.com/support/privacy">
                 {t("Firebase’s privacy policy", "Firebase 隐私政策")}

@@ -52,10 +52,10 @@ A community-driven, non-profit digital guide to Chinese restaurants in Berlin. B
 ### Map screen
 
 - Interactive Google Map (custom Pinwo brand style — desaturated cream base, brand-red pins as the only saturated colour) centred on Berlin with the user's location dot when permission is granted.
-- **Marker pills** show the restaurant's cover photo + Chinese name + cuisine/format tag. Cover bitmaps are pre-loaded by the ViewModel so cluster regroupings don't trigger a re-load. Closed restaurants fade to grey + a moon icon (computed from Google's structured `regularOpeningHours.periods`).
-- **Clustering** is screen-distance-based, recomputed only on zoom-idle (pan is invariant under our algorithm). Two-phase: projection on Main, grid math on `Dispatchers.Default`.
+- **Marker pills** show the restaurant's cover photo + Chinese name + cuisine/format tag. Cover bitmaps are pre-loaded by the ViewModel so dot ↔ pill collapse cycles don't trigger a re-load. Closed restaurants fade to grey + a moon icon (computed from Google's structured `regularOpeningHours.periods`). Favourited and editor-picked venues get a floating heart / star badge overhanging the pill's top-left corner.
+- **Dense-marker collapse (no clustering).** Every restaurant gets its own marker. When a pill would visually overlap another at the current zoom, both collapse to a small circular badge — red dot for normal, red heart for favourite, gold star for editor's pick — so the user always sees individual points-of-interest. Zoom in and the dots expand back into pills. Two-phase: projection on Main, AABB rectangle overlap on `Dispatchers.Default`.
 - **Bottom card row** lists restaurants currently in the visible viewport — tap to open the detail sheet without leaving the map.
-- **Filter sheet (FAB ↘ filter)** — three tabs (Cuisine / Style / Neighbourhood) with per-row counts that respect the active filter from the *other* family. Cuisine and Style are independent single-selects; Neighbourhood rows pan the camera to the district centroid instead of filtering.
+- **Filter sheet (FAB ↘ filter)** — three quick toggles (Favourites only · Editor's picks only · Open now) plus tabbed pickers for cuisine and format. Picker counts respect the filter from the *other* family. The "Open now" toggle hides venues whose computed status is currently closed; unknown / 24-7 / opening-soon all pass through.
 - **Locate-me FAB** — reuses the cached fix when fresh (≤ 60 s) so rapid re-taps animate to the cached coordinates without re-prompting the sensor.
 
 ### Restaurant detail (modal sheet)
@@ -78,7 +78,8 @@ A community-driven, non-profit digital guide to Chinese restaurants in Berlin. B
 - **Bilingual UI** — English / Chinese (simplified). German is supported as a restaurant-name language only; UI strings are EN/ZH.
 - **Dark mode** — system / light / dark, persisted via DataStore.
 - **Offline-friendly** — Firestore persistent cache means the map and lists paint immediately on cold launch from the last sync; cover photos are cached by Coil's disk cache.
-- **Privacy-first** — anonymous Firebase auth (so the view counter has a stable id), no other PII, no ads, no analytics.
+- **Warm-start map** — `MapViewModel` and `MapControlViewModel` are app-scope DI singletons that get touched at the top of `App()`, so their Firestore observers and the first location fetch run during the splash hold. By the time the splash fades out, the map already has data and tiles in memory.
+- **Privacy-first** — anonymous Firebase auth (so the view counter has a stable id), no third-party tracking SDKs, no ads. First-party telemetry (Firebase Analytics + Crashlytics) logs only restaurant ids and short route strings — never restaurant names, search queries, or GPS coordinates. The anon Firebase uid is reused as the Analytics user id and Crashlytics user id so reports group per install.
 
 ## Project Structure
 
@@ -97,19 +98,21 @@ Single Gradle module (`:composeApp`). Layered:
 
 ```
 composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
-├── App.kt                          # Root composable + NavHost + theme + locale
-├── di/                             # kotlin-inject AppComponent (KMP)
+├── App.kt                          # Root composable, splash → onboarding → main, overlay-based UI
+├── di/                             # kotlin-inject AppComponent (@AppScope singletons, KMP)
 ├── domain/
+│   ├── analytics/                  # AnalyticsService interface (events + crash logs)
 │   ├── auth/                       # AuthService interface
 │   ├── common/                     # Localizable, preferred()
+│   ├── favorites/                  # FavoritesRepository
 │   ├── restaurant/                 # Restaurant, Tag, GooglePlaceData, OpeningStatus
 │   └── settings/                   # SettingsRepository (DataStore-backed)
 ├── data/
-│   └── remote/                     # FirebaseAuthService, FirestoreRestaurantRepository
+│   ├── remote/                     # FirebaseAuthService, FirestoreRestaurantRepository, FirebaseAnalyticsService
+│   └── store/                      # RestaurantStore — app-scoped data layer for the map
 └── ui/
     ├── theme/                      # AppTheme, Pinwo brand palette, Source Sans 3 typography
     ├── locale/                     # LocalAppLocale (expect/actual)
-    ├── navigation/                 # @Serializable Routes
     ├── components/                 # Shared composables (TagChips, OpeningStatusBadge, etc.)
     └── pages/
         ├── map/                    # MapScreen + MapViewModel + MapControlViewModel + marker pipeline
@@ -118,7 +121,13 @@ composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/
         └── settings/               # SettingsScreen (theme + language)
 ```
 
-**Map screen specifics** are detailed in [`docs/MAP_PIPELINE.md`](docs/MAP_PIPELINE.md): VM split, clustering algorithm, marker bitmap pipeline, the library bug we work around in `StableMarkerIcon`.
+The Map and Settings tabs are rendered as a single `MainShell` with the
+Settings panel sliding over the live map; a cross-platform `BackHandler`
+returns to the map. There is no `NavHost` and no `@Serializable Routes` —
+the previous Compose Navigation graph was retired in favour of this
+overlay model so the map composable stays mounted across tab switches.
+
+**Map screen specifics** are detailed in [`docs/MAP_PIPELINE.md`](docs/MAP_PIPELINE.md): VM singletons, dense-marker detection, marker bitmap pipeline, the library bug we work around in `StableMarkerIcon`.
 
 ### Data Pipeline
 
@@ -132,14 +141,14 @@ See [`data/README.md`](data/README.md) for the full pipeline reference: layout, 
 |-------|-----------|
 | Language | Kotlin 2.2 |
 | UI | Compose Multiplatform 1.10 (Material Design 3 Expressive) |
-| Navigation | Compose Navigation, type-safe `@Serializable` routes |
-| State | `androidx.lifecycle.ViewModel` + Compose snapshot state (`mutableStateOf` / `derivedStateOf`) |
-| Backend | Firebase (Anonymous Auth + Firestore via [`gitlive-firebase`](https://github.com/GitLiveApp/firebase-kotlin-sdk)) |
-| Local Storage | Jetpack DataStore (settings only — favorites not yet wired) |
+| Navigation | None — `MainShell` renders Map + Settings as overlays with a cross-platform `BackHandler` (`org.jetbrains.compose.ui:ui-backhandler`) |
+| State | `androidx.lifecycle.ViewModel` + Compose snapshot state (`mutableStateOf` / `derivedStateOf`); ViewModels are `@AppScope` DI singletons resolved by `AppComponent` so the map warms up during splash |
+| Backend | Firebase (Anonymous Auth + Firestore + Analytics + Crashlytics via [`gitlive-firebase`](https://github.com/GitLiveApp/firebase-kotlin-sdk)) |
+| Local Storage | Jetpack DataStore (settings + favorites) |
 | Maps | [`eu.buney.maps:kmp-maps-compose`](https://github.com/buney-eu/maps) (Google Maps SDK on Android, MapKit on iOS) |
 | Image loading | [Coil 3](https://coil-kt.github.io/coil/) (`io.coil-kt.coil3`) with Ktor network fetcher |
 | Geolocation | [Compass](https://compass.jordond.dev/) (`dev.jordond.compass`) — handles permissions internally, KMP-friendly |
-| DI | [kotlin-inject](https://github.com/evant/kotlin-inject) with KSP, `@KmpComponentCreate` |
+| DI | [kotlin-inject](https://github.com/evant/kotlin-inject) with KSP, `@KmpComponentCreate`, custom `@AppScope` for process-singleton lifetime |
 | Networking | Ktor Client (OkHttp on Android, Darwin on iOS) |
 | Date/Time | kotlinx-datetime + `kotlinx-datetime-names` for localised weekday/month strings |
 | Targets | Android (SDK 24+, target SDK 36) / iOS (Swift wrapper, framework `ComposeApp`) |
