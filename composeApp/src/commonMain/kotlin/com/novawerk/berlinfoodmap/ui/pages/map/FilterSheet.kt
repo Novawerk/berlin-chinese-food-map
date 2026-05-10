@@ -6,12 +6,18 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -50,7 +56,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import berlinfoodmap.composeapp.generated.resources.Res
@@ -59,6 +70,7 @@ import berlinfoodmap.composeapp.generated.resources.filter_all
 import berlinfoodmap.composeapp.generated.resources.filter_apply
 import berlinfoodmap.composeapp.generated.resources.filter_apply_count
 import berlinfoodmap.composeapp.generated.resources.filter_clear
+import berlinfoodmap.composeapp.generated.resources.filter_done
 import berlinfoodmap.composeapp.generated.resources.filter_favorites_only
 import berlinfoodmap.composeapp.generated.resources.filter_favorites_subtitle
 import berlinfoodmap.composeapp.generated.resources.filter_featured_only
@@ -75,6 +87,8 @@ import com.novawerk.berlinfoodmap.domain.restaurant.TagFamily
 import com.novawerk.berlinfoodmap.domain.restaurant.family
 import com.novawerk.berlinfoodmap.ui.components.tagDescription
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
+import com.novawerk.berlinfoodmap.ui.components.tagPhoto
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -430,7 +444,13 @@ private fun PickerPane(
         }
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    // fillMaxHeight lets the Done CTA stick to the bottom of the sheet so it's
+    // always visible regardless of how the user has scrolled the grid.
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -457,23 +477,66 @@ private fun PickerPane(
                 }
             }
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 24.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 4.dp, bottom = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            tags.forEach { tag ->
-                TagPickerRow(
-                    title = tagDisplayName(tag),
-                    subtitle = tagDescription(tag),
-                    count = counts[tag] ?: 0,
-                    selected = tag in selected,
-                    onClick = {
-                        onSelectedChange(
-                            if (tag in selected) selected - tag else selected + tag,
+            tags.chunked(2).forEach { rowTags ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    rowTags.forEach { tag ->
+                        TagPhotoCard(
+                            modifier = Modifier.weight(1f),
+                            tag = tag,
+                            count = counts[tag] ?: 0,
+                            selected = tag in selected,
+                            onClick = {
+                                onSelectedChange(
+                                    if (tag in selected) selected - tag else selected + tag,
+                                )
+                            },
                         )
-                    },
+                    }
+                    // Pad an odd trailing card so the row layout still aligns.
+                    if (rowTags.size == 1) Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+
+        // Sticky Done CTA. Tapping it pops back to the summary pane —
+        // draft selections were already committed live to the parent draft,
+        // so this is purely a "I'm done picking, let me see the summary"
+        // affordance. It deliberately mirrors the Apply button's footprint
+        // so the bottom of the sheet feels stable across pages.
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(top = 12.dp, bottom = 12.dp)
+                .navigationBarsPadding(),
+        ) {
+            Button(
+                onClick = onBack,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+            ) {
+                Text(
+                    text = stringResource(Res.string.filter_done),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }
@@ -481,76 +544,130 @@ private fun PickerPane(
 }
 
 @Composable
-private fun TagPickerRow(
-    title: String,
-    subtitle: String?,
+private fun TagPhotoCard(
+    modifier: Modifier,
+    tag: Tag,
     count: Int,
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
+    val cornerShape = RoundedCornerShape(14.dp)
+    val emptyCount = count == 0
+
+    Box(
+        modifier = modifier
+            .aspectRatio(2.45f)
+            .clip(cornerShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable(onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .then(
+                if (selected) {
+                    Modifier.border(
+                        width = 2.5.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = cornerShape,
+                    )
+                } else {
+                    Modifier
+                }
+            ),
     ) {
-        SelectionIndicator(selected = selected)
-        Spacer(Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (selected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurface,
+        Image(
+            painter = painterResource(tagPhoto(tag)),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                // Slightly desaturate cards with zero results so the user
+                // sees them as "empty" without disabling the click — they
+                // can still toggle the tag off if it's already selected.
+                .alpha(if (emptyCount && !selected) 0.55f else 1f),
+        )
+        // Dark gradient anchored at the top-left where the labels sit, so
+        // white text stays readable regardless of the underlying photo.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.55f),
+                            Color.Black.copy(alpha = 0.05f),
+                        ),
+                    ),
+                ),
+        )
+        // Selected state adds a subtle primary tint over the photo so the
+        // card reads "active" beyond the border alone.
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
             )
-            if (!subtitle.isNullOrBlank()) {
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(start = 12.dp, top = 10.dp, end = 36.dp, bottom = 10.dp),
+        ) {
+            Text(
+                text = tagDisplayName(tag),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                maxLines = 1,
+            )
+            val subtitle = tagDescription(tag)
+            if (subtitle.isNotBlank()) {
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color.White.copy(alpha = 0.85f),
+                    maxLines = 1,
                 )
             }
         }
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text = "$count",
-            style = MaterialTheme.typography.labelLarge,
-            color = if (count == 0) {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
-                    RoundedCornerShape(percent = 50),
-                )
-                .padding(horizontal = 10.dp, vertical = 3.dp),
-        )
-    }
-}
 
-@Composable
-private fun SelectionIndicator(selected: Boolean) {
-    Box(
-        modifier = Modifier
-            .size(22.dp)
-            .background(
-                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(percent = 50),
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (selected) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(14.dp),
-            )
+        // Top-right badge: a check when selected, otherwise the count.
+        // Position is shared so they don't fight each other for space.
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 8.dp, end = 8.dp),
+        ) {
+            if (selected) {
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(percent = 50),
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(14.dp),
+                    )
+                }
+            } else if (count > 0) {
+                Text(
+                    text = "$count",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.45f),
+                            shape = RoundedCornerShape(percent = 50),
+                        )
+                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                )
+            }
         }
     }
 }
