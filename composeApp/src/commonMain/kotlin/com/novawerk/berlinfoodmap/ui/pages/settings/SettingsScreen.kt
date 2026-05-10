@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.BuildKonfig
 import com.novawerk.berlinfoodmap.domain.feedback.FeedbackRepository
 import com.novawerk.berlinfoodmap.ui.components.MenuRow
+import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.dark_mode
@@ -28,8 +29,7 @@ import berlinfoodmap.composeapp.generated.resources.english
 import berlinfoodmap.composeapp.generated.resources.chinese
 import berlinfoodmap.composeapp.generated.resources.version
 import berlinfoodmap.composeapp.generated.resources.privacy_policy
-import berlinfoodmap.composeapp.generated.resources.icon_credits
-import berlinfoodmap.composeapp.generated.resources.icon_credits_value
+import berlinfoodmap.composeapp.generated.resources.privacy_policy_subtitle
 import berlinfoodmap.composeapp.generated.resources.about_title
 import berlinfoodmap.composeapp.generated.resources.about_subtitle
 import berlinfoodmap.composeapp.generated.resources.team_title
@@ -39,6 +39,8 @@ import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
 import berlinfoodmap.composeapp.generated.resources.licenses_title
 import berlinfoodmap.composeapp.generated.resources.licenses_subtitle
+
+private const val PRIVACY_POLICY_URL = "https://berlinfoodmap.novawerk.io/privacy"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +56,7 @@ fun SettingsScreen(
     var showPinwoSheet by remember { mutableStateOf(false) }
     var showFeedbackSheet by remember { mutableStateOf(false) }
     var showLicensesSheet by remember { mutableStateOf(false) }
+    val urlLauncher = rememberUrlLauncher()
 
     // No top app bar — Settings is a tab destination reached via the bottom
     // navigation, not a pushed screen. The bottom-nav label already says
@@ -143,9 +146,15 @@ fun SettingsScreen(
 
         HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
 
-        // Open-source licenses — required for compliance, surfaces both
-        // the project's own licence (AGPL-3.0 + CC BY 4.0 dual model) and
-        // a pointer to third-party attributions on GitHub.
+        // Legal & credits cluster — privacy first (legally required as its
+        // own discoverable entry), then the merged licences-and-attributions
+        // sheet that also folds in the icon credits that used to live as a
+        // separate inline footer.
+        MenuRow(
+            title = stringResource(Res.string.privacy_policy),
+            supportingText = stringResource(Res.string.privacy_policy_subtitle),
+            onClick = { urlLauncher.open(PRIVACY_POLICY_URL) },
+        )
         MenuRow(
             title = stringResource(Res.string.licenses_title),
             supportingText = stringResource(Res.string.licenses_subtitle),
@@ -171,33 +180,7 @@ fun SettingsScreen(
             )
         }
 
-        // Privacy policy
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-        ) {
-            Text(
-                text = stringResource(Res.string.privacy_policy),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
-
-        // Icon credits (Flaticon attribution)
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-        ) {
-            Text(
-                text = stringResource(Res.string.icon_credits),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                text = stringResource(Res.string.icon_credits_value),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-    Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(24.dp))
     }
 
     if (showAboutSheet) {

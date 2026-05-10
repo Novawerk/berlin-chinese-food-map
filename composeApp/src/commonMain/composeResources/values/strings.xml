@@ -209,6 +209,7 @@
     <string name="call_phone">Call</string>
     <string name="version">Version</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_subtitle">How we handle your data</string>
     <string name="icon_credits">Icon credits</string>
     <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
 
