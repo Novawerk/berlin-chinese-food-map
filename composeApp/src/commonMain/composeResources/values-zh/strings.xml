@@ -32,6 +32,8 @@
     <string name="filter_favorites_subtitle">只显示你收藏过的餐厅</string>
     <string name="filter_featured_only">只看编辑精选</string>
     <string name="filter_featured_subtitle">只显示编辑推荐的餐厅</string>
+    <string name="filter_open_now">仅看营业中</string>
+    <string name="filter_open_now_subtitle">隐藏当前已打烊的餐厅</string>
     <string name="districts_title">街区</string>
     <string name="districts_action">按街区浏览</string>
     <string name="districts_subtitle">点击任意街区，地图会自动定位过去</string>

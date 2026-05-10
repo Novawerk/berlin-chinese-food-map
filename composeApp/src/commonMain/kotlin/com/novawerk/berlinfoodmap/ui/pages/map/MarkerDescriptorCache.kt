@@ -8,9 +8,9 @@ import eu.buney.maps.BitmapDescriptor
 
 /**
  * One bitmap descriptor + the visual state it was rendered for. The
- * coverReady flag lets us evict the placeholder-pill descriptor once the
- * photo loads; the isFavorite flag re-rasterises the pill with/without
- * the heart marker when the user toggles their saved set.
+ * `coverReady` flag lets us evict the placeholder-pill descriptor once
+ * the photo loads; `isFavorite` re-rasterises the pill with/without
+ * the floating heart badge when the user toggles their saved set.
  */
 internal data class CachedMarkerDescriptor(
     val coverReady: Boolean,
@@ -41,10 +41,8 @@ internal fun rememberMarkerDescriptorCache(): SnapshotStateMap<String, CachedMar
 
 /**
  * Hoisted cache for the dense-marker dot bitmaps, keyed on
- * [MarkerDotKind]. Only three variants exist (regular / favorite /
- * featured) so the cache is bounded at three entries for the whole
- * session — every dense restaurant of the same variant shares one
- * rasterised bitmap.
+ * [MarkerDotKind]. Three entries max for the whole session — every
+ * dense restaurant of the same variant shares one bitmap.
  */
 @Composable
 internal fun rememberMarkerDotDescriptorCache(): SnapshotStateMap<MarkerDotKind, BitmapDescriptor> =

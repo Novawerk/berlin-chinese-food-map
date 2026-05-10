@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Restaurant
@@ -62,6 +63,8 @@ import berlinfoodmap.composeapp.generated.resources.filter_favorites_only
 import berlinfoodmap.composeapp.generated.resources.filter_favorites_subtitle
 import berlinfoodmap.composeapp.generated.resources.filter_featured_only
 import berlinfoodmap.composeapp.generated.resources.filter_featured_subtitle
+import berlinfoodmap.composeapp.generated.resources.filter_open_now
+import berlinfoodmap.composeapp.generated.resources.filter_open_now_subtitle
 import berlinfoodmap.composeapp.generated.resources.filter_reset
 import berlinfoodmap.composeapp.generated.resources.filter_title
 import berlinfoodmap.composeapp.generated.resources.tag_family_format
@@ -100,9 +103,11 @@ internal fun FilterSheet(
     selectedFormats: Set<Tag>,
     favoritesOnly: Boolean,
     featuredOnly: Boolean,
+    openNow: Boolean,
     onApply: (
         favoritesOnly: Boolean,
         featuredOnly: Boolean,
+        openNow: Boolean,
         cuisines: Set<Tag>,
         formats: Set<Tag>,
     ) -> Unit,
@@ -115,6 +120,7 @@ internal fun FilterSheet(
     // when the live filter changes externally (e.g., another caller resets).
     var draftFavoritesOnly by remember(favoritesOnly) { mutableStateOf(favoritesOnly) }
     var draftFeaturedOnly by remember(featuredOnly) { mutableStateOf(featuredOnly) }
+    var draftOpenNow by remember(openNow) { mutableStateOf(openNow) }
     var draftCuisines by remember(selectedCuisines) { mutableStateOf(selectedCuisines) }
     var draftFormats by remember(selectedFormats) { mutableStateOf(selectedFormats) }
 
@@ -122,7 +128,8 @@ internal fun FilterSheet(
     val draftFilterCount = draftCuisines.size +
         draftFormats.size +
         (if (draftFavoritesOnly) 1 else 0) +
-        (if (draftFeaturedOnly) 1 else 0)
+        (if (draftFeaturedOnly) 1 else 0) +
+        (if (draftOpenNow) 1 else 0)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -150,17 +157,20 @@ internal fun FilterSheet(
                     favorites = favorites,
                     favoritesOnly = draftFavoritesOnly,
                     featuredOnly = draftFeaturedOnly,
+                    openNow = draftOpenNow,
                     featuredCount = featuredCount,
                     selectedCuisines = draftCuisines,
                     selectedFormats = draftFormats,
                     draftFilterCount = draftFilterCount,
                     onFavoritesOnlyChange = { draftFavoritesOnly = it },
                     onFeaturedOnlyChange = { draftFeaturedOnly = it },
+                    onOpenNowChange = { draftOpenNow = it },
                     onCuisineRowClick = { page = SheetPage.Cuisine },
                     onFormatRowClick = { page = SheetPage.Format },
                     onReset = {
                         draftFavoritesOnly = false
                         draftFeaturedOnly = false
+                        draftOpenNow = false
                         draftCuisines = emptySet()
                         draftFormats = emptySet()
                     },
@@ -168,6 +178,7 @@ internal fun FilterSheet(
                         onApply(
                             draftFavoritesOnly,
                             draftFeaturedOnly,
+                            draftOpenNow,
                             draftCuisines,
                             draftFormats,
                         )
@@ -209,12 +220,14 @@ private fun SummaryPane(
     favorites: Set<String>,
     favoritesOnly: Boolean,
     featuredOnly: Boolean,
+    openNow: Boolean,
     featuredCount: Int,
     selectedCuisines: Set<Tag>,
     selectedFormats: Set<Tag>,
     draftFilterCount: Int,
     onFavoritesOnlyChange: (Boolean) -> Unit,
     onFeaturedOnlyChange: (Boolean) -> Unit,
+    onOpenNowChange: (Boolean) -> Unit,
     onCuisineRowClick: () -> Unit,
     onFormatRowClick: () -> Unit,
     onReset: () -> Unit,
@@ -258,6 +271,14 @@ private fun SummaryPane(
                 checked = featuredOnly,
                 enabled = featuredCount > 0 || featuredOnly,
                 onChange = onFeaturedOnlyChange,
+            )
+            ToggleRow(
+                icon = Icons.Filled.AccessTime,
+                title = stringResource(Res.string.filter_open_now),
+                subtitle = stringResource(Res.string.filter_open_now_subtitle),
+                checked = openNow,
+                enabled = true,
+                onChange = onOpenNowChange,
             )
 
             HorizontalDivider(

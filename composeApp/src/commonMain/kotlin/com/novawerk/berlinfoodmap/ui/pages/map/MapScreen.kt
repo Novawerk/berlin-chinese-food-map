@@ -395,11 +395,13 @@ fun MapScreen(
             selectedFormats = viewModel.selectedFormats,
             favoritesOnly = viewModel.favoritesOnly,
             featuredOnly = viewModel.featuredOnly,
+            openNow = viewModel.openNow,
             // Single commit point — sheet draft becomes live filter only
             // here, then dismiss. Sheet swipe / scrim cancels the draft.
-            onApply = { fav, featured, cuisines, formats ->
+            onApply = { fav, featured, openNow, cuisines, formats ->
                 viewModel.toggleFavoritesOnly(fav)
                 viewModel.toggleFeaturedOnly(featured)
+                viewModel.toggleOpenNow(openNow)
                 viewModel.setCuisines(cuisines)
                 viewModel.setFormats(formats)
                 filterSheetOpen = false

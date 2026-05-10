@@ -93,12 +93,12 @@ internal fun MiniRestaurantCard(
             modifier = Modifier
                 // Solid fill — the previous 0.75-alpha treatment let map labels
                 // bleed through and read as visual noise. Now that overlap is
-                // resolved by clustering (AABB-based, see `clusterFromProjected`)
-                // rather than by translucency, the pill renders fully opaque.
-                .background(
-                    MaterialTheme.colorScheme.surface,
-                    MarkerBubbleShape,
-                )
+                // resolved by collapsing dense pills to dots (see
+                // `detectDenseRestaurants`) rather than by translucency, the
+                // pill renders fully opaque. Closed state is signalled by the
+                // moon thumbnail + 0.55-alpha text fade — the pill chrome
+                // doesn't need to shift colour.
+                .background(MaterialTheme.colorScheme.surface, MarkerBubbleShape)
                 .border(
                     1.dp,
                     MaterialTheme.colorScheme.outlineVariant,

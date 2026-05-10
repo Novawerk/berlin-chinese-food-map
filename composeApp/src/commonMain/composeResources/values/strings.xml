@@ -32,6 +32,8 @@
     <string name="filter_favorites_subtitle">Show only the places you saved</string>
     <string name="filter_featured_only">Editor's picks only</string>
     <string name="filter_featured_subtitle">Show only featured restaurants</string>
+    <string name="filter_open_now">Open now</string>
+    <string name="filter_open_now_subtitle">Hide places that are currently closed</string>
     <string name="districts_title">Neighborhoods</string>
     <string name="districts_action">Browse by area</string>
     <string name="districts_subtitle">Tap a neighborhood — the map will jump there</string>

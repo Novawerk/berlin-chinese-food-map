@@ -58,8 +58,8 @@ private val DotInnerGold = Color(0xFFF7DD6D) // PinwoGold — brand-warm lemon
  * Compact replacement for [RestaurantMarker] used when the full pill
  * would visually collide with another marker at the current zoom (see
  * [detectDenseRestaurants]). One bitmap per [MarkerDotKind] is shared
- * across every restaurant rendered as a dot via [descriptorCache] —
- * three rasterisations total per session.
+ * across every restaurant rendered as that variant — three
+ * rasterisations total per session.
  */
 @Composable
 internal fun MarkerDot(
@@ -101,8 +101,8 @@ internal fun MarkerDot(
 @Composable
 private fun DotBadge(kind: MarkerDotKind) {
     // Constant outer canvas so anchor (0.5, 0.5) lands identically across
-    // variants. The visible mark sits centred inside; only favourite and
-    // featured fill the canvas with the wrapper badge.
+    // variants. Only favourite and featured fill the canvas with the
+    // wrapper badge; regular sits centred as a smaller dot.
     Box(
         modifier = Modifier.size(DOT_BOUND_SIZE),
         contentAlignment = Alignment.Center,

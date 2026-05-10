@@ -13,9 +13,11 @@ import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
+import com.novawerk.berlinfoodmap.domain.restaurant.OpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
+import com.novawerk.berlinfoodmap.domain.restaurant.computeOpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
 import eu.buney.maps.LatLngBounds
 import eu.buney.maps.Projection
@@ -72,6 +74,19 @@ internal class MapViewModel(
     var featuredOnly by mutableStateOf(false)
         private set
 
+    /**
+     * "Currently open" filter — only show restaurants whose opening
+     * status is not [OpeningStatus.Closed]. Unknown / always-open
+     * statuses pass so we don't penalise venues with missing hours data.
+     *
+     * Caveat: the filter is recomputed on Compose state changes only,
+     * not on a wall-clock timer. A user who toggles the filter at 17:59
+     * and lingers past 18:00 may see a venue that just closed; toggling
+     * the sheet open and applying again refreshes the result.
+     */
+    var openNow by mutableStateOf(false)
+        private set
+
     /** Local-favorites set, kept in sync with [FavoritesRepository]. */
     var favorites by mutableStateOf<Set<String>>(emptySet())
         private set
@@ -81,7 +96,8 @@ internal class MapViewModel(
             (selectedCuisines.isEmpty() || selectedCuisines.any { it in r.tags }) &&
                 (selectedFormats.isEmpty() || selectedFormats.any { it in r.tags }) &&
                 (!favoritesOnly || r.id in favorites) &&
-                (!featuredOnly || r.featured)
+                (!featuredOnly || r.featured) &&
+                (!openNow || isCurrentlyServing(r))
         }
     }
 
@@ -89,7 +105,15 @@ internal class MapViewModel(
         selectedCuisines.size +
             selectedFormats.size +
             (if (favoritesOnly) 1 else 0) +
-            (if (featuredOnly) 1 else 0)
+            (if (featuredOnly) 1 else 0) +
+            (if (openNow) 1 else 0)
+    }
+
+    private fun isCurrentlyServing(r: Restaurant): Boolean {
+        // Unknown hours and 24/7 venues pass through — we can't say with
+        // confidence they're closed, so don't filter them out.
+        val status = computeOpeningStatus(r.googleData?.periods.orEmpty())
+        return status !is OpeningStatus.Closed
     }
 
     /**
@@ -157,11 +181,16 @@ internal class MapViewModel(
         featuredOnly = value
     }
 
+    fun toggleOpenNow(value: Boolean) {
+        openNow = value
+    }
+
     fun resetFilters() {
         selectedCuisines = emptySet()
         selectedFormats = emptySet()
         favoritesOnly = false
         featuredOnly = false
+        openNow = false
     }
 
     fun updateVisibleBounds(bounds: LatLngBounds?) {
