@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 import com.novawerk.berlinfoodmap.domain.restaurant.TagFamily
 import com.novawerk.berlinfoodmap.domain.restaurant.family
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.all
@@ -124,6 +125,31 @@ fun tagDisplayName(tag: Tag): String = when (tag) {
     Tag.BAKERY -> stringResource(Res.string.tag_bakery)
     Tag.STREET_FOOD -> stringResource(Res.string.tag_street_food)
     Tag.FUSION -> stringResource(Res.string.tag_fusion)
+}
+
+fun tagPhoto(tag: Tag): DrawableResource = when (tag) {
+    Tag.SICHUAN -> Res.drawable.tag_sichuan
+    Tag.CANTONESE -> Res.drawable.tag_cantonese
+    Tag.NORTHERN -> Res.drawable.tag_northern
+    Tag.NORTHEASTERN -> Res.drawable.tag_northeastern
+    Tag.SHANGHAINESE -> Res.drawable.tag_shanghainese
+    Tag.HUNAN -> Res.drawable.tag_hunan
+    Tag.XINJIANG -> Res.drawable.tag_xinjiang
+    Tag.TAIWANESE -> Res.drawable.tag_taiwanese
+    Tag.MUSLIM -> Res.drawable.tag_muslim
+    Tag.MONGOLIAN -> Res.drawable.tag_mongolian
+    Tag.HOTPOT -> Res.drawable.tag_hotpot
+    Tag.BBQ -> Res.drawable.tag_bbq
+    Tag.NOODLES -> Res.drawable.tag_noodles
+    Tag.DUMPLINGS -> Res.drawable.tag_dumplings
+    Tag.DIM_SUM -> Res.drawable.tag_dim_sum
+    Tag.MALATANG -> Res.drawable.tag_malatang
+    Tag.VEGETARIAN -> Res.drawable.tag_vegetarian
+    Tag.BREAKFAST -> Res.drawable.tag_breakfast
+    Tag.TEA_HOUSE -> Res.drawable.tag_tea_house
+    Tag.BAKERY -> Res.drawable.tag_bakery
+    Tag.STREET_FOOD -> Res.drawable.tag_street_food
+    Tag.FUSION -> Res.drawable.tag_fusion
 }
 
 @Composable
