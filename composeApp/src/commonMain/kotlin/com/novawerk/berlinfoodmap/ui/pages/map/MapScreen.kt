@@ -78,12 +78,12 @@ fun MapScreen(
 
     // Cover bitmaps are owned by the VM (loaded via `imageLoader.execute`,
     // not via composable painters) — survives configuration changes and
-    // cluster regroupings.
+    // dot ↔ pill collapse/expand cycles as the user zooms.
     val markerCovers = viewModel.markerCovers
     // Descriptor caches stay in composition: rendering goes through a
     // hidden `ComposeView` (Android) that needs a live composition context.
     val descriptorCache = rememberMarkerDescriptorCache()
-    val clusterDescriptorCache = rememberClusterDescriptorCache()
+    val dotDescriptorCache = rememberMarkerDotDescriptorCache()
     LaunchedEffect(restaurantsFiltered) {
         // Drop entries for restaurants no longer in the filter — otherwise
         // descriptors leak bitmap memory until MapScreen disposes.
@@ -116,11 +116,11 @@ fun MapScreen(
     }
 
     val density = LocalDensity.current
-    // AABB-clustering parameters. Each pill has a per-restaurant width
-    // (estimated from name + tag chars, capped at MARKER_MAX_WIDTH); the
-    // body height is constant. We add a small visual padding so even
-    // adjacent-but-not-quite-touching pills cluster — the pre-fix
-    // complaint was that pills 1-2 px apart still read as overlapping.
+    // AABB dense-detection parameters. Each pill has a per-restaurant
+    // width (estimated from name + tag chars, capped at MARKER_MAX_WIDTH);
+    // the body height is constant. A small visual padding is added so
+    // adjacent-but-not-quite-touching pills also collapse to dots —
+    // matches what users perceive as "overlapping".
     val markerHeightPx = with(density) { MARKER_BODY_HEIGHT.toPx() }
     val markerPaddingPx = with(density) { 6.dp.toPx() }
     val markerMaxWidthPx = with(density) { MARKER_MAX_WIDTH.toPx() }
@@ -150,11 +150,12 @@ fun MapScreen(
             .collect { viewModel.updateVisibleBounds(it) }
     }
 
-    // Recompute clusters on filter changes (immediate) and on zoom-idle
-    // (lazy — pan is invariant under our screen-distance clustering).
+    // Recompute the dense-id set on filter changes (immediate) and on
+    // zoom-idle (lazy — pan is invariant under our screen-distance
+    // detection, since pairwise screen distances are translation-invariant).
     LaunchedEffect(restaurantsFiltered, markerHeightPx, markerPaddingPx, maxOverlapPx) {
         cameraPositionState.projection?.let { projection ->
-            viewModel.recomputeClusters(
+            viewModel.recomputeDenseIds(
                 projection = projection,
                 widthEstimator = widthEstimator,
                 heightPx = markerHeightPx,
@@ -170,7 +171,7 @@ fun MapScreen(
             .distinctUntilChanged()
             .collect {
                 cameraPositionState.projection?.let { projection ->
-                    viewModel.recomputeClusters(
+                    viewModel.recomputeDenseIds(
                         projection = projection,
                         widthEstimator = widthEstimator,
                         heightPx = markerHeightPx,
@@ -189,29 +190,34 @@ fun MapScreen(
             uiSettings = mapConfig.uiSettings,
             onMapLoaded = { mapLoaded = true },
         ) {
-            viewModel.clusters.forEach { cluster ->
-                if (cluster.items.size == 1) {
-                    val restaurant = cluster.items.first()
-                    RestaurantMarker(
+            // Per-restaurant render branch: dense → compact dot, otherwise
+            // → full pill. We iterate the entire filtered list (typically
+            // ≤200) because the Maps SDK handles off-screen markers
+            // efficiently and dot bitmaps come from a 3-entry shared cache,
+            // so the marginal cost of every-restaurant emission is small.
+            val denseIds = viewModel.denseIds
+            val favorites = viewModel.favorites
+            restaurantsFiltered.forEach { restaurant ->
+                val isFavorite = restaurant.id in favorites
+                if (restaurant.id in denseIds) {
+                    val kind = when {
+                        isFavorite -> MarkerDotKind.FAVORITE
+                        restaurant.featured -> MarkerDotKind.FEATURED
+                        else -> MarkerDotKind.REGULAR
+                    }
+                    MarkerDot(
                         restaurant = restaurant,
-                        cover = markerCovers[restaurant.id],
-                        isFavorite = restaurant.id in viewModel.favorites,
-                        descriptorCache = descriptorCache,
+                        kind = kind,
+                        descriptorCache = dotDescriptorCache,
                         onClick = { onNavigateDetail(restaurant.id) },
                     )
                 } else {
-                    ClusterMarker(
-                        cluster = cluster,
-                        descriptorCache = clusterDescriptorCache,
-                        onClick = {
-                            scope.launch {
-                                val targetZoom = (cameraPositionState.position.zoom + 2f)
-                                    .coerceAtMost(18f)
-                                cameraPositionState.animate(
-                                    CameraUpdateFactory.newLatLngZoom(cluster.center, targetZoom),
-                                )
-                            }
-                        },
+                    RestaurantMarker(
+                        restaurant = restaurant,
+                        cover = markerCovers[restaurant.id],
+                        isFavorite = isFavorite,
+                        descriptorCache = descriptorCache,
+                        onClick = { onNavigateDetail(restaurant.id) },
                     )
                 }
             }

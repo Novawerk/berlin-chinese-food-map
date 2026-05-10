@@ -92,7 +92,15 @@ internal class MapViewModel(
             (if (featuredOnly) 1 else 0)
     }
 
-    var clusters by mutableStateOf<List<RestaurantCluster>>(emptyList())
+    /**
+     * Restaurants whose full pill card would visually collide with at
+     * least one other pill at the current zoom. The map screen renders
+     * these as compact [MarkerDot] markers (dot / heart / star) instead
+     * of full pills. Recomputed on filter changes (immediate) and on
+     * zoom-idle (lazy — pan is invariant under our screen-distance
+     * detection).
+     */
+    var denseIds by mutableStateOf<Set<String>>(emptySet())
         private set
 
     /**
@@ -192,18 +200,18 @@ internal class MapViewModel(
     }
 
     /**
-     * Two-phase clustering: project on Main (caller's dispatcher), grid on
-     * Default. Skips state writes when the new grouping is structurally
-     * identical so pan-induced no-op recomputes don't cascade into marker
-     * re-emissions.
+     * Two-phase dense-marker detection: project on Main (caller's
+     * dispatcher), grid on Default. Skips state writes when the new
+     * dense set is identical so pan-induced no-op recomputes don't
+     * cascade into marker re-emissions.
      *
      * [widthEstimator] returns each restaurant's pill width in px. Caller
      * computes this with `Density` in scope (composable side); the VM
      * stays platform/density-agnostic. [maxOverlapPx] must be ≥ the
      * largest possible center-to-center distance at which two pills can
-     * still overlap — see [clusterFromProjected].
+     * still overlap — see [detectDenseRestaurants].
      */
-    suspend fun recomputeClusters(
+    suspend fun recomputeDenseIds(
         projection: Projection,
         widthEstimator: (Restaurant) -> Float,
         heightPx: Float,
@@ -214,7 +222,7 @@ internal class MapViewModel(
         val projected = projectAll(current, projection)
         val widths = FloatArray(current.size) { i -> widthEstimator(current[i]) }
         val next = withContext(Dispatchers.Default) {
-            clusterFromProjected(
+            detectDenseRestaurants(
                 restaurants = current,
                 projected = projected,
                 widthsPx = widths,
@@ -223,8 +231,8 @@ internal class MapViewModel(
                 maxOverlapPx = maxOverlapPx,
             )
         }
-        if (!sameClusterGrouping(next, clusters)) {
-            clusters = next
+        if (next != denseIds) {
+            denseIds = next
         }
     }
 }

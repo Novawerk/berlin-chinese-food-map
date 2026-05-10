@@ -10,38 +10,45 @@ under `ui/pages/map/`.
 
 - **Two ViewModels** because they have different lifecycles and
   dependencies: `MapViewModel` (restaurant pipeline, painters,
-  clusters) and `MapControlViewModel` (location + freshness).
+  dense-id set) and `MapControlViewModel` (location + freshness).
 - **Camera state lives in the composable** because
   `rememberCameraPositionState` is composable-bound to the
   `GoogleMap` widget; hoisting it would cause sync drift.
+- **No clustering.** Every restaurant gets its own marker. When a pill
+  would visually overlap another, it collapses to a compact dot
+  (regular = red dot, favourite = red heart, featured = gold star). The
+  user always sees individual points-of-interest; zooming in expands
+  the dots back into pills.
 - **Three layered caches** for marker rendering:
   1. Coil's disk cache (cover JPEGs)
   2. `MapViewModel.markerCovers` — decoded `coil3.Image` per restaurant
   3. `MarkerDescriptorCache` — rasterised pill `BitmapDescriptor` per (restaurant, coverReady) pair
+  Plus a tiny 3-entry `rememberMarkerDotDescriptorCache` for the dot variants.
 - **A custom `rememberStableComposeBitmapDescriptor`** because the
   upstream library's Android impl has a subtle bug (content lambda in
   `remember` keys) that defeats its own caching.
-- **Clustering is two-phase** — projection on Main (SDK isn't documented
-  thread-safe), grid math on `Dispatchers.Default`.
-- **Pan does no work.** Clustering is invariant under pan; only
-  zoom-idle triggers a recompute, and even that short-circuits if the
-  grouping is structurally identical.
+- **Dense detection is two-phase** — projection on Main (SDK isn't
+  documented thread-safe), grid math on `Dispatchers.Default`.
+- **Pan does no work.** Pairwise screen distances are translation-
+  invariant, so the dense-id set is invariant under pan; only zoom-idle
+  triggers a recompute, and even that short-circuits if the resulting
+  set is unchanged.
 
 ## File map
 
 | File | Role |
 |------|------|
 | `MapScreen.kt` | UI orchestration only — layout, camera state, snapshotFlow → VM bindings. No business logic. |
-| `MapViewModel.kt` | Restaurant pipeline: filters, derived lists, cluster state, cover image cache, viewport bounds. |
+| `MapViewModel.kt` | Restaurant pipeline: filters, derived lists, dense-id set, cover image cache, viewport bounds. |
 | `MapControlViewModel.kt` | Map-control state: user location + freshness via Compass. |
 | `MapStyle.kt` | `BERLIN_MAP_STYLE_JSON`, `DEFAULT_BERLIN_CAMERA`, `rememberBerlinMapConfig()`. |
 | `MarkerColors.kt` | `myLocationDotIcon()` expect/actual for the user-location blue dot. |
-| `Clustering.kt` | `RestaurantCluster`, `projectAll`, `clusterFromProjected`, `sameClusterGrouping`. Pure functions. |
+| `Clustering.kt` | `projectAll`, `detectDenseRestaurants`. Pure functions. (File name historical — there's no clustering anymore, just AABB dense detection.) |
 | `MarkerCover.kt` | `sealed interface MarkerCover { NoUrl, Failed, Loaded(Image) }`. |
-| `MarkerDescriptorCache.kt` | `SnapshotStateMap<String, CachedMarkerDescriptor>` — composable cache for rasterised pill bitmaps. |
+| `MarkerDescriptorCache.kt` | `SnapshotStateMap<String, CachedMarkerDescriptor>` for pills + 3-entry `SnapshotStateMap<MarkerDotKind, BitmapDescriptor>` for dots. |
 | `StableMarkerIcon.kt` (+ `.android.kt` / `.ios.kt`) | Custom `rememberStableComposeBitmapDescriptor` — replaces the buggy library function. |
-| `RestaurantMarker.kt` | Single-restaurant marker composable (cover state gate, descriptor cache lookup, `Marker` emission). |
-| `ClusterMarker.kt` | Multi-restaurant cluster badge marker. |
+| `RestaurantMarker.kt` | Single-restaurant pill marker composable (cover state gate, descriptor cache lookup, `Marker` emission). |
+| `MarkerDot.kt` | Compact dot/heart/star marker for restaurants in the dense set. |
 | `MiniRestaurantCard.kt` | The pill content (cover thumb + name + tag) composed *inside* the bitmap descriptor. |
 | `NearbyCard.kt` | Bottom card-row card for restaurants in the visible viewport. |
 | `FilterSheet.kt` | Tabbed filter sheet (Cuisine / Style / Neighbourhood). |
@@ -53,7 +60,7 @@ under `ui/pages/map/`.
 
 | | `MapViewModel` | `MapControlViewModel` |
 |---|---|---|
-| **Owns** | filters, restaurants, clusters, marker covers | user location, freshness flag |
+| **Owns** | filters, restaurants, dense ids, marker covers | user location, freshness flag |
 | **Depends on** | `RestaurantRepository`, Coil `PlatformContext` | Compass `Geolocator` |
 | **Lifecycle** | tied to NavBackStackEntry; survives configuration changes | same |
 | **Could be tested without the other?** | Yes | Yes |
@@ -175,36 +182,51 @@ used to flash on first paint. Once the marker emits, the descriptor
 cache's `coverReady` key matches; subsequent compositions are pure
 cache hits.
 
-## Clustering
+## Dense detection (no clustering)
+
+### Why no clusters
+
+We tried numbered cluster badges and discarded them. The replacement:
+**every restaurant gets its own marker, but markers whose pill would
+overlap collapse to a small dot/heart/star**. The user always sees
+individual points-of-interest — zooming in expands the dots back into
+pills as room opens up. Trade-off accepted: extreme density (e.g., 20
+restaurants in one block) shows 20 stacked dots instead of one "20+"
+badge; "zoom in for detail" is the implicit instruction.
 
 ### Algorithm
 
-`Clustering.kt` implements a screen-AABB grid clusterer:
+`Clustering.kt` implements a screen-AABB grid overlap detector. (File
+name is historical; there's no clustering anymore.)
 
 1. Project every restaurant's lat/lng to screen pixels via the SDK's
    `Projection.toScreenLocation(...)`.
 2. Estimate each pill's width from its restaurant (name length + tag
    row, capped at `MARKER_MAX_WIDTH`). Height is constant
    (`MARKER_BODY_HEIGHT`).
-3. Bucket into a uniform grid of `maxOverlapPx`-side cells, where
-   `maxOverlapPx = MARKER_MAX_WIDTH + paddingPx` is the worst-case
-   centre-to-centre distance at which two pills can still overlap.
+3. Bucket all anchors into a uniform grid of `maxOverlapPx`-side
+   cells, where `maxOverlapPx = MARKER_MAX_WIDTH + paddingPx` is the
+   worst-case centre-to-centre distance at which two pills can still
+   overlap. (Two-pass: index everything before checking, since dense
+   is pairwise — a single-pass match-against-existing approach would
+   miss the case where i is checked before j but j ends up
+   overlapping i.)
 4. For each point, scan only the 9 cells in its 3×3 neighbourhood.
 5. Predicate: AABB intersection on the (anchor 0.5, 1.0) box. Two
-   pills cluster iff `|dx| < (Wa+Wb)/2 + padding` AND
+   pills are dense iff `|dx| < (Wa+Wb)/2 + padding` AND
    `|dy| < heightPx + padding`. Width-aware overlap (rather than a
-   uniform circular radius) is what makes 短名 + 长名 pairs cluster
+   uniform circular radius) is what makes 短名 + 长名 pairs collapse
    when they actually visually overlap, not before.
 
-Average-case O(n). For our scale (~200 restaurants) the projection
-calls dominate.
+Returns `Set<String>` of dense restaurant ids. Average-case O(n). For
+our scale (~200 restaurants) the projection calls dominate.
 
 ### Why pan does nothing
 
 Pan is a uniform screen translation. Pairwise screen distances between
-any two restaurants are invariant under translation. So **the cluster
-grouping is invariant under pan**. Zoom is the only camera change that
-can move a restaurant in or out of a cluster.
+any two restaurants are invariant under translation. So **the dense
+set is invariant under pan**. Zoom is the only camera change that can
+move a restaurant into or out of the dense set.
 
 The `LaunchedEffect` that wires the pipeline subscribes only to zoom:
 
@@ -218,19 +240,19 @@ snapshotFlow {
     .collect { ... }
 ```
 
-We previously had a viewport pre-filter (only cluster restaurants
-within visible bounds + 20% pad) to save projection calls. It caused
+We previously had a viewport pre-filter (only check restaurants within
+visible bounds + 20% pad) to save projection calls. It caused
 edge-marker flicker — restaurants crossing the pad boundary on every
-pan got destroyed and recreated. Removed in favour of clustering all
-filtered restaurants every recompute. Cost: ~200 extra projection calls
-per recompute. Imperceptible.
+pan got destroyed and recreated. Removed in favour of checking all
+filtered restaurants every recompute. Cost: ~200 extra projection
+calls per recompute. Imperceptible.
 
 ### Two-phase off-thread
 
-`MapViewModel.recomputeClusters` is suspending:
+`MapViewModel.recomputeDenseIds` is suspending:
 
 ```kotlin
-suspend fun recomputeClusters(
+suspend fun recomputeDenseIds(
     projection: Projection,
     widthEstimator: (Restaurant) -> Float,
     heightPx: Float,
@@ -241,11 +263,11 @@ suspend fun recomputeClusters(
     val projected = projectAll(current, projection)              // Main
     val widths = FloatArray(current.size) { widthEstimator(current[it]) }
     val next = withContext(Dispatchers.Default) {
-        clusterFromProjected(current, projected, widths,         // Default
+        detectDenseRestaurants(current, projected, widths,        // Default
             heightPx, paddingPx, maxOverlapPx)
     }
-    if (!sameClusterGrouping(next, clusters)) {
-        clusters = next
+    if (next != denseIds) {
+        denseIds = next
     }
 }
 ```
@@ -254,10 +276,11 @@ Projection is on Main because the Maps SDK isn't documented as
 thread-safe. The grid math is pure and runs on `Dispatchers.Default`
 so the UI thread isn't blocked.
 
-`sameClusterGrouping` short-circuits the state write when the new
-cluster list groups the same restaurants the same way. Cluster
-centroids drift slightly even on stable groupings, so without this
-check we'd cascade into marker re-emissions on every zoom-idle.
+The `next != denseIds` check short-circuits the state write when the
+new dense set is structurally identical. Sets compare by membership,
+so even if the underlying iteration order differs the comparison
+returns true — without this check we'd cascade into marker
+re-emissions on every zoom-idle.
 
 ## Location
 

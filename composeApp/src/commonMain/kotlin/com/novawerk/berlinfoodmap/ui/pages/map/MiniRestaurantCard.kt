@@ -30,6 +30,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
@@ -38,7 +39,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.Image
@@ -59,8 +59,11 @@ import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
  *    is used for both "load failed" and "no cover URL" — visually
  *    identical, semantically interchangeable for the user.
  *
- * Subtitle line shows the restaurant's [cardTags] joined with `·`, with a
- * star prefix for editorially-featured restaurants.
+ * Favorite / featured state is shown as a floating badge overhanging
+ * the pill's top-left corner (heart for favorite, star for featured).
+ * Favorite wins when both are true — the user's saved state is more
+ * informative than editorial curation. Subtitle line below the name
+ * shows the restaurant's [cardTags] joined with `·`.
  */
 @Composable
 internal fun MiniRestaurantCard(
@@ -74,90 +77,81 @@ internal fun MiniRestaurantCard(
     val secondaryColor = if (isClosed) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
     else MaterialTheme.colorScheme.onSurfaceVariant
 
+    // Wrapper Box reserves space around the pill so the floating badge can
+    // overhang the top-left corner without being clipped by the rasterised
+    // bitmap. Symmetric horizontal padding (start = end = OVERHANG) keeps
+    // the pill — and therefore its tail tip — horizontally centred in the
+    // bitmap so `Marker(anchor = (0.5, 1))` still lands on the lat/lng.
     Box(
-        modifier = Modifier
-            // Solid fill — the previous 0.75-alpha treatment let map labels
-            // bleed through and read as visual noise. Now that overlap is
-            // resolved by clustering (AABB-based, see `clusterFromProjected`)
-            // rather than by translucency, the pill renders fully opaque.
-            .background(
-                MaterialTheme.colorScheme.surface,
-                MarkerBubbleShape,
-            )
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.outlineVariant,
-                MarkerBubbleShape,
-            )
-            // Bottom padding leaves the tail area clear so content stays above
-            // the pointer triangle (the bubble itself extends `MARKER_TAIL_HEIGHT`
-            // below the body).
-            .padding(
-                start = 6.dp,
-                end = 10.dp,
-                top = 6.dp,
-                bottom = 6.dp + MARKER_TAIL_HEIGHT,
-            ),
+        modifier = Modifier.padding(
+            start = MARKER_BADGE_OVERHANG,
+            end = MARKER_BADGE_OVERHANG,
+            top = MARKER_BADGE_OVERHANG,
+        ),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center,
-            ) {
-                when {
-                    isClosed -> Icon(
-                        imageVector = Icons.Filled.AirlineSeatFlat,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp),
-                    )
-                    coverImage != null -> {
-                        val ctx = LocalPlatformContext.current
-                        val painter = remember(coverImage, ctx) { coverImage.asPainter(ctx) }
-                        Image(
-                            painter = painter,
+        Box(
+            modifier = Modifier
+                // Solid fill — the previous 0.75-alpha treatment let map labels
+                // bleed through and read as visual noise. Now that overlap is
+                // resolved by clustering (AABB-based, see `clusterFromProjected`)
+                // rather than by translucency, the pill renders fully opaque.
+                .background(
+                    MaterialTheme.colorScheme.surface,
+                    MarkerBubbleShape,
+                )
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.outlineVariant,
+                    MarkerBubbleShape,
+                )
+                // Bottom padding leaves the tail area clear so content stays above
+                // the pointer triangle (the bubble itself extends `MARKER_TAIL_HEIGHT`
+                // below the body).
+                .padding(
+                    start = 6.dp,
+                    end = 10.dp,
+                    top = 6.dp,
+                    bottom = 6.dp + MARKER_TAIL_HEIGHT,
+                ),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    when {
+                        isClosed -> Icon(
+                            imageVector = Icons.Filled.AirlineSeatFlat,
                             contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        coverImage != null -> {
+                            val ctx = LocalPlatformContext.current
+                            val painter = remember(coverImage, ctx) { coverImage.asPainter(ctx) }
+                            Image(
+                                painter = painter,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                        else -> Icon(
+                            imageVector = Icons.Filled.Restaurant,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp),
                         )
                     }
-                    else -> Icon(
-                        imageVector = Icons.Filled.Restaurant,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(18.dp),
-                    )
                 }
-            }
-            Spacer(Modifier.width(8.dp))
-            // Cap the text column width so long zh names + tag strings can't
-            // grow the pill arbitrarily — the AABB overlap check downstream
-            // is calibrated against this max. Names that exceed it ellipsize.
-            Column(modifier = Modifier.widthIn(max = MARKER_TEXT_COLUMN_MAX_WIDTH)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (restaurant.featured) {
-                        Icon(
-                            Icons.Filled.Star,
-                            contentDescription = null,
-                            modifier = Modifier.size(12.dp),
-                            tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
-                            else MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.width(3.dp))
-                    }
-                    if (isFavorite) {
-                        Icon(
-                            Icons.Filled.Favorite,
-                            contentDescription = null,
-                            modifier = Modifier.size(12.dp),
-                            tint = if (isClosed) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
-                            else MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.width(3.dp))
-                    }
+                Spacer(Modifier.width(8.dp))
+                // Cap the text column width so long zh names + tag strings can't
+                // grow the pill arbitrarily — the AABB overlap check downstream
+                // is calibrated against this max. Names that exceed it ellipsize.
+                Column(modifier = Modifier.widthIn(max = MARKER_TEXT_COLUMN_MAX_WIDTH)) {
                     Text(
                         text = restaurant.name.zh,
                         style = MaterialTheme.typography.labelMedium,
@@ -166,19 +160,41 @@ internal fun MiniRestaurantCard(
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold,
                     )
-                }
-                val displayTags = restaurant.cardTags()
-                if (displayTags.isNotEmpty()) {
-                    val labels = displayTags.map { tagDisplayName(it) }
-                    Text(
-                        text = labels.joinToString(" · "),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = secondaryColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    val displayTags = restaurant.cardTags()
+                    if (displayTags.isNotEmpty()) {
+                        val labels = displayTags.map { tagDisplayName(it) }
+                        Text(
+                            text = labels.joinToString(" · "),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = secondaryColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
+        }
+
+        // Floating top-left badge. Only one shows at a time: heart wins
+        // over star when the venue is both saved and editorially featured,
+        // so the user's own state is what they see first.
+        when {
+            isFavorite -> Icon(
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = null,
+                tint = if (isClosed) BadgeFavoriteColor.copy(alpha = 0.55f) else BadgeFavoriteColor,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .size(MARKER_BADGE_SIZE),
+            )
+            restaurant.featured -> Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = null,
+                tint = if (isClosed) BadgeFeaturedColor.copy(alpha = 0.55f) else BadgeFeaturedColor,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .size(MARKER_BADGE_SIZE),
+            )
         }
     }
 }
@@ -201,15 +217,31 @@ internal val MARKER_MAX_WIDTH = MARKER_BASE_WIDTH + MARKER_TEXT_COLUMN_MAX_WIDTH
 // with neighbouring pills' bodies.
 internal val MARKER_BODY_HEIGHT = 44.dp
 
+// Floating-badge size + how far it overhangs each edge of the pill.
+// Overhang = SIZE/2 means half of the badge sits inside the pill's
+// rounded corner, half outside — the look in the design spec.
+internal val MARKER_BADGE_SIZE = 20.dp
+internal val MARKER_BADGE_OVERHANG = MARKER_BADGE_SIZE / 2
+
+// Saturated badge colours — pulled out of MaterialTheme on purpose. The
+// theme's primary is a wine-leaning red that reads as muted next to the
+// brand-red marker pin behind it; the design wants a punchier red for
+// the heart. Star uses gold to differentiate at a glance from the heart.
+private val BadgeFavoriteColor = Color(0xFFE53935) // Material Red 600
+private val BadgeFeaturedColor = Color(0xFFFFC107) // Material Amber 500
+
 /**
  * Conservative pill-width estimate for a given restaurant, used by the
  * clusterer to reason about visual overlap before the bitmap is rendered.
  *
  * Formula: base chrome width + max(name row, tag row), capped at
- * [MARKER_MAX_WIDTH]. Per-character widths approximate the rendered
- * `labelMedium` (zh name) and `labelSmall` (tag joiner) at typical
- * typography sizes — fine-grained accuracy isn't needed because the
- * clustering predicate already adds a safety padding.
+ * [MARKER_MAX_WIDTH], then doubled by the badge overhang on both sides
+ * (always added — most pills don't have a badge but the overhead is small
+ * compared to the safety padding the AABB predicate applies anyway).
+ * Per-character widths approximate the rendered `labelMedium` (zh name)
+ * and `labelSmall` (tag joiner) at typical typography sizes — fine-grained
+ * accuracy isn't needed because the clustering predicate already adds a
+ * safety padding.
  */
 internal fun estimatedMarkerWidth(
     restaurant: com.novawerk.berlinfoodmap.domain.restaurant.Restaurant,
@@ -218,8 +250,7 @@ internal fun estimatedMarkerWidth(
     // Rough char widths in dp at the rendered text styles. CJK fonts are
     // squarer than Latin, so we use the same ~14dp/char for the name row
     // (labelMedium ≈ 14sp) and a slimmer ~9dp average for the tag row.
-    val nameWidth = (name.length * 14).dp +
-        (if (restaurant.featured) 15.dp else 0.dp) // star + gap
+    val nameWidth = (name.length * 14).dp
     val tags = restaurant.cardTags()
     val tagsText = if (tags.isEmpty()) {
         ""
@@ -233,7 +264,10 @@ internal fun estimatedMarkerWidth(
     val tagsWidth = (tagsText.length * 9).dp
     val textColumnWidth = maxOf(nameWidth, tagsWidth)
         .coerceAtMost(MARKER_TEXT_COLUMN_MAX_WIDTH)
-    return (MARKER_BASE_WIDTH + textColumnWidth).coerceAtMost(MARKER_MAX_WIDTH)
+    val pillWidth = (MARKER_BASE_WIDTH + textColumnWidth).coerceAtMost(MARKER_MAX_WIDTH)
+    // Bitmap is wrapped in symmetric overhang padding (see top of file)
+    // so the AABB rect that the clusterer sees is `pill + 2 * overhang`.
+    return pillWidth + MARKER_BADGE_OVERHANG * 2
 }
 
 /**
