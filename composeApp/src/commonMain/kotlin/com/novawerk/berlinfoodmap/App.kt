@@ -60,12 +60,13 @@ fun App(component: AppComponent) {
     LaunchedEffect(Unit) {
         darkMode = settings.getDarkMode()
         language = settings.getLanguage()
-        val onboardingShown = settings.getOnboardingShown()
         // Hold the splash for a beat so the brand reads cleanly even on a
         // fast warm start. The first composition is already on screen as the
         // splash; this delay gates the transition to the next phase.
         delay(SPLASH_DURATION_MS)
-        phase = if (onboardingShown) AppPhase.Main else AppPhase.Onboarding
+        // TESTING: always show the onboarding tour every launch. Restore the
+        // `getOnboardingShown()` gate before release.
+        phase = AppPhase.Onboarding
         // Anonymous sign-in is needed for view/visit tracking but NOT for the
         // map or restaurant list to render — Firestore's persistent cache can
         // serve those reads while auth completes. Run it fire-and-forget so a
