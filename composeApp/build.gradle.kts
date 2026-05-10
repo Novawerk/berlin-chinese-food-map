@@ -74,6 +74,10 @@ kotlin {
             implementation(compose.foundation)
             implementation(libs.material3)
             implementation(compose.ui)
+            // Cross-platform BackHandler for the Settings overlay's
+            // "back returns to Map" gesture. Lives in its own module
+            // separate from compose.ui.
+            implementation("org.jetbrains.compose.ui:ui-backhandler:${libs.versions.composeMultiplatform.get()}")
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -83,7 +87,6 @@ kotlin {
             implementation(libs.kotlinx.datetime.names)
             implementation(libs.datastore.preferences)
             implementation(libs.kotlin.inject.runtime)
-            implementation(libs.navigation.compose)
             implementation(libs.gitlive.firebase.auth)
             implementation(libs.gitlive.firebase.firestore)
             implementation(libs.gitlive.firebase.analytics)

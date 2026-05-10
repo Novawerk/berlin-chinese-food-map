@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.novawerk.berlinfoodmap.di.AppScope
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.mobile
@@ -12,6 +13,7 @@ import eu.buney.maps.LatLng
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 
 // How recent a location fix can be before the FAB will reuse it instead
 // of re-requesting. 60 s ≈ 50 m of walking drift in the worst case,
@@ -23,7 +25,7 @@ private val LOCATION_FRESHNESS = 60.seconds
  * Compass's richer sealed hierarchy into the three cases the UI actually
  * branches on.
  */
-internal sealed interface LocationOutcome {
+sealed interface LocationOutcome {
     data class Available(val coords: LatLng) : LocationOutcome
     data object PermissionDenied : LocationOutcome
     data object Unavailable : LocationOutcome
@@ -45,7 +47,9 @@ internal sealed interface LocationOutcome {
  * `cameraPositionState` and reads decisions (e.g. [isLocationFresh]) from
  * this VM.
  */
-internal class MapControlViewModel : ViewModel() {
+@AppScope
+@Inject
+class MapControlViewModel : ViewModel() {
 
     private val geolocator: Geolocator = Geolocator.mobile()
 
