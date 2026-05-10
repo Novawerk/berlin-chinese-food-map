@@ -10,7 +10,7 @@ import coil3.Image
  * means "load was attempted" (or there was no URL to begin with); an
  * absent entry means "still in flight".
  */
-internal sealed interface MarkerCover {
+sealed interface MarkerCover {
     data object NoUrl : MarkerCover
     data object Failed : MarkerCover
     data class Loaded(val image: Image) : MarkerCover

@@ -2,61 +2,46 @@ package com.novawerk.berlinfoodmap.ui.pages.map
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import coil3.PlatformContext
-import coil3.SingletonImageLoader
-import coil3.request.ImageRequest
-import coil3.request.SuccessResult
-import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
+import com.novawerk.berlinfoodmap.data.store.RestaurantStore
+import com.novawerk.berlinfoodmap.di.AppScope
 import com.novawerk.berlinfoodmap.domain.restaurant.OpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
-import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 import com.novawerk.berlinfoodmap.domain.restaurant.computeOpeningStatus
-import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
 import eu.buney.maps.LatLngBounds
 import eu.buney.maps.Projection
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 
 /**
- * State holder + clustering + cover-image loader for the map screen.
+ * UI/state holder for the map screen — filters, viewport, clustering. Pure
+ * presentation logic; no IO, no Coil, no Firestore. Restaurant data and
+ * cover bitmaps come from [RestaurantStore], which owns the long-running
+ * observers and is process-scoped via DI.
  *
  * Compose-state-backed throughout: properties are `mutableStateOf` /
- * `mutableStateMapOf` / `derivedStateOf`, so consumers just read them in
- * composition — Compose's snapshot system handles subscriptions, no
- * `collectAsState` boilerplate.
+ * `derivedStateOf`, so consumers just read them in composition — Compose's
+ * snapshot system handles subscriptions, no `collectAsState` boilerplate.
  *
- * Filter model: one cuisine (regional family) + one format (style
- * family), independent. Both nullable. District is NOT a filter — tapping
- * a district in the FilterSheet just pans the camera, handled in the UI
- * layer.
- *
- * Cover loading uses `imageLoader.execute(request)` directly, not
- * `AsyncImagePainter`, so it has no composition dependency and lives here
- * in `viewModelScope`. The cached `coil3.Image` is wrapped with
- * `Image.asPainter(ctx)` only at marker rasterisation time.
+ * Filter model: regional and format tags are independent multi-select
+ * families, plus the boolean favourites / featured / open-now toggles.
+ * Within a family selections OR; across families they AND.
  */
-internal class MapViewModel(
-    repository: RestaurantRepository,
-    private val favoritesRepository: FavoritesRepository,
-    private val context: PlatformContext,
+@AppScope
+@Inject
+class MapViewModel(
+    private val store: RestaurantStore,
 ) : ViewModel() {
 
-    var allRestaurants by mutableStateOf<List<Restaurant>>(emptyList())
-        private set
+    val allRestaurants: List<Restaurant> get() = store.restaurants
+    val favorites: Set<String> get() = store.favorites
+    val markerCovers: SnapshotStateMap<String, MarkerCover> get() = store.markerCovers
 
-    /**
-     * Multi-select cuisine filter. Within a family, selections are OR-ed
-     * (any match in the set passes); across families, AND. Empty set means
-     * "no filter on this family". Same model for [selectedFormats].
-     */
     var selectedCuisines by mutableStateOf<Set<Tag>>(emptySet())
         private set
 
@@ -87,15 +72,11 @@ internal class MapViewModel(
     var openNow by mutableStateOf(false)
         private set
 
-    /** Local-favorites set, kept in sync with [FavoritesRepository]. */
-    var favorites by mutableStateOf<Set<String>>(emptySet())
-        private set
-
     val restaurantsFiltered: List<Restaurant> by derivedStateOf {
-        allRestaurants.filter { r ->
+        store.restaurants.filter { r ->
             (selectedCuisines.isEmpty() || selectedCuisines.any { it in r.tags }) &&
                 (selectedFormats.isEmpty() || selectedFormats.any { it in r.tags }) &&
-                (!favoritesOnly || r.id in favorites) &&
+                (!favoritesOnly || r.id in store.favorites) &&
                 (!featuredOnly || r.featured) &&
                 (!openNow || isCurrentlyServing(r))
         }
@@ -131,9 +112,6 @@ internal class MapViewModel(
      * Current map viewport. Pushed in by the composable each time
      * `cameraPositionState.projection.visibleBounds` changes; the rest of
      * the screen reads [visibleRestaurants] derived from it.
-     *
-     * Lives here (not in composable as a `derivedStateOf`) so MapScreen
-     * stays a display layer — bounds → filtered list is data work.
      */
     var visibleBounds by mutableStateOf<LatLngBounds?>(null)
         private set
@@ -143,25 +121,6 @@ internal class MapViewModel(
         restaurantsFiltered.filter { r ->
             r.latitude in bounds.southwest.latitude..bounds.northeast.latitude &&
                 r.longitude in bounds.southwest.longitude..bounds.northeast.longitude
-        }
-    }
-
-    val markerCovers = mutableStateMapOf<String, MarkerCover>()
-
-    private val imageLoader = SingletonImageLoader.get(context)
-
-    init {
-        viewModelScope.launch {
-            repository.observeAll().collect { allRestaurants = it }
-        }
-        viewModelScope.launch {
-            favoritesRepository.observe().collect { favorites = it }
-        }
-        viewModelScope.launch {
-            // React to filter changes by reconciling the cover cache: drop
-            // entries no longer in the filter, kick off loads for newcomers.
-            // Existing entries are kept so cluster/zoom changes don't reload.
-            snapshotFlow { restaurantsFiltered }.collect { reconcileCovers(it) }
         }
     }
 
@@ -195,37 +154,6 @@ internal class MapViewModel(
 
     fun updateVisibleBounds(bounds: LatLngBounds?) {
         visibleBounds = bounds
-    }
-
-    private fun reconcileCovers(restaurants: List<Restaurant>) {
-        val keep = restaurants.mapTo(HashSet()) { it.id }
-        markerCovers.keys.toList().forEach { id ->
-            if (id !in keep) markerCovers.remove(id)
-        }
-
-        for (r in restaurants) {
-            if (r.id in markerCovers) continue
-            val url = r.previewImageUrl()
-            if (url == null) {
-                markerCovers[r.id] = MarkerCover.NoUrl
-                continue
-            }
-            // Each load runs in its own viewModelScope job — independent
-            // lifetime from the snapshotFlow collector, so reconcile churn
-            // doesn't cancel mid-load. Coil's request executor handles
-            // concurrency limits internally.
-            viewModelScope.launch {
-                val request = ImageRequest.Builder(context)
-                    .data(url)
-                    .disableHardwareBitmap()
-                    .size(MARKER_COVER_PX, MARKER_COVER_PX)
-                    .build()
-                markerCovers[r.id] = when (val result = imageLoader.execute(request)) {
-                    is SuccessResult -> MarkerCover.Loaded(result.image)
-                    else -> MarkerCover.Failed
-                }
-            }
-        }
     }
 
     /**

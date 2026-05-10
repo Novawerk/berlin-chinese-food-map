@@ -204,7 +204,6 @@
     <string name="search_hint">Search restaurants...</string>
     <string name="search_prompt_title">Find a restaurant</string>
     <string name="search_prompt_subtitle">Search by name, cuisine, or category — try “Hotpot”, “Sichuan”, or part of a restaurant name.</string>
-    <string name="map_loading">Loading map…</string>
     <string name="all">All</string>
     <string name="no_results">No restaurants found</string>
     <string name="call_phone">Call</string>

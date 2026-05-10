@@ -1,7 +1,6 @@
 package com.novawerk.berlinfoodmap.ui.pages.map
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,12 +19,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.filter_title
-import berlinfoodmap.composeapp.generated.resources.map_loading
-import coil3.compose.LocalPlatformContext
-import com.novawerk.berlinfoodmap.domain.favorites.FavoritesRepository
 import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
 import com.novawerk.berlinfoodmap.ui.pages.search.RestaurantSearchBar
 import eu.buney.maps.*
@@ -38,27 +33,15 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
+    viewModel: MapViewModel,
+    controlVm: MapControlViewModel,
     repository: RestaurantRepository,
-    favoritesRepository: FavoritesRepository,
     onNavigateDetail: (String) -> Unit,
 ) {
-    // VM is bound to the current NavBackStackEntry — survives recompose +
-    // configuration changes; cleared when the destination leaves the back
-    // stack. Properties are Compose state, so reads in composition
-    // auto-subscribe via the snapshot system.
-    //
-    // PlatformContext is captured at first composition and held by the VM.
-    // It's the application-scoped Coil context (Android: app Context,
-    // iOS: empty marker), so no leak risk from the long lifetime.
-    val platformContext = LocalPlatformContext.current
-    val viewModel: MapViewModel = viewModel {
-        MapViewModel(repository, favoritesRepository, platformContext)
-    }
-    // Map-control state (location + freshness) lives in its own VM, separate
-    // from the restaurant pipeline. Each VM has independent lifecycle and
-    // dependencies; both bind to the same NavBackStackEntry so they survive
-    // configuration changes together.
-    val controlVm: MapControlViewModel = viewModel { MapControlViewModel() }
+    // Both view models are @AppScope DI singletons resolved by AppComponent —
+    // same instance across the entire app. They were touched at the top of
+    // App() so their `init` blocks ran during the splash hold and the
+    // restaurant data + first location fix are already in memory.
     val restaurantsFiltered = viewModel.restaurantsFiltered
 
     var filterSheetOpen by remember { mutableStateOf(false) }
@@ -150,24 +133,19 @@ fun MapScreen(
             .collect { viewModel.updateVisibleBounds(it) }
     }
 
-    // Recompute the dense-id set on filter changes (immediate) and on
-    // zoom-idle (lazy — pan is invariant under our screen-distance
-    // detection, since pairwise screen distances are translation-invariant).
+    // Recompute the dense-id set on filter changes (LaunchedEffect re-fires,
+    // snapshotFlow re-collects → fresh first emission), on first map load
+    // (projection flips from null → non-null), and on zoom-idle. Pan is
+    // invariant under our screen-distance detection so we don't watch it.
     LaunchedEffect(restaurantsFiltered, markerHeightPx, markerPaddingPx, maxOverlapPx) {
-        cameraPositionState.projection?.let { projection ->
-            viewModel.recomputeDenseIds(
-                projection = projection,
-                widthEstimator = widthEstimator,
-                heightPx = markerHeightPx,
-                paddingPx = markerPaddingPx,
-                maxOverlapPx = maxOverlapPx,
+        snapshotFlow {
+            Triple(
+                cameraPositionState.projection != null,
+                cameraPositionState.isMoving,
+                cameraPositionState.position.zoom,
             )
         }
-        snapshotFlow {
-            cameraPositionState.isMoving to cameraPositionState.position.zoom
-        }
-            .filter { (isMoving, _) -> !isMoving }
-            .map { (_, zoom) -> zoom }
+            .filter { (hasProjection, isMoving, _) -> hasProjection && !isMoving }
             .distinctUntilChanged()
             .collect {
                 cameraPositionState.projection?.let { projection ->
@@ -190,35 +168,37 @@ fun MapScreen(
             uiSettings = mapConfig.uiSettings,
             onMapLoaded = { mapLoaded = true },
         ) {
-            // Per-restaurant render branch: dense → compact dot, otherwise
-            // → full pill. We iterate the entire filtered list (typically
-            // ≤200) because the Maps SDK handles off-screen markers
-            // efficiently and dot bitmaps come from a 3-entry shared cache,
-            // so the marginal cost of every-restaurant emission is small.
-            val denseIds = viewModel.denseIds
-            val favorites = viewModel.favorites
-            restaurantsFiltered.forEach { restaurant ->
-                val isFavorite = restaurant.id in favorites
-                if (restaurant.id in denseIds) {
-                    val kind = when {
-                        isFavorite -> MarkerDotKind.FAVORITE
-                        restaurant.featured -> MarkerDotKind.FEATURED
-                        else -> MarkerDotKind.REGULAR
+            // Defer marker emission until the SDK has rendered its first
+            // frame. Each marker rasterises a Compose bitmap on the main
+            // thread, and ~200 of those compete with the Maps SDK for the
+            // initial paint — emitting after `onMapLoaded` lets the map
+            // tiles appear first, with pins dropping in shortly after.
+            if (mapLoaded) {
+                val denseIds = viewModel.denseIds
+                val favorites = viewModel.favorites
+                restaurantsFiltered.forEach { restaurant ->
+                    val isFavorite = restaurant.id in favorites
+                    if (restaurant.id in denseIds) {
+                        val kind = when {
+                            isFavorite -> MarkerDotKind.FAVORITE
+                            restaurant.featured -> MarkerDotKind.FEATURED
+                            else -> MarkerDotKind.REGULAR
+                        }
+                        MarkerDot(
+                            restaurant = restaurant,
+                            kind = kind,
+                            descriptorCache = dotDescriptorCache,
+                            onClick = { onNavigateDetail(restaurant.id) },
+                        )
+                    } else {
+                        RestaurantMarker(
+                            restaurant = restaurant,
+                            cover = markerCovers[restaurant.id],
+                            isFavorite = isFavorite,
+                            descriptorCache = descriptorCache,
+                            onClick = { onNavigateDetail(restaurant.id) },
+                        )
                     }
-                    MarkerDot(
-                        restaurant = restaurant,
-                        kind = kind,
-                        descriptorCache = dotDescriptorCache,
-                        onClick = { onNavigateDetail(restaurant.id) },
-                    )
-                } else {
-                    RestaurantMarker(
-                        restaurant = restaurant,
-                        cover = markerCovers[restaurant.id],
-                        isFavorite = isFavorite,
-                        descriptorCache = descriptorCache,
-                        onClick = { onNavigateDetail(restaurant.id) },
-                    )
                 }
             }
 
@@ -233,31 +213,21 @@ fun MapScreen(
             }
         }
 
-        // Loading mask covers the empty/grey map until the SDK signals the
-        // first frame is rendered (`onMapLoaded`).
+        // Hide the underlying MapView's first frame, which the Google Maps
+        // SDK paints at (0, 0) — somewhere in the Gulf of Guinea — before
+        // applying the camera position from `rememberCameraPositionState`.
+        // Plain brand surface, no spinner, fades out the moment the SDK
+        // signals first render so we don't bleed perceived load time.
         AnimatedVisibility(
             visible = !mapLoaded,
-            enter = fadeIn(),
+            enter = androidx.compose.animation.EnterTransition.None,
             exit = fadeOut(),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    Text(
-                        text = stringResource(Res.string.map_loading),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            )
         }
 
         RestaurantSearchBar(
