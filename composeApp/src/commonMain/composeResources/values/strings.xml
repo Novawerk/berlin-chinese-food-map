@@ -294,6 +294,14 @@
     <string name="onboarding_team_one_eyebrow">Team 1 of 2</string>
     <string name="onboarding_team_two_eyebrow">Team 2 of 2</string>
 
+    <!-- Onboarding pages 1-3 (Pinwo design tour) -->
+    <string name="onboarding_p1_title">Every Chinese restaurant in Berlin</string>
+    <string name="onboarding_p1_body">Taste — and a lot more — in your hand.</string>
+    <string name="onboarding_p2_title">Looking for something specific? Just search.</string>
+    <string name="onboarding_p2_body">No more scrolling through the map page by page.</string>
+    <string name="onboarding_p3_title">One tap to save a place for next time.</string>
+    <string name="onboarding_p3_body">Browse your saved spots, plus our hand-curated picks.</string>
+
     <!-- Open-source licenses sheet -->
     <string name="licenses_title">Open-source licenses</string>
     <string name="licenses_subtitle">How this project is licensed</string>

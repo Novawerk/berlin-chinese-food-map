@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -178,22 +179,26 @@ internal fun MiniRestaurantCard(
         // Floating top-left badge. Only one shows at a time: heart wins
         // over star when the venue is both saved and editorially featured,
         // so the user's own state is what they see first.
+        //
+        // The negative offset cancels the outer Box's start/top padding so
+        // the badge centres on the pill's top-left corner (half outside,
+        // half inside) instead of sitting fully inside the corner.
+        val badgeOverhangModifier = Modifier
+            .align(Alignment.TopStart)
+            .offset(x = -MARKER_BADGE_OVERHANG, y = -MARKER_BADGE_OVERHANG)
+            .size(MARKER_BADGE_SIZE)
         when {
             isFavorite -> Icon(
                 imageVector = Icons.Filled.Favorite,
                 contentDescription = null,
                 tint = if (isClosed) BadgeFavoriteColor.copy(alpha = 0.55f) else BadgeFavoriteColor,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .size(MARKER_BADGE_SIZE),
+                modifier = badgeOverhangModifier,
             )
             restaurant.featured -> Icon(
                 imageVector = Icons.Filled.Star,
                 contentDescription = null,
                 tint = if (isClosed) BadgeFeaturedColor.copy(alpha = 0.55f) else BadgeFeaturedColor,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .size(MARKER_BADGE_SIZE),
+                modifier = badgeOverhangModifier,
             )
         }
     }

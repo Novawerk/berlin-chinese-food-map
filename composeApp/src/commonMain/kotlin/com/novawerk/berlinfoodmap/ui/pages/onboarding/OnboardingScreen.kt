@@ -1,14 +1,11 @@
 package com.novawerk.berlinfoodmap.ui.pages.onboarding
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,217 +14,222 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.onboarding_get_started
-import berlinfoodmap.composeapp.generated.resources.onboarding_next
+import berlinfoodmap.composeapp.generated.resources.onboarding_p1_body
+import berlinfoodmap.composeapp.generated.resources.onboarding_p1_title
+import berlinfoodmap.composeapp.generated.resources.onboarding_p2_body
+import berlinfoodmap.composeapp.generated.resources.onboarding_p2_title
+import berlinfoodmap.composeapp.generated.resources.onboarding_p3_body
+import berlinfoodmap.composeapp.generated.resources.onboarding_p3_title
+import berlinfoodmap.composeapp.generated.resources.onboarding_page1
+import berlinfoodmap.composeapp.generated.resources.onboarding_page2
+import berlinfoodmap.composeapp.generated.resources.onboarding_page3
 import berlinfoodmap.composeapp.generated.resources.onboarding_skip
-import berlinfoodmap.composeapp.generated.resources.onboarding_team_one_eyebrow
-import berlinfoodmap.composeapp.generated.resources.onboarding_team_two_eyebrow
-import berlinfoodmap.composeapp.generated.resources.onboarding_welcome_body
-import berlinfoodmap.composeapp.generated.resources.onboarding_welcome_subtitle
-import berlinfoodmap.composeapp.generated.resources.onboarding_welcome_title
-import berlinfoodmap.composeapp.generated.resources.team_pinwo_bio
-import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
-import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
-import berlinfoodmap.composeapp.generated.resources.team_novawerk_bio
-import berlinfoodmap.composeapp.generated.resources.team_novawerk_name
-import berlinfoodmap.composeapp.generated.resources.team_novawerk_role
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
-private const val PAGE_COUNT = 3
+private data class OnboardingPage(
+    val image: DrawableResource,
+    val title: StringResource,
+    val body: StringResource,
+)
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val Pages = listOf(
+    OnboardingPage(
+        image = Res.drawable.onboarding_page1,
+        title = Res.string.onboarding_p1_title,
+        body = Res.string.onboarding_p1_body,
+    ),
+    OnboardingPage(
+        image = Res.drawable.onboarding_page2,
+        title = Res.string.onboarding_p2_title,
+        body = Res.string.onboarding_p2_body,
+    ),
+    OnboardingPage(
+        image = Res.drawable.onboarding_page3,
+        title = Res.string.onboarding_p3_title,
+        body = Res.string.onboarding_p3_body,
+    ),
+)
+
+// Onboarding fixes the Pinwo brand red regardless of light/dark theme — the
+// hero PNGs are baked at this colour, so swapping to a theme token would
+// produce a seam between the artwork and the surrounding chrome.
+private val BrandRed = Color(0xFFB51F1F)
+private val BrandWine = Color(0xFF780A09)
+private val OnBrand = Color(0xFFFFFCF8)
+
 @Composable
 fun OnboardingScreen(onComplete: () -> Unit) {
-    val pagerState = rememberPagerState(pageCount = { PAGE_COUNT })
+    val pagerState = rememberPagerState(pageCount = { Pages.size })
     val scope = rememberCoroutineScope()
     val currentPage = pagerState.currentPage
-    val isLastPage = currentPage == PAGE_COUNT - 1
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .systemBarsPadding(),
+            .background(BrandRed),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.End,
-        ) {
-            TextButton(onClick = onComplete) {
-                Text(stringResource(Res.string.onboarding_skip))
-            }
-        }
-
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(horizontal = 0.dp),
-        ) { page ->
-            when (page) {
-                0 -> WelcomePage()
-                1 -> TeamPage(
-                    eyebrow = Res.string.onboarding_team_one_eyebrow,
-                    name = Res.string.team_novawerk_name,
-                    role = Res.string.team_novawerk_role,
-                    bio = Res.string.team_novawerk_bio,
-                )
-                2 -> TeamPage(
-                    eyebrow = Res.string.onboarding_team_two_eyebrow,
-                    name = Res.string.team_pinwo_name,
-                    role = Res.string.team_pinwo_role,
-                    bio = Res.string.team_pinwo_bio,
-                )
-            }
+            modifier = Modifier.fillMaxSize(),
+        ) { index ->
+            OnboardingPageView(page = Pages[index])
         }
 
+        // Skip control, top-right. Flips straight to Main from any page.
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
+                .align(Alignment.TopEnd)
+                .systemBarsPadding()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
-            repeat(PAGE_COUNT) { index ->
-                val selected = currentPage == index
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .size(if (selected) 10.dp else 8.dp)
-                        .background(
-                            color = if (selected) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.outlineVariant
-                            },
-                            shape = CircleShape,
-                        ),
+            TextButton(onClick = onComplete) {
+                Text(
+                    stringResource(Res.string.onboarding_skip),
+                    color = OnBrand,
                 )
             }
         }
 
-        Box(
+        // Bottom action row: page dots + advance/finish FAB.
+        Row(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 24.dp, top = 4.dp),
+                .systemBarsPadding()
+                .padding(horizontal = 28.dp, vertical = 32.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            AnimatedContent(
-                targetState = isLastPage,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "onboarding-cta",
-            ) { last ->
-                Button(
-                    onClick = {
-                        if (last) {
-                            onComplete()
-                        } else {
-                            scope.launch { pagerState.animateScrollToPage(currentPage + 1) }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        stringResource(
-                            if (last) Res.string.onboarding_get_started
-                            else Res.string.onboarding_next
-                        ),
-                    )
-                }
-            }
+            PageIndicator(
+                pageCount = Pages.size,
+                current = currentPage,
+            )
+            Spacer(Modifier.width(16.dp).fillMaxWidth().weight(1f))
+            AdvanceButton(
+                isLast = currentPage == Pages.lastIndex,
+                onClick = {
+                    if (currentPage == Pages.lastIndex) {
+                        onComplete()
+                    } else {
+                        scope.launch { pagerState.animateScrollToPage(currentPage + 1) }
+                    }
+                },
+            )
         }
     }
 }
 
 @Composable
-private fun WelcomePage() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 28.dp),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(Res.string.onboarding_welcome_title),
-            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary,
+private fun OnboardingPageView(page: OnboardingPage) {
+    Box(Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(page.image),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
         )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = stringResource(Res.string.onboarding_welcome_subtitle),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+        // Vertical brand-red gradient over the lower half so headline +
+        // body text stay legible on top of the artwork (cards / map).
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        0.0f to Color.Transparent,
+                        0.45f to Color.Transparent,
+                        1.0f to BrandRed.copy(alpha = 0.92f),
+                    ),
+                ),
         )
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = stringResource(Res.string.onboarding_welcome_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .systemBarsPadding()
+                // Bottom-padded enough to clear the page-indicator + FAB row.
+                .padding(start = 28.dp, end = 28.dp, bottom = 120.dp),
+        ) {
+            Text(
+                text = stringResource(page.title),
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
+                ),
+                color = OnBrand,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = stringResource(page.body),
+                style = MaterialTheme.typography.bodyLarge,
+                color = OnBrand.copy(alpha = 0.85f),
+            )
+        }
     }
 }
 
 @Composable
-private fun TeamPage(
-    eyebrow: StringResource,
-    name: StringResource,
-    role: StringResource,
-    bio: StringResource,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 28.dp)
-            .padding(top = 8.dp),
+private fun PageIndicator(pageCount: Int, current: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(
-            text = stringResource(eyebrow),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
+        repeat(pageCount) { index ->
+            val active = index == current
+            Box(
+                modifier = Modifier
+                    .height(6.dp)
+                    .width(if (active) 18.dp else 6.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (active) OnBrand else OnBrand.copy(alpha = 0.4f),
+                    ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AdvanceButton(isLast: Boolean, onClick: () -> Unit) {
+    val description = stringResource(
+        if (isLast) Res.string.onboarding_get_started else Res.string.onboarding_skip,
+    )
+    Box(
+        modifier = Modifier
+            .size(if (isLast) 64.dp else 56.dp)
+            .clip(CircleShape)
+            .background(BrandWine)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = description,
+            tint = OnBrand,
         )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = stringResource(name),
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = stringResource(role),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(20.dp))
-        Text(
-            text = stringResource(bio),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(Modifier.height(24.dp))
     }
 }
