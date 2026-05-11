@@ -6,7 +6,7 @@ import GoogleMaps
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        FirebaseApp.configure()
+        configureFirebase()
 
         // Persistent disk cache for Firestore so cold starts paint from
         // the last sync before the network round-trip. MUST run before
@@ -32,6 +32,33 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         GMSServices.provideAPIKey(mapsApiKey)
 
         return true
+    }
+
+    // Uses GoogleService-Info.plist when bundled, otherwise falls back to
+    // in-code FirebaseOptions. Bare FirebaseApp.configure() raises an
+    // NSException and kills the app on launch when the plist isn't in the
+    // .app — Xcode Cloud archives have shipped without it (TestFlight
+    // build 27, App Review build 69). Per Firebase guidance these
+    // client-config values aren't secrets; the Bundle ID gate and
+    // Firestore Security Rules are the actual perimeter. Keep these in
+    // sync with iosApp/iosApp/GoogleService-Info.plist.
+    private func configureFirebase() {
+        let options: FirebaseOptions = {
+            if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+               let bundled = FirebaseOptions(contentsOfFile: path) {
+                return bundled
+            }
+            let fallback = FirebaseOptions(
+                googleAppID: "1:364041827824:ios:1ca70ae91bc43be6165935",
+                gcmSenderID: "364041827824"
+            )
+            fallback.apiKey = "AIzaSyAy8HvQyj1gqKxMIKTjrIr5tYaVF9U4SY8"
+            fallback.projectID = "novawerk-7dd18"
+            fallback.storageBucket = "novawerk-7dd18.firebasestorage.app"
+            fallback.bundleID = "com.novawerk.berlinfoodmap"
+            return fallback
+        }()
+        FirebaseApp.configure(options: options)
     }
 }
 
