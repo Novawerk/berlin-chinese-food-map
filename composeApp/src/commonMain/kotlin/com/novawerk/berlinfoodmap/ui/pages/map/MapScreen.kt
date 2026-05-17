@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,23 +16,19 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.filter_title
-import com.novawerk.berlinfoodmap.domain.restaurant.RestaurantRepository
-import com.novawerk.berlinfoodmap.ui.pages.search.RestaurantSearchBar
 import eu.buney.maps.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
     viewModel: MapViewModel,
     controlVm: MapControlViewModel,
-    repository: RestaurantRepository,
+    commands: MapCommands,
+    snackbarHostState: SnackbarHostState,
     onNavigateDetail: (String) -> Unit,
 ) {
     // Both view models are @AppScope DI singletons resolved by AppComponent —
@@ -44,8 +37,6 @@ fun MapScreen(
     // restaurant data + first location fix are already in memory.
     val restaurantsFiltered = viewModel.restaurantsFiltered
 
-    var filterSheetOpen by remember { mutableStateOf(false) }
-    var districtSheetOpen by remember { mutableStateOf(false) }
     var mapLoaded by remember { mutableStateOf(false) }
     val myLocationIcon = remember(mapLoaded) {
         if (mapLoaded) {
@@ -78,11 +69,10 @@ fun MapScreen(
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
     val haptics = LocalHapticFeedback.current
 
     // Reset the nearby-row scroll position whenever the user pans/zooms the
-    // map by gesture. Programmatic camera moves (card click, FAB, district
+    // map by gesture. Programmatic camera moves (card click, locate, district
     // tap) report API_ANIMATION, so they don't trigger this — only direct
     // user input does. Without this, the row would keep its old scroll
     // offset against a freshly-rebuilt list, which is disorienting.
@@ -160,6 +150,38 @@ fun MapScreen(
             }
     }
 
+    // ── Command bus ────────────────────────────────────────────────────
+    // Pan requests come from outside MapScreen (search results, district
+    // picker). LaunchedEffect collapses the slot back to null once the
+    // animation kicks off so a repeat tap on the same target still fires.
+    LaunchedEffect(commands.pendingPan) {
+        commands.pendingPan?.let { req ->
+            cameraPositionState.animate(
+                CameraUpdateFactory.newLatLngZoom(req.target, req.zoom),
+            )
+            commands.clearPan()
+        }
+    }
+
+    // Locate requests use a monotonically increasing tick so re-taps of the
+    // bottom-nav button after a permission denial still re-enter the flow.
+    // Skip the initial 0 — that's the default state, not a user action.
+    LaunchedEffect(commands.locateTick) {
+        if (commands.locateTick == 0) return@LaunchedEffect
+        if (controlVm.isLocating) return@LaunchedEffect
+        when (val result = controlVm.ensureFreshLocation()) {
+            is LocationOutcome.Available -> cameraPositionState.animate(
+                CameraUpdateFactory.newLatLngZoom(result.coords, 15f),
+            )
+            LocationOutcome.PermissionDenied -> snackbarHostState.showSnackbar(
+                "Location permission denied",
+            )
+            LocationOutcome.Unavailable -> snackbarHostState.showSnackbar(
+                "Could not determine your location",
+            )
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -230,25 +252,6 @@ fun MapScreen(
             )
         }
 
-        RestaurantSearchBar(
-            repository = repository,
-            onRestaurantClick = { id ->
-                viewModel.allRestaurants.firstOrNull { it.id == id }?.let { r ->
-                    scope.launch {
-                        cameraPositionState.animate(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(r.latitude, r.longitude),
-                                16f,
-                            ),
-                        )
-                    }
-                }
-                onNavigateDetail(id)
-            },
-            onBrowseDistricts = { districtSheetOpen = true },
-            modifier = Modifier.align(Alignment.TopCenter),
-        )
-
         if (viewModel.visibleRestaurants.isNotEmpty()) {
             LazyRow(
                 state = listState,
@@ -279,122 +282,5 @@ fun MapScreen(
                 }
             }
         }
-
-        // Lift the FABs clear of the bottom NearbyCard row. NearbyCard is
-        // ~68dp tall and sits 12dp above the screen bottom; an extra 24dp
-        // of breathing room above it puts the FAB visibly above the cards
-        // (no horizontal/vertical overlap) without floating too high.
-        // When no card row is showing (empty viewport) the FAB sits close
-        // to the bottom edge.
-        val cardOffset = if (viewModel.visibleRestaurants.isNotEmpty()) 104.dp else 24.dp
-        // FABs use a neutral elevated surface (`surfaceContainerHigh`) with a
-        // dark `onSurface` icon — quiet chrome that sits on top of the map
-        // without competing with brand-red markers or the warm-cream
-        // background. This is the standard "neutral floating action" pattern
-        // (cf. Google Maps' locate FAB).
-        val fabContainer = MaterialTheme.colorScheme.surfaceContainerHigh
-        val fabContent = MaterialTheme.colorScheme.onSurface
-
-        FloatingActionButton(
-            onClick = {
-                if (controlVm.isLocating) return@FloatingActionButton
-                scope.launch {
-                    when (val result = controlVm.ensureFreshLocation()) {
-                        is LocationOutcome.Available -> cameraPositionState.animate(
-                            CameraUpdateFactory.newLatLngZoom(result.coords, 15f),
-                        )
-                        LocationOutcome.PermissionDenied -> snackbarHostState.showSnackbar(
-                            "Location permission denied",
-                        )
-                        LocationOutcome.Unavailable -> snackbarHostState.showSnackbar(
-                            "Could not determine your location",
-                        )
-                    }
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = cardOffset),
-            containerColor = fabContainer,
-            contentColor = fabContent,
-        ) {
-            if (controlVm.isLocating) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = fabContent,
-                    strokeWidth = 2.5.dp,
-                )
-            } else {
-                Icon(Icons.Filled.MyLocation, contentDescription = "Locate me")
-            }
-        }
-
-        BadgedBox(
-            badge = {
-                if (viewModel.activeFilterCount > 0) {
-                    Badge { Text(text = "${viewModel.activeFilterCount}") }
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = cardOffset),
-        ) {
-            FloatingActionButton(
-                onClick = { filterSheetOpen = true },
-                containerColor = fabContainer,
-                contentColor = fabContent,
-            ) {
-                Icon(
-                    Icons.Filled.FilterList,
-                    contentDescription = stringResource(Res.string.filter_title),
-                )
-            }
-        }
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter),
-        )
-    }
-
-    if (filterSheetOpen) {
-        FilterSheet(
-            allRestaurants = viewModel.allRestaurants,
-            favorites = viewModel.favorites,
-            selectedCuisines = viewModel.selectedCuisines,
-            selectedFormats = viewModel.selectedFormats,
-            favoritesOnly = viewModel.favoritesOnly,
-            featuredOnly = viewModel.featuredOnly,
-            openNow = viewModel.openNow,
-            // Single commit point — sheet draft becomes live filter only
-            // here, then dismiss. Sheet swipe / scrim cancels the draft.
-            onApply = { fav, featured, openNow, cuisines, formats ->
-                viewModel.toggleFavoritesOnly(fav)
-                viewModel.toggleFeaturedOnly(featured)
-                viewModel.toggleOpenNow(openNow)
-                viewModel.setCuisines(cuisines)
-                viewModel.setFormats(formats)
-                filterSheetOpen = false
-            },
-            onDismiss = { filterSheetOpen = false },
-        )
-    }
-
-    if (districtSheetOpen) {
-        DistrictPickerSheet(
-            // Pass the full list — district browsing is "where in Berlin
-            // do I want to look", independent of current filters. The
-            // filter state stays applied after the camera jump.
-            restaurants = viewModel.allRestaurants,
-            onDistrictSelected = { center ->
-                scope.launch {
-                    cameraPositionState.animate(
-                        CameraUpdateFactory.newLatLngZoom(center, 14f),
-                    )
-                }
-                districtSheetOpen = false
-            },
-            onDismiss = { districtSheetOpen = false },
-        )
     }
 }

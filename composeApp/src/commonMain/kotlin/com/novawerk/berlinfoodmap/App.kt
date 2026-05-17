@@ -1,38 +1,42 @@
 package com.novawerk.berlinfoodmap
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.domain.analytics.AnalyticsService
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
+import com.novawerk.berlinfoodmap.ui.pages.map.DistrictPickerSheet
+import com.novawerk.berlinfoodmap.ui.pages.map.MapCommands
 import com.novawerk.berlinfoodmap.ui.pages.map.MapControlViewModel
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapViewModel
 import com.novawerk.berlinfoodmap.ui.pages.onboarding.OnboardingScreen
+import com.novawerk.berlinfoodmap.ui.pages.search.SearchAndFilterSheet
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
 import com.novawerk.berlinfoodmap.ui.pages.splash.SplashScreen
 import com.novawerk.berlinfoodmap.ui.theme.AppTheme
+import eu.buney.maps.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.nav_map
+import berlinfoodmap.composeapp.generated.resources.nav_locate
+import berlinfoodmap.composeapp.generated.resources.nav_search
 import berlinfoodmap.composeapp.generated.resources.settings
 
 private enum class AppPhase { Splash, Onboarding, Main }
-
-private enum class MainTab { Map, Settings }
 
 private const val SPLASH_DURATION_MS = 1000L
 
@@ -93,7 +97,7 @@ fun App(component: AppComponent) {
         when (phase) {
             AppPhase.Splash -> analytics.logScreenView("Splash")
             AppPhase.Onboarding -> analytics.logScreenView("Onboarding")
-            AppPhase.Main -> Unit // MainShell logs per-tab
+            AppPhase.Main -> Unit // MainShell logs per-surface
         }
     }
 
@@ -200,94 +204,118 @@ private fun MainShell(
     onDarkModeChange: (String) -> Unit,
     onLanguageChange: (String?) -> Unit,
 ) {
-    // Tab state replaces the previous NavHost so the MapScreen composable
-    // stays in composition forever. The underlying GoogleMap's MapView keeps
-    // its loaded tiles, camera position, and `mapLoaded` flag across tab
-    // switches — no flash of "loading" when returning from Settings.
-    var currentTab by rememberSaveable { mutableStateOf(MainTab.Map) }
+    // Map stays full-screen with a 3-icon bottom bar overlaid on top.
+    // Search, Settings, and District-picker are all ModalBottomSheets; Locate
+    // is a one-shot action that flows into MapScreen via [MapCommands]. None
+    // of the three nav buttons is a "tab" in the navigational sense — there's
+    // no selected state.
+    val mapCommands = remember { MapCommands() }
+    var searchSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var settingsSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var districtSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(currentTab, isActive) {
-        // Suppress while we're mounted invisibly behind the splash overlay —
-        // otherwise the user reaching the Main phase would log Splash + Map
-        // back-to-back even though they only ever saw the splash.
+    LaunchedEffect(searchSheetOpen, settingsSheetOpen, isActive) {
+        // Suppress while we're mounted invisibly behind the splash overlay.
         if (!isActive) return@LaunchedEffect
-        analytics.logScreenView(if (currentTab == MainTab.Map) "Map" else "Settings")
-    }
-
-    // Hardware/system back from the Settings overlay returns to Map instead
-    // of exiting the app. On Map, default behavior takes over (exit).
-    BackHandler(enabled = currentTab == MainTab.Settings) {
-        currentTab = MainTab.Map
+        val screen = when {
+            settingsSheetOpen -> "Settings"
+            searchSheetOpen -> "Search"
+            else -> "Map"
+        }
+        analytics.logScreenView(screen)
     }
 
     Scaffold(
         bottomBar = {
-            // Override the default NavigationBar palette so the
-            // selected pill uses the brand red instead of the
-            // sage/olive secondary container — those default
-            // tones read as a muddy green/purple here.
-            val navItemColors = NavigationBarItemDefaults.colors(
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                selectedIconColor = MaterialTheme.colorScheme.primary,
-                selectedTextColor = MaterialTheme.colorScheme.primary,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            MainBottomBar(
+                isLocating = mapControlViewModel.isLocating,
+                onSearchClick = { searchSheetOpen = true },
+                onLocateClick = {
+                    // Permission-denied / unavailable cases need user-visible
+                    // feedback. The command holder itself is purely a
+                    // request channel — MapScreen owns the snackbar host
+                    // and translates LocationOutcome into a message.
+                    mapCommands.requestLocate()
+                },
+                onSettingsClick = { settingsSheetOpen = true },
             )
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-            ) {
-                NavigationBarItem(
-                    selected = currentTab == MainTab.Map,
-                    onClick = { currentTab = MainTab.Map },
-                    icon = { Icon(Icons.Filled.Map, contentDescription = null) },
-                    label = { Text(stringResource(Res.string.nav_map)) },
-                    colors = navItemColors,
-                )
-                NavigationBarItem(
-                    selected = currentTab == MainTab.Settings,
-                    onClick = { currentTab = MainTab.Settings },
-                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-                    label = { Text(stringResource(Res.string.settings)) },
-                    colors = navItemColors,
-                )
-            }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             // Always rendered. MapScreen never leaves composition for the
             // lifetime of the Main phase, so its camera state, marker bitmap
             // caches, and the GoogleMap composable's underlying MapView all
-            // persist regardless of which tab is foregrounded.
+            // persist regardless of which overlay is foregrounded.
             MapScreen(
                 viewModel = mapViewModel,
                 controlVm = mapControlViewModel,
-                repository = restaurantRepository,
+                commands = mapCommands,
+                snackbarHostState = snackbarHostState,
                 onNavigateDetail = { id -> onDetailIdChange(id) },
             )
 
-            // Settings overlay — opaque Surface intercepts pointer events so
-            // touches don't fall through to the map. AnimatedVisibility
-            // disposes the inner content when hidden so we don't pay for
-            // SettingsScreen recompositions while the user is on Map.
-            AnimatedVisibility(
-                visible = currentTab == MainTab.Settings,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    SettingsScreen(
-                        currentDarkMode = darkMode,
-                        currentLanguage = language,
-                        feedbackRepository = feedbackRepository,
-                        onDarkModeChange = onDarkModeChange,
-                        onLanguageChange = onLanguageChange,
-                    )
-                }
-            }
         }
+    }
+
+    if (settingsSheetOpen) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { settingsSheetOpen = false },
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface,
+        ) {
+            SettingsScreen(
+                currentDarkMode = darkMode,
+                currentLanguage = language,
+                feedbackRepository = feedbackRepository,
+                onDarkModeChange = onDarkModeChange,
+                onLanguageChange = onLanguageChange,
+            )
+        }
+    }
+
+    if (searchSheetOpen) {
+        SearchAndFilterSheet(
+            allRestaurants = mapViewModel.allRestaurants,
+            favorites = mapViewModel.favorites,
+            selectedCuisines = mapViewModel.selectedCuisines,
+            selectedFormats = mapViewModel.selectedFormats,
+            favoritesOnly = mapViewModel.favoritesOnly,
+            featuredOnly = mapViewModel.featuredOnly,
+            openNow = mapViewModel.openNow,
+            onCuisinesChange = { mapViewModel.setCuisines(it) },
+            onFormatsChange = { mapViewModel.setFormats(it) },
+            onFavoritesOnlyChange = { mapViewModel.toggleFavoritesOnly(it) },
+            onFeaturedOnlyChange = { mapViewModel.toggleFeaturedOnly(it) },
+            onOpenNowChange = { mapViewModel.toggleOpenNow(it) },
+            onReset = { mapViewModel.resetFilters() },
+            onRestaurantClick = { restaurant ->
+                searchSheetOpen = false
+                mapCommands.requestPan(
+                    target = LatLng(restaurant.latitude, restaurant.longitude),
+                    zoom = 16f,
+                )
+                onDetailIdChange(restaurant.id)
+            },
+            onBrowseDistricts = { districtSheetOpen = true },
+            onDismiss = { searchSheetOpen = false },
+        )
+    }
+
+    if (districtSheetOpen) {
+        DistrictPickerSheet(
+            restaurants = mapViewModel.allRestaurants,
+            onDistrictSelected = { center ->
+                districtSheetOpen = false
+                searchSheetOpen = false
+                mapCommands.requestPan(target = center, zoom = 14f)
+            },
+            onDismiss = { districtSheetOpen = false },
+        )
     }
 
     detailRestaurantId?.let { id ->
@@ -303,6 +331,79 @@ private fun MainShell(
                 repository = restaurantRepository,
                 favoritesRepository = favoritesRepository,
                 authService = authService,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainBottomBar(
+    isLocating: Boolean,
+    onSearchClick: () -> Unit,
+    onLocateClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+) {
+    // Custom 3-icon bar instead of `NavigationBar` — none of the three
+    // buttons represents a navigation destination (they're all actions /
+    // overlays), so the selected-pill chrome would be misleading. We still
+    // want the M3 bottom-bar visual treatment (elevated surface, height,
+    // shadow) without the navigation semantics.
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 0.dp,
+        shadowElevation = 2.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            BottomBarIcon(
+                icon = Icons.Filled.Search,
+                contentDescription = stringResource(Res.string.nav_search),
+                onClick = onSearchClick,
+            )
+            BottomBarIcon(
+                icon = Icons.Filled.MyLocation,
+                contentDescription = stringResource(Res.string.nav_locate),
+                busy = isLocating,
+                onClick = onLocateClick,
+            )
+            BottomBarIcon(
+                icon = Icons.Filled.Settings,
+                contentDescription = stringResource(Res.string.settings),
+                onClick = onSettingsClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomBarIcon(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    busy: Boolean = false,
+) {
+    IconButton(
+        onClick = onClick,
+        enabled = !busy,
+        modifier = Modifier.size(48.dp),
+    ) {
+        if (busy) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

@@ -201,9 +201,12 @@
     <string name="district_desc_wittenau">Reinickendorf 北部小住宅区。</string>
 
     <!-- Search -->
-    <string name="search_hint">搜索餐厅...</string>
+    <string name="search_hint">今天想吃儿什么？</string>
     <string name="search_prompt_title">搜索餐厅</string>
     <string name="search_prompt_subtitle">按名称、菜系或类型搜索——试试「火锅」「川菜」，或输入餐厅名的几个字。</string>
+    <string name="search_and_filter_title">搜索与筛选</string>
+    <string name="nav_search">搜索</string>
+    <string name="nav_locate">我的位置</string>
     <string name="all">全部</string>
     <string name="no_results">未找到餐厅</string>
     <string name="call_phone">拨打电话</string>
