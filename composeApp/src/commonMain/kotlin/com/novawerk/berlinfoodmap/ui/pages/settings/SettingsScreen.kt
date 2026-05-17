@@ -1,8 +1,7 @@
 package com.novawerk.berlinfoodmap.ui.pages.settings
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,129 +57,134 @@ fun SettingsScreen(
     var showLicensesSheet by remember { mutableStateOf(false) }
     val urlLauncher = rememberUrlLauncher()
 
-    // No top app bar — Settings is a tab destination reached via the bottom
-    // navigation, not a pushed screen. The bottom-nav label already says
-    // 设置 / Settings, so a duplicate header in the body is just wasted
-    // vertical space. statusBarsPadding keeps content out from under the
-    // notch / camera cutout.
-    Column(
+    // Settings now lives inside a ModalBottomSheet (mounted by the caller),
+    // so the sheet handles top inset and dismissal. We use LazyColumn over
+    // `Column.verticalScroll` because the sheet's nested-scroll plays nicely
+    // with LazyColumn at the bottom edge — verticalScroll's overscroll
+    // bounce gets interpreted as a drag-to-dismiss gesture and jitters.
+    LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
             .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        // Dark mode section
-        Text(
-            text = stringResource(Res.string.dark_mode),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 12.dp),
-        )
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            val options = listOf("system" to Res.string.system_default, "light" to Res.string.light, "dark" to Res.string.dark)
-            options.forEachIndexed { index, (value, labelRes) ->
-                SegmentedButton(
-                    selected = currentDarkMode == value,
-                    onClick = { onDarkModeChange(value) },
-                    shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                ) {
-                    Text(stringResource(labelRes))
-                }
-            }
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        // Language section
-        Text(
-            text = stringResource(Res.string.language),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 12.dp),
-        )
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            val options = listOf(null to Res.string.system_default, "en" to Res.string.english, "zh" to Res.string.chinese)
-            options.forEachIndexed { index, (value, labelRes) ->
-                SegmentedButton(
-                    selected = currentLanguage == value,
-                    onClick = { onLanguageChange(value) },
-                    shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                ) {
-                    Text(stringResource(labelRes))
-                }
-            }
-        }
-
-        Spacer(Modifier.height(24.dp))
-        HorizontalDivider()
-
-        // Feedback — in-app form, no GitHub account required
-        MenuRow(
-            title = stringResource(Res.string.feedback_title),
-            supportingText = stringResource(Res.string.feedback_subtitle),
-            onClick = { showFeedbackSheet = true },
-        )
-
-        // About — story, contribute, and contributors live in one merged sheet
-        MenuRow(
-            title = stringResource(Res.string.about_title),
-            supportingText = stringResource(Res.string.about_subtitle),
-            onClick = { showAboutSheet = true },
-        )
-
-        // Team section
-        Text(
-            text = stringResource(Res.string.team_title),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
-        )
-        MenuRow(
-            title = stringResource(Res.string.team_novawerk_name),
-            supportingText = stringResource(Res.string.team_novawerk_role),
-            onClick = { showNovawerkSheet = true },
-        )
-        MenuRow(
-            title = stringResource(Res.string.team_pinwo_name),
-            supportingText = stringResource(Res.string.team_pinwo_role),
-            onClick = { showPinwoSheet = true },
-        )
-
-        HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-
-        // Legal & credits cluster — privacy first (legally required as its
-        // own discoverable entry), then the merged licences-and-attributions
-        // sheet that also folds in the icon credits that used to live as a
-        // separate inline footer.
-        MenuRow(
-            title = stringResource(Res.string.privacy_policy),
-            supportingText = stringResource(Res.string.privacy_policy_subtitle),
-            onClick = { urlLauncher.open(PRIVACY_POLICY_URL) },
-        )
-        MenuRow(
-            title = stringResource(Res.string.licenses_title),
-            supportingText = stringResource(Res.string.licenses_subtitle),
-            onClick = { showLicensesSheet = true },
-        )
-
-        HorizontalDivider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
-
-        // Version row
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        item("dark-mode") {
             Text(
-                text = stringResource(Res.string.version),
-                style = MaterialTheme.typography.bodyMedium,
+                text = stringResource(Res.string.dark_mode),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(vertical = 12.dp),
             )
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                val options = listOf("system" to Res.string.system_default, "light" to Res.string.light, "dark" to Res.string.dark)
+                options.forEachIndexed { index, (value, labelRes) ->
+                    SegmentedButton(
+                        selected = currentDarkMode == value,
+                        onClick = { onDarkModeChange(value) },
+                        shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                    ) {
+                        Text(stringResource(labelRes))
+                    }
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+        }
+
+        item("language") {
             Text(
-                text = "${BuildKonfig.VERSION_NAME} (${BuildKonfig.VERSION_CODE})",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = stringResource(Res.string.language),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(vertical = 12.dp),
+            )
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                val options = listOf(null to Res.string.system_default, "en" to Res.string.english, "zh" to Res.string.chinese)
+                options.forEachIndexed { index, (value, labelRes) ->
+                    SegmentedButton(
+                        selected = currentLanguage == value,
+                        onClick = { onLanguageChange(value) },
+                        shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                    ) {
+                        Text(stringResource(labelRes))
+                    }
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+        }
+
+        item("feedback") {
+            MenuRow(
+                title = stringResource(Res.string.feedback_title),
+                supportingText = stringResource(Res.string.feedback_subtitle),
+                onClick = { showFeedbackSheet = true },
             )
         }
 
-        Spacer(Modifier.height(24.dp))
+        item("about") {
+            MenuRow(
+                title = stringResource(Res.string.about_title),
+                supportingText = stringResource(Res.string.about_subtitle),
+                onClick = { showAboutSheet = true },
+            )
+        }
+
+        item("team-header") {
+            Text(
+                text = stringResource(Res.string.team_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            )
+        }
+        item("team-novawerk") {
+            MenuRow(
+                title = stringResource(Res.string.team_novawerk_name),
+                supportingText = stringResource(Res.string.team_novawerk_role),
+                onClick = { showNovawerkSheet = true },
+            )
+        }
+        item("team-pinwo") {
+            MenuRow(
+                title = stringResource(Res.string.team_pinwo_name),
+                supportingText = stringResource(Res.string.team_pinwo_role),
+                onClick = { showPinwoSheet = true },
+            )
+        }
+
+        item("legal-divider") {
+            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+        }
+        item("privacy") {
+            MenuRow(
+                title = stringResource(Res.string.privacy_policy),
+                supportingText = stringResource(Res.string.privacy_policy_subtitle),
+                onClick = { urlLauncher.open(PRIVACY_POLICY_URL) },
+            )
+        }
+        item("licenses") {
+            MenuRow(
+                title = stringResource(Res.string.licenses_title),
+                supportingText = stringResource(Res.string.licenses_subtitle),
+                onClick = { showLicensesSheet = true },
+            )
+            HorizontalDivider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+        }
+
+        item("version") {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(Res.string.version),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "${BuildKonfig.VERSION_NAME} (${BuildKonfig.VERSION_CODE})",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 
     if (showAboutSheet) {

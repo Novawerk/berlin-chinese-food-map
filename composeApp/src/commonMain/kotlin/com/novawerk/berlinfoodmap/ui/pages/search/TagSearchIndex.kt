@@ -3,7 +3,7 @@ package com.novawerk.berlinfoodmap.ui.pages.search
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 
 /**
- * Search aliases per [Tag], used by [RestaurantSearchBar] so typing a cuisine
+ * Search aliases per [Tag], used by [SearchAndFilterSheet] so typing a cuisine
  * or format name (e.g. "火锅", "川菜", "hotpot") returns every restaurant
  * carrying that tag.
  *

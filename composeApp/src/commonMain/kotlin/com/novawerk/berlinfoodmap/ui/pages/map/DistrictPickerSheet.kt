@@ -166,7 +166,7 @@ private fun DistrictsHeader() {
             .fillMaxWidth()
             // Pull the header back out of the grid's `contentPadding`
             // (16dp horizontal) so its left edge lines up at 20dp from
-            // the screen edge — matches the FilterSheet header.
+            // the screen edge — matches the search/filter sheet header.
             .padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
