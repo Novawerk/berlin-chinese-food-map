@@ -205,6 +205,8 @@
     <string name="search_prompt_title">Find a restaurant</string>
     <string name="search_prompt_subtitle">Search by name, cuisine, or category — try “Hotpot”, “Sichuan”, or part of a restaurant name.</string>
     <string name="search_and_filter_title">Search &amp; filter</string>
+    <string name="search_cancel">Cancel</string>
+    <string name="filters_active_multi">%1$d filters</string>
     <string name="nav_search">Search</string>
     <string name="nav_locate">My location</string>
     <string name="all">All</string>

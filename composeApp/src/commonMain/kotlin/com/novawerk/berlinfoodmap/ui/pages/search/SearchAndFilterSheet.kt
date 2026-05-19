@@ -63,8 +63,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -77,6 +79,7 @@ import berlinfoodmap.composeapp.generated.resources.filter_open_now
 import berlinfoodmap.composeapp.generated.resources.filter_reset
 import berlinfoodmap.composeapp.generated.resources.no_results
 import berlinfoodmap.composeapp.generated.resources.search_and_filter_title
+import berlinfoodmap.composeapp.generated.resources.search_cancel
 import berlinfoodmap.composeapp.generated.resources.search_hint
 import berlinfoodmap.composeapp.generated.resources.search_prompt_subtitle
 import berlinfoodmap.composeapp.generated.resources.tag_family_format
@@ -162,6 +165,7 @@ fun SearchAndFilterSheet(
                 onRestaurantClick(restaurant)
             },
             onBrowseDistricts = onBrowseDistricts,
+            onTagPicked = onDismiss,
             sheetState = sheetState,
         )
     }
@@ -185,6 +189,7 @@ private fun SheetBody(
     onReset: () -> Unit,
     onRestaurantClick: (Restaurant) -> Unit,
     onBrowseDistricts: () -> Unit,
+    onTagPicked: () -> Unit,
     sheetState: SheetState,
 ) {
     var query by remember { mutableStateOf("") }
@@ -192,6 +197,15 @@ private fun SheetBody(
     val hasQuery by remember(trimmed) {
         derivedStateOf { trimmed.length >= MIN_QUERY_LENGTH }
     }
+    // Apple Music-style focus mode. Once the search field gains focus the
+    // chrome above it (title, toggles, tag grid) collapses to leave only the
+    // search bar + Cancel + results — keeping typing context clean. Cancel
+    // clears the query and unfocuses, restoring the picker.
+    var searchFocused by remember { mutableStateOf(false) }
+    val searchActive by remember(searchFocused, hasQuery) {
+        derivedStateOf { searchFocused || hasQuery }
+    }
+    val keyboard = LocalSoftwareKeyboardController.current
 
     var results by remember { mutableStateOf<List<Restaurant>>(emptyList()) }
     LaunchedEffect(trimmed, hasQuery, allRestaurants) {
@@ -228,82 +242,88 @@ private fun SheetBody(
             .fillMaxWidth()
             .fillMaxHeight(),
     ) {
-        // Sticky header
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
-        ) {
-            Text(
-                text = stringResource(Res.string.search_and_filter_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Spacer(Modifier.weight(1f))
-            if (activeCount > 0) {
-                TextButton(onClick = onReset) {
-                    Text(stringResource(Res.string.filter_reset))
+        if (!searchActive) {
+            // Sticky header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
+            ) {
+                Text(
+                    text = stringResource(Res.string.search_and_filter_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Spacer(Modifier.weight(1f))
+                if (activeCount > 0) {
+                    TextButton(onClick = onReset) {
+                        Text(stringResource(Res.string.filter_reset))
+                    }
                 }
+            }
+
+            // Quick-toggle row: scrollable to fit on narrow screens / when text grows.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ToggleChip(
+                    selected = favoritesOnly,
+                    enabled = favorites.isNotEmpty() || favoritesOnly,
+                    label = stringResource(Res.string.filter_favorites_only),
+                    icon = Icons.Filled.Favorite,
+                    onClick = { onFavoritesOnlyChange(!favoritesOnly) },
+                )
+                ToggleChip(
+                    selected = featuredOnly,
+                    enabled = true,
+                    label = stringResource(Res.string.filter_featured_only),
+                    icon = Icons.Filled.Star,
+                    onClick = { onFeaturedOnlyChange(!featuredOnly) },
+                )
+                ToggleChip(
+                    selected = openNow,
+                    enabled = true,
+                    label = stringResource(Res.string.filter_open_now),
+                    icon = Icons.Filled.AccessTime,
+                    onClick = { onOpenNowChange(!openNow) },
+                )
+                // District browsing lives here as a navigational shortcut — same
+                // chip row so the user sees it as a peer to the toggles.
+                AssistChip(
+                    onClick = onBrowseDistricts,
+                    label = { Text(stringResource(Res.string.districts_action)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Place,
+                            contentDescription = null,
+                            modifier = Modifier.size(AssistChipDefaults.IconSize),
+                        )
+                    },
+                )
             }
         }
 
-        // Quick-toggle row: scrollable to fit on narrow screens / when text grows.
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            ToggleChip(
-                selected = favoritesOnly,
-                enabled = favorites.isNotEmpty() || favoritesOnly,
-                label = stringResource(Res.string.filter_favorites_only),
-                icon = Icons.Filled.Favorite,
-                onClick = { onFavoritesOnlyChange(!favoritesOnly) },
-            )
-            ToggleChip(
-                selected = featuredOnly,
-                enabled = true,
-                label = stringResource(Res.string.filter_featured_only),
-                icon = Icons.Filled.Star,
-                onClick = { onFeaturedOnlyChange(!featuredOnly) },
-            )
-            ToggleChip(
-                selected = openNow,
-                enabled = true,
-                label = stringResource(Res.string.filter_open_now),
-                icon = Icons.Filled.AccessTime,
-                onClick = { onOpenNowChange(!openNow) },
-            )
-            // District browsing lives here as a navigational shortcut — same
-            // chip row so the user sees it as a peer to the toggles.
-            AssistChip(
-                onClick = onBrowseDistricts,
-                label = { Text(stringResource(Res.string.districts_action)) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Place,
-                        contentDescription = null,
-                        modifier = Modifier.size(AssistChipDefaults.IconSize),
-                    )
-                },
-            )
-        }
-
-        // Search field — between the toggles and the body so the user's
-        // typing context (chips above, results below) stays consistent.
+        // Search field row. In picker mode, just the field; in search-active
+        // mode, the field shares the row with a Cancel button that mirrors
+        // Apple Music's behavior — drop the query, blur, return to picker.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .weight(1f)
+                    .onFocusChanged { searchFocused = it.isFocused },
                 placeholder = { Text(stringResource(Res.string.search_hint)) },
                 leadingIcon = {
                     Icon(Icons.Filled.Search, contentDescription = null)
@@ -324,6 +344,21 @@ private fun SheetBody(
                     unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                 ),
             )
+            if (searchActive) {
+                Spacer(Modifier.size(8.dp))
+                TextButton(
+                    onClick = {
+                        query = ""
+                        keyboard?.hide()
+                        // Field stays in composition so we can't blur it
+                        // directly — clearing focus state + query is enough
+                        // for the searchActive predicate to flip back.
+                        searchFocused = false
+                    },
+                ) {
+                    Text(stringResource(Res.string.search_cancel))
+                }
+            }
         }
 
         // Body: tag picker OR search results.
@@ -333,7 +368,7 @@ private fun SheetBody(
                 .weight(1f)
                 .imePadding(),
         ) {
-            if (hasQuery) {
+            if (searchActive) {
                 ResultsList(
                     results = results,
                     onRestaurantClick = onRestaurantClick,
@@ -346,8 +381,19 @@ private fun SheetBody(
                     featuredOnly = featuredOnly,
                     selectedCuisines = selectedCuisines,
                     selectedFormats = selectedFormats,
-                    onCuisinesChange = onCuisinesChange,
-                    onFormatsChange = onFormatsChange,
+                    onCuisinesChange = { tags ->
+                        onCuisinesChange(tags)
+                        // Selecting a tag is a one-shot pick — dismiss the
+                        // sheet so the user immediately sees the filtered
+                        // map. Deselects don't dismiss (handled by caller
+                        // passing the same lambda; the sheet just closes
+                        // on every call, which matches the requirement).
+                        onTagPicked()
+                    },
+                    onFormatsChange = { tags ->
+                        onFormatsChange(tags)
+                        onTagPicked()
+                    },
                 )
             }
         }

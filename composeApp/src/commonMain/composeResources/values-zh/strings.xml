@@ -205,6 +205,8 @@
     <string name="search_prompt_title">搜索餐厅</string>
     <string name="search_prompt_subtitle">按名称、菜系或类型搜索——试试「火锅」「川菜」，或输入餐厅名的几个字。</string>
     <string name="search_and_filter_title">搜索与筛选</string>
+    <string name="search_cancel">取消</string>
+    <string name="filters_active_multi">%1$d 项筛选</string>
     <string name="nav_search">搜索</string>
     <string name="nav_locate">我的位置</string>
     <string name="all">全部</string>

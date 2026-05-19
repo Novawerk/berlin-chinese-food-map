@@ -2,16 +2,24 @@ package com.novawerk.berlinfoodmap
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.domain.analytics.AnalyticsService
@@ -22,6 +30,7 @@ import com.novawerk.berlinfoodmap.ui.pages.map.MapCommands
 import com.novawerk.berlinfoodmap.ui.pages.map.MapControlViewModel
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapViewModel
+import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.pages.onboarding.OnboardingScreen
 import com.novawerk.berlinfoodmap.ui.pages.search.SearchAndFilterSheet
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
@@ -32,6 +41,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.filter_favorites_only
+import berlinfoodmap.composeapp.generated.resources.filter_featured_only
+import berlinfoodmap.composeapp.generated.resources.filter_open_now
+import berlinfoodmap.composeapp.generated.resources.filter_reset
+import berlinfoodmap.composeapp.generated.resources.filters_active_multi
 import berlinfoodmap.composeapp.generated.resources.nav_locate
 import berlinfoodmap.composeapp.generated.resources.nav_search
 import berlinfoodmap.composeapp.generated.resources.settings
@@ -230,7 +244,9 @@ private fun MainShell(
         bottomBar = {
             MainBottomBar(
                 isLocating = mapControlViewModel.isLocating,
+                activeFilterLabel = activeFilterLabel(mapViewModel),
                 onSearchClick = { searchSheetOpen = true },
+                onClearFilters = { mapViewModel.resetFilters() },
                 onLocateClick = {
                     // Permission-denied / unavailable cases need user-visible
                     // feedback. The command holder itself is purely a
@@ -339,7 +355,9 @@ private fun MainShell(
 @Composable
 private fun MainBottomBar(
     isLocating: Boolean,
+    activeFilterLabel: FilterPillLabel?,
     onSearchClick: () -> Unit,
+    onClearFilters: () -> Unit,
     onLocateClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
@@ -361,11 +379,19 @@ private fun MainBottomBar(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            BottomBarIcon(
-                icon = Icons.Filled.Search,
-                contentDescription = stringResource(Res.string.nav_search),
-                onClick = onSearchClick,
-            )
+            if (activeFilterLabel != null) {
+                FilterPill(
+                    label = activeFilterLabel,
+                    onClick = onSearchClick,
+                    onClear = onClearFilters,
+                )
+            } else {
+                BottomBarIcon(
+                    icon = Icons.Filled.Search,
+                    contentDescription = stringResource(Res.string.nav_search),
+                    onClick = onSearchClick,
+                )
+            }
             BottomBarIcon(
                 icon = Icons.Filled.MyLocation,
                 contentDescription = stringResource(Res.string.nav_locate),
@@ -377,6 +403,103 @@ private fun MainBottomBar(
                 contentDescription = stringResource(Res.string.settings),
                 onClick = onSettingsClick,
             )
+        }
+    }
+}
+
+/**
+ * Surface representation of the current filter for the bottom-nav pill.
+ * Either a single chip-style entry (icon + tag/toggle label) or a count
+ * summary when multiple filters stack — keeps the pill from overflowing.
+ */
+private data class FilterPillLabel(
+    val text: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector?,
+)
+
+/**
+ * Builds the pill descriptor from the live MapViewModel filter state.
+ * Picks the most visually informative single filter when exactly one is
+ * active, otherwise collapses to "N filters".
+ */
+@Composable
+private fun activeFilterLabel(vm: MapViewModel): FilterPillLabel? {
+    val count = vm.activeFilterCount
+    if (count == 0) return null
+    if (count == 1) {
+        vm.selectedCuisines.firstOrNull()?.let {
+            return FilterPillLabel(tagDisplayName(it), null)
+        }
+        vm.selectedFormats.firstOrNull()?.let {
+            return FilterPillLabel(tagDisplayName(it), null)
+        }
+        if (vm.favoritesOnly) {
+            return FilterPillLabel(
+                stringResource(Res.string.filter_favorites_only),
+                Icons.Filled.Favorite,
+            )
+        }
+        if (vm.featuredOnly) {
+            return FilterPillLabel(
+                stringResource(Res.string.filter_featured_only),
+                Icons.Filled.Star,
+            )
+        }
+        if (vm.openNow) {
+            return FilterPillLabel(
+                stringResource(Res.string.filter_open_now),
+                Icons.Filled.AccessTime,
+            )
+        }
+    }
+    return FilterPillLabel(
+        stringResource(Res.string.filters_active_multi, count),
+        null,
+    )
+}
+
+@Composable
+private fun FilterPill(
+    label: FilterPillLabel,
+    onClick: () -> Unit,
+    onClear: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        shape = RoundedCornerShape(percent = 50),
+        modifier = Modifier
+            .height(40.dp)
+            .clip(RoundedCornerShape(percent = 50))
+            .clickable(onClick = onClick),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 14.dp, end = 4.dp),
+        ) {
+            if (label.icon != null) {
+                Icon(
+                    imageVector = label.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                )
+                Spacer(Modifier.size(6.dp))
+            }
+            Text(
+                text = label.text,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            IconButton(
+                onClick = onClear,
+                modifier = Modifier.size(32.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.filter_reset),
+                    modifier = Modifier.size(16.dp),
+                )
+            }
         }
     }
 }
