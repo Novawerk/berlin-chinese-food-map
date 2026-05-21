@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PinwoCream backdrop for the adaptive icon. Matches the source PNG's
+<!-- Dark-red backdrop for the adaptive icon. Matches the source PNG's
      own background so the image's outer area blends seamlessly into the
      adaptive layer regardless of which mask shape the launcher uses. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#FFFCF8" />
+    <gradient
+        android:type="linear"
+        android:angle="270"
+        android:startColor="#A00000"
+        android:endColor="#840100" />
 </shape>
