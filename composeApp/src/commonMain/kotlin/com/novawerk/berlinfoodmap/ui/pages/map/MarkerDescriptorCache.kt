@@ -9,12 +9,14 @@ import eu.buney.maps.BitmapDescriptor
 /**
  * One bitmap descriptor + the visual state it was rendered for. The
  * `coverReady` flag lets us evict the placeholder-pill descriptor once
- * the photo loads; `isFavorite` re-rasterises the pill with/without
- * the floating heart badge when the user toggles their saved set.
+ * the photo loads; `isFavorite` and `hasDiscount` re-rasterise the pill
+ * with the matching corner badge (diamond / outlined circle / both)
+ * when the underlying flags change.
  */
 internal data class CachedMarkerDescriptor(
     val coverReady: Boolean,
     val isFavorite: Boolean,
+    val hasDiscount: Boolean,
     val descriptor: BitmapDescriptor,
 )
 

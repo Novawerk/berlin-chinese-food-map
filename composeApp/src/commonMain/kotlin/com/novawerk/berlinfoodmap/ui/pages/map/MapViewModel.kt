@@ -29,8 +29,8 @@ import me.tatarka.inject.annotations.Inject
  * snapshot system handles subscriptions, no `collectAsState` boilerplate.
  *
  * Filter model: regional and format tags are independent multi-select
- * families, plus the boolean favourites / featured / open-now toggles.
- * Within a family selections OR; across families they AND.
+ * families, plus the boolean favourites / open-now toggles. Within a
+ * family selections OR; across families they AND.
  */
 @AppScope
 @Inject
@@ -52,14 +52,6 @@ class MapViewModel(
         private set
 
     /**
-     * "Editor's Picks only" filter — restaurants with the editorial
-     * `featured` flag set in the YAML data. The same flag drives the star
-     * indicator on cards and markers.
-     */
-    var featuredOnly by mutableStateOf(false)
-        private set
-
-    /**
      * "Currently open" filter — only show restaurants whose opening
      * status is not [OpeningStatus.Closed]. Unknown / always-open
      * statuses pass so we don't penalise venues with missing hours data.
@@ -77,7 +69,6 @@ class MapViewModel(
             (selectedCuisines.isEmpty() || selectedCuisines.any { it in r.tags }) &&
                 (selectedFormats.isEmpty() || selectedFormats.any { it in r.tags }) &&
                 (!favoritesOnly || r.id in store.favorites) &&
-                (!featuredOnly || r.featured) &&
                 (!openNow || isCurrentlyServing(r))
         }
     }
@@ -86,7 +77,6 @@ class MapViewModel(
         selectedCuisines.size +
             selectedFormats.size +
             (if (favoritesOnly) 1 else 0) +
-            (if (featuredOnly) 1 else 0) +
             (if (openNow) 1 else 0)
     }
 
@@ -136,10 +126,6 @@ class MapViewModel(
         favoritesOnly = value
     }
 
-    fun toggleFeaturedOnly(value: Boolean) {
-        featuredOnly = value
-    }
-
     fun toggleOpenNow(value: Boolean) {
         openNow = value
     }
@@ -148,7 +134,6 @@ class MapViewModel(
         selectedCuisines = emptySet()
         selectedFormats = emptySet()
         favoritesOnly = false
-        featuredOnly = false
         openNow = false
     }
 

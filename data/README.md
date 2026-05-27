@@ -64,6 +64,13 @@ diverge.
    --resolve-place-ids` (writes the matched id back to the YAML).
 5. Push to `main`. CI validates tags and syncs to Firestore.
 
+### Mark a restaurant as a Pinwo discount partner
+
+Set `hasDiscount: true` in the restaurant's YAML (or toggle "Discount partner"
+in the admin panel). The map renders these with a special outlined-circle
+marker variant, and the search/filter surface can highlight them. The field
+defaults to `false` and is independent from `featured`.
+
 ### Add a new tag
 
 1. Add it to `data/_tags.yaml` under the right family.

@@ -80,6 +80,11 @@ function toYaml(r: Restaurant & { id: string }): string {
     lines.push("featured: true");
   }
 
+  if (r.hasDiscount) {
+    lines.push("");
+    lines.push("hasDiscount: true");
+  }
+
   if (r.editorialNote && (r.editorialNote.zh || r.editorialNote.en)) {
     lines.push("");
     lines.push("editorialNote:");

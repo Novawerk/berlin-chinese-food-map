@@ -57,6 +57,25 @@ class MapControlViewModel : ViewModel() {
         private set
 
     /**
+     * Compass heading in degrees (0 = north). Surfaced from Compass's
+     * [dev.jordond.compass.Location.azimuth] when available — drives the
+     * rotation of the arrow-shaped current-location marker. Nullable
+     * because the platform may not have a heading (stationary device,
+     * indoors, cold start). When null the marker points north.
+     */
+    var bearing by mutableStateOf<Float?>(null)
+        private set
+
+    /**
+     * Toggled by the locate FAB: first tap centres the camera AND turns
+     * this on, drawing the 5min/15min walking-radius rings around the
+     * user's location. Second tap turns it back off. Lives here (not in
+     * [MapViewModel]) because it reads [myLocation].
+     */
+    var walkingRadiusVisible by mutableStateOf(false)
+        private set
+
+    /**
      * `true` while a sensor fetch is in flight (i.e. cache miss). Stays
      * `false` for the cache-hit fast path so the FAB doesn't flash a
      * spinner on rapid re-taps.
@@ -113,6 +132,15 @@ class MapControlViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Called by the locate FAB to flip the walking-radius rings on/off
+     * each tap. The FAB also drives [ensureFreshLocation]; this method
+     * is purely about the overlay visibility.
+     */
+    fun toggleWalkingRadius() {
+        walkingRadiusVisible = !walkingRadiusVisible
+    }
+
     private suspend fun fetchAndStore(): LocationOutcome =
         when (val result = geolocator.current()) {
             is GeolocatorResult.Success -> {
@@ -121,6 +149,7 @@ class MapControlViewModel : ViewModel() {
                     result.data.coordinates.longitude,
                 )
                 myLocation = latLng
+                bearing = result.data.azimuth?.degrees?.toFloat()
                 fetchedAt = TimeSource.Monotonic.markNow()
                 LocationOutcome.Available(latLng)
             }

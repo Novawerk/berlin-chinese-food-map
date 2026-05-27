@@ -36,6 +36,7 @@ internal fun RestaurantMarker(
     if (cover == null) return // load still in flight
 
     val coverReady = cover is MarkerCover.Loaded
+    val hasDiscount = restaurant.hasDiscount
     val state = rememberUpdatedMarkerState(
         position = LatLng(restaurant.latitude, restaurant.longitude),
     )
@@ -44,12 +45,13 @@ internal fun RestaurantMarker(
     val icon: BitmapDescriptor = if (
         cached != null &&
         cached.coverReady == coverReady &&
-        cached.isFavorite == isFavorite
+        cached.isFavorite == isFavorite &&
+        cached.hasDiscount == hasDiscount
     ) {
         cached.descriptor
     } else {
         val rendered = rememberStableComposeBitmapDescriptor(
-            restaurant.id, coverReady, isFavorite,
+            restaurant.id, coverReady, isFavorite, hasDiscount,
         ) {
             MiniRestaurantCard(
                 restaurant = restaurant,
@@ -59,7 +61,7 @@ internal fun RestaurantMarker(
         }
         SideEffect {
             descriptorCache[restaurant.id] =
-                CachedMarkerDescriptor(coverReady, isFavorite, rendered)
+                CachedMarkerDescriptor(coverReady, isFavorite, hasDiscount, rendered)
         }
         rendered
     }
