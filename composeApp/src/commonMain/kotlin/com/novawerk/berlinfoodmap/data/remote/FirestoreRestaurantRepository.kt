@@ -162,6 +162,7 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
         viewCount = try { get<Int>("viewCount") } catch (_: Exception) { 0 },
         hidden = try { get<Boolean>("hidden") } catch (_: Exception) { false },
         featured = try { get<Boolean>("featured") } catch (_: Exception) { false },
+        hasDiscount = try { get<Boolean>("hasDiscount") } catch (_: Exception) { false },
         editorialNote = editorialMap?.takeIf { it["zh"]?.isNotBlank() == true || it["en"]?.isNotBlank() == true }?.let {
             Localizable(
                 en = it["en"] ?: "",

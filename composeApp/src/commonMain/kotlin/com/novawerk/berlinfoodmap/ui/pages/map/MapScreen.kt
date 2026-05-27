@@ -16,6 +16,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.marker_location
 import eu.buney.maps.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -38,11 +40,20 @@ fun MapScreen(
     val restaurantsFiltered = viewModel.restaurantsFiltered
 
     var mapLoaded by remember { mutableStateOf(false) }
-    val myLocationIcon = remember(mapLoaded) {
-        if (mapLoaded) {
-            try { myLocationDotIcon() } catch (_: Exception) { null }
-        } else null
-    }
+    // Render the design's red-wine arrow PNG into a marker bitmap via the
+    // same compose-to-bitmap pipeline the restaurant pills use.
+    val myLocationIcon: eu.buney.maps.BitmapDescriptor? = if (mapLoaded) {
+        rememberStableComposeBitmapDescriptor("__my_location__") {
+            androidx.compose.foundation.Image(
+                painter = org.jetbrains.compose.resources.painterResource(
+                    Res.drawable.marker_location,
+                ),
+                contentDescription = null,
+                modifier = androidx.compose.ui.Modifier.size(28.dp),
+                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+            )
+        }
+    } else null
 
     val mapConfig = rememberBerlinMapConfig()
 
@@ -202,8 +213,9 @@ fun MapScreen(
                     val isFavorite = restaurant.id in favorites
                     if (restaurant.id in denseIds) {
                         val kind = when {
+                            isFavorite && restaurant.hasDiscount -> MarkerDotKind.DISCOUNT_FAVORITE
+                            restaurant.hasDiscount -> MarkerDotKind.DISCOUNT
                             isFavorite -> MarkerDotKind.FAVORITE
-                            restaurant.featured -> MarkerDotKind.FEATURED
                             else -> MarkerDotKind.REGULAR
                         }
                         MarkerDot(
@@ -230,8 +242,45 @@ fun MapScreen(
                     state = state,
                     icon = myLocationIcon,
                     anchor = Offset(0.5f, 0.5f),
+                    // Compass heading from Compass library; null falls back to
+                    // 0° (arrow points north). The bitmap is designed as an
+                    // upward arrow at 0° so the rotation reads as heading.
+                    rotation = controlVm.bearing ?: 0f,
                     zIndex = 10f,
                 )
+
+                // Walking-radius rings, toggled by the locate FAB. Radii are
+                // 350 m (≈ 5 min walk at 4.2 km/h) and 1000 m (≈ 15 min).
+                // Stroke pattern Dash/Gap renders as a dashed line on Android;
+                // iOS ignores `strokePattern` (the kmp-maps library wraps
+                // MKCircleRenderer which has no strokePattern equivalent) and
+                // falls back to a solid stroke — see the upstream Circle.kt
+                // docstring. Acceptable for v1; revisit if needed.
+                if (controlVm.walkingRadiusVisible) {
+                    val ringColor = androidx.compose.ui.graphics.Color(0xFF780A09)
+                    val ringPattern = listOf(
+                        eu.buney.maps.PatternItem.Dash(20f),
+                        eu.buney.maps.PatternItem.Gap(10f),
+                    )
+                    Circle(
+                        center = loc,
+                        radius = 350.0,
+                        fillColor = androidx.compose.ui.graphics.Color.Transparent,
+                        strokeColor = ringColor,
+                        strokeWidth = 4f,
+                        strokePattern = ringPattern,
+                        zIndex = 5f,
+                    )
+                    Circle(
+                        center = loc,
+                        radius = 1000.0,
+                        fillColor = androidx.compose.ui.graphics.Color.Transparent,
+                        strokeColor = ringColor,
+                        strokeWidth = 4f,
+                        strokePattern = ringPattern,
+                        zIndex = 5f,
+                    )
+                }
             }
         }
 
@@ -251,6 +300,31 @@ fun MapScreen(
                     .background(MaterialTheme.colorScheme.surface),
             )
         }
+
+        // Bottom-right locate FAB (per May-24 design PDF page 4). First
+        // tap centres on user's location AND turns the walking-radius
+        // rings on; second tap turns them off without re-centring. The
+        // FAB shows a busy spinner overlay while a sensor fetch is in
+        // flight. Bottom padding clears the restaurant-cards row entirely
+        // — NearbyCard is ~56 dp tall + the LazyRow's 12 dp bottom pad +
+        // ~12 dp breathing room = ~80 dp; we use a slightly higher
+        // 100 dp so the FAB sits cleanly above the cards instead of
+        // touching them.
+        val hasCards = viewModel.visibleRestaurants.isNotEmpty()
+        LocateFab(
+            isLocating = controlVm.isLocating,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 12.dp, bottom = if (hasCards) 100.dp else 16.dp),
+            onClick = {
+                if (controlVm.walkingRadiusVisible) {
+                    controlVm.toggleWalkingRadius()
+                } else {
+                    controlVm.toggleWalkingRadius()
+                    commands.requestLocate()
+                }
+            },
+        )
 
         if (viewModel.visibleRestaurants.isNotEmpty()) {
             LazyRow(

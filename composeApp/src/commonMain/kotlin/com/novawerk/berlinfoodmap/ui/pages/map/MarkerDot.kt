@@ -1,64 +1,65 @@
 package com.novawerk.berlinfoodmap.ui.pages.map
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.marker_discount
+import berlinfoodmap.composeapp.generated.resources.marker_favorite
+import berlinfoodmap.composeapp.generated.resources.marker_regular
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import eu.buney.maps.BitmapDescriptor
 import eu.buney.maps.LatLng
 import eu.buney.maps.Marker
 import eu.buney.maps.rememberUpdatedMarkerState
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 /**
  * Visual variant the dense-marker dot takes — drives both the cache key
- * and the rendered bitmap. Only three variants exist, so the dot
- * descriptor cache is bounded at a tiny constant size for the whole
- * session.
+ * and the rendered bitmap. Per the May-24 design (PDF page 5):
+ *
+ *  - [REGULAR]: small solid red dot. The default; lots of restaurants
+ *    are just there, so they shouldn't shout.
+ *  - [FAVORITE]: larger red circle with a dark-red (450100) inner —
+ *    the user's saved venues pop above the field of small dots.
+ *  - [DISCOUNT]: red circle with a white diamond inside — Pinwo
+ *    partner discount marker.
+ *  - [DISCOUNT_FAVORITE]: combined (currently drawn as the discount
+ *    marker; the venue's saved state shows on the pill corner badge).
+ *
+ * Icons are PNG assets exported directly from the v2 Sketch design
+ * file (`drawable/marker_*.png`) — no Compose primitives, so the
+ * shapes exactly match the design including the subtle drop shadow.
+ *
+ * The old `FEATURED` (editor's pick) variant was dropped in the May-24
+ * redesign — `Restaurant.featured` still exists for content curation
+ * but no longer surfaces as a map marker.
  */
-internal enum class MarkerDotKind { REGULAR, FAVORITE, FEATURED }
+internal enum class MarkerDotKind { REGULAR, FAVORITE, DISCOUNT, DISCOUNT_FAVORITE }
 
-// All three variants render into the same DOT_BOUND_SIZE bounding box so
-// the marker's anchor (0.5, 0.5) lands on the lat/lng identically — but
-// the *visible* mark differs in weight. Regular is a small red dot, no
-// wrapper: lots of restaurants are "just there", so they shouldn't shout.
-// Favourite + featured share the larger circular badge so the user's
-// saved venues and editorial picks pop against the field of small dots.
-private val DOT_BOUND_SIZE = 20.dp
-private val DOT_REGULAR_SIZE = 10.dp
-private val DOT_INNER_HEART_SIZE = 12.dp
-private val DOT_INNER_STAR_SIZE = 14.dp
-
-// Brand-red badge fill matches the map's POI pin. White halo (1dp) keeps
-// it crisp against reddish map tiles without softening the brand signal.
-private val DotWrapperFill = Color(0xFFB51F1F) // PinwoRed (brand primary)
-private val DotWrapperBorder = Color.White
-private val DotWrapperBorderWidth = 1.dp
-
-// Centred-symbol palette. Favourite uses white-on-red for max contrast;
-// featured uses the warm brand gold so editor picks remain instantly
-// recognisable as the "specially curated" marker.
-private val DotInnerWhite = Color.White
-private val DotInnerGold = Color(0xFFF7DD6D) // PinwoGold — brand-warm lemon
+// All variants render into the same DOT_BOUND_SIZE bounding box so the
+// marker's anchor (0.5, 0.5) lands on the lat/lng identically. Special
+// markers (favorite/discount) are visually larger but the bounding box
+// stays the same so projection-based collision detection sees a
+// consistent footprint regardless of variant.
+private val DOT_BOUND_SIZE = 22.dp
+private val DOT_REGULAR_SIZE = 11.dp
+private val DOT_SPECIAL_SIZE = 20.dp
 
 /**
  * Compact replacement for [RestaurantMarker] used when the full pill
  * would visually collide with another marker at the current zoom (see
  * [detectDenseRestaurants]). One bitmap per [MarkerDotKind] is shared
- * across every restaurant rendered as that variant — three
+ * across every restaurant rendered as that variant — four
  * rasterisations total per session.
  */
 @Composable
@@ -76,7 +77,7 @@ internal fun MarkerDot(
         cached
     } else {
         val rendered = rememberStableComposeBitmapDescriptor(kind) {
-            DotBadge(kind)
+            DotIcon(kind)
         }
         SideEffect {
             descriptorCache[kind] = rendered
@@ -86,8 +87,6 @@ internal fun MarkerDot(
     Marker(
         state = state,
         icon = icon,
-        // Centre anchor: the dot's geometric centre lands on the lat/lng,
-        // unlike the pill which uses (0.5, 1) so its tail tip lands on it.
         anchor = Offset(0.5f, 0.5f),
         title = restaurant.name.zh,
         snippet = restaurant.name.en,
@@ -99,49 +98,22 @@ internal fun MarkerDot(
 }
 
 @Composable
-private fun DotBadge(kind: MarkerDotKind) {
-    // Constant outer canvas so anchor (0.5, 0.5) lands identically across
-    // variants. Only favourite and featured fill the canvas with the
-    // wrapper badge; regular sits centred as a smaller dot.
+private fun DotIcon(kind: MarkerDotKind) {
+    val drawable: DrawableResource = when (kind) {
+        MarkerDotKind.REGULAR -> Res.drawable.marker_regular
+        MarkerDotKind.FAVORITE -> Res.drawable.marker_favorite
+        MarkerDotKind.DISCOUNT, MarkerDotKind.DISCOUNT_FAVORITE -> Res.drawable.marker_discount
+    }
+    val size = if (kind == MarkerDotKind.REGULAR) DOT_REGULAR_SIZE else DOT_SPECIAL_SIZE
     Box(
         modifier = Modifier.size(DOT_BOUND_SIZE),
         contentAlignment = Alignment.Center,
     ) {
-        when (kind) {
-            MarkerDotKind.REGULAR -> Box(
-                modifier = Modifier
-                    .size(DOT_REGULAR_SIZE)
-                    .background(DotWrapperFill, CircleShape)
-                    .border(DotWrapperBorderWidth, DotWrapperBorder, CircleShape),
-            )
-            MarkerDotKind.FAVORITE -> Box(
-                modifier = Modifier
-                    .size(DOT_BOUND_SIZE)
-                    .background(DotWrapperFill, CircleShape)
-                    .border(DotWrapperBorderWidth, DotWrapperBorder, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = null,
-                    tint = DotInnerWhite,
-                    modifier = Modifier.size(DOT_INNER_HEART_SIZE),
-                )
-            }
-            MarkerDotKind.FEATURED -> Box(
-                modifier = Modifier
-                    .size(DOT_BOUND_SIZE)
-                    .background(DotWrapperFill, CircleShape)
-                    .border(DotWrapperBorderWidth, DotWrapperBorder, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = null,
-                    tint = DotInnerGold,
-                    modifier = Modifier.size(DOT_INNER_STAR_SIZE),
-                )
-            }
-        }
+        Image(
+            painter = painterResource(drawable),
+            contentDescription = null,
+            modifier = Modifier.size(size),
+            contentScale = ContentScale.Fit,
+        )
     }
 }

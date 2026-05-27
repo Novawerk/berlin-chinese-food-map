@@ -56,6 +56,12 @@ hidden: false                  # true = soft-deleted, hidden from public
 # landing page. editorialNote is a short hand-written hook (Chinese), shown
 # under the cover image on the detail sheet.
 featured: false
+
+# Pinwo partner discount/coupon flag. Drives the discount-marker variant on
+# the map and (eventually) a perks surface in the detail sheet. Independent
+# from `featured`; a restaurant can be one, both, or neither.
+hasDiscount: false
+
 editorialNote:
   zh: "广式点心｜凌晨营业｜宵夜江湖"
   en: ""                        # optional, leave empty until translated

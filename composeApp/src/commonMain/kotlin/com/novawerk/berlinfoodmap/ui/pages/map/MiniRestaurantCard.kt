@@ -16,9 +16,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineSeatFlat
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
@@ -42,6 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.marker_discount
+import berlinfoodmap.composeapp.generated.resources.marker_favorite
 import coil3.Image
 import coil3.compose.LocalPlatformContext
 import coil3.compose.asPainter
@@ -176,29 +179,37 @@ internal fun MiniRestaurantCard(
             }
         }
 
-        // Floating top-left badge. Only one shows at a time: heart wins
-        // over star when the venue is both saved and editorially featured,
-        // so the user's own state is what they see first.
+        // Floating top-left corner badge — reuses the exported marker
+        // PNGs so the pill badge matches the dense-marker dot exactly.
+        // Per May-24 design (PDF page 6):
+        //   favorite → red ring with dark-red inner dot
+        //   hasDiscount → red circle with white diamond inside
+        //   both → discount marker wins visually (the favorite shows in
+        //          the bottom-card heart and on the detail page anyway)
+        //   neither → no badge (regular pill)
         //
-        // The negative offset cancels the outer Box's start/top padding so
-        // the badge centres on the pill's top-left corner (half outside,
-        // half inside) instead of sitting fully inside the corner.
-        val badgeOverhangModifier = Modifier
-            .align(Alignment.TopStart)
-            .offset(x = -MARKER_BADGE_OVERHANG, y = -MARKER_BADGE_OVERHANG)
-            .size(MARKER_BADGE_SIZE)
-        when {
-            isFavorite -> Icon(
-                imageVector = Icons.Filled.Favorite,
+        // The negative offset cancels the outer Box's start/top padding
+        // so the badge centres on the pill's top-left corner (half
+        // outside, half inside) instead of sitting fully inside.
+        val badgeRes = when {
+            isFavorite && restaurant.hasDiscount ->
+                Res.drawable.marker_discount
+            restaurant.hasDiscount ->
+                Res.drawable.marker_discount
+            isFavorite ->
+                Res.drawable.marker_favorite
+            else -> null
+        }
+        if (badgeRes != null) {
+            androidx.compose.foundation.Image(
+                painter = org.jetbrains.compose.resources.painterResource(badgeRes),
                 contentDescription = null,
-                tint = if (isClosed) BadgeFavoriteColor.copy(alpha = 0.55f) else BadgeFavoriteColor,
-                modifier = badgeOverhangModifier,
-            )
-            restaurant.featured -> Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = null,
-                tint = if (isClosed) BadgeFeaturedColor.copy(alpha = 0.55f) else BadgeFeaturedColor,
-                modifier = badgeOverhangModifier,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .offset(x = -MARKER_BADGE_OVERHANG, y = -MARKER_BADGE_OVERHANG)
+                    .size(MARKER_BADGE_SIZE)
+                    .let { if (isClosed) it.alpha(0.55f) else it },
+                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
             )
         }
     }
@@ -228,12 +239,11 @@ internal val MARKER_BODY_HEIGHT = 44.dp
 internal val MARKER_BADGE_SIZE = 20.dp
 internal val MARKER_BADGE_OVERHANG = MARKER_BADGE_SIZE / 2
 
-// Saturated badge colours — pulled out of MaterialTheme on purpose. The
-// theme's primary is a wine-leaning red that reads as muted next to the
-// brand-red marker pin behind it; the design wants a punchier red for
-// the heart. Star uses gold to differentiate at a glance from the heart.
-private val BadgeFavoriteColor = Color(0xFFE53935) // Material Red 600
-private val BadgeFeaturedColor = Color(0xFFFFC107) // Material Amber 500
+// Badge colour for the new pill corner glyphs (diamond for favorite,
+// outlined circle for discount). CE4847 matches the marker dot spec in
+// the May-24 design, so the corner badge reads as a smaller sibling of
+// the dot variant the same restaurant would collapse to.
+private val MarkerBadgeOuter = Color(0xFFCE4847)
 
 /**
  * Conservative pill-width estimate for a given restaurant, used by the

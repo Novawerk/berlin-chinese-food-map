@@ -18,6 +18,7 @@ data class Restaurant(
     val viewCount: Int = 0,
     val hidden: Boolean = false,
     val featured: Boolean = false,
+    val hasDiscount: Boolean = false,
     val editorialNote: Localizable? = null,
     val chain: Chain? = null,
     val googleData: GooglePlaceData? = null,

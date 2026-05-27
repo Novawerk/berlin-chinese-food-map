@@ -30,14 +30,8 @@
     <string name="filter_reset">Reset</string>
     <string name="filter_favorites_only">Favorites only</string>
     <string name="filter_favorites_subtitle">Show only the places you saved</string>
-    <string name="filter_featured_only">Editor's picks only</string>
-    <string name="filter_featured_subtitle">Show only featured restaurants</string>
     <string name="filter_open_now">Open now</string>
     <string name="filter_open_now_subtitle">Hide places that are currently closed</string>
-    <string name="districts_title">Neighborhoods</string>
-    <string name="districts_action">Browse by area</string>
-    <string name="districts_subtitle">Tap a neighborhood — the map will jump there</string>
-    <string name="districts_count_label">%1$d places</string>
     <string name="filter_done">Done</string>
     <string name="filter_clear">Clear</string>
     <string name="filter_all">All</string>
@@ -163,42 +157,6 @@
     <string name="tag_fusion_desc">Modern, cross-style cooking — Chinese roots, contemporary plates.</string>
 
     <!-- District descriptions (Berlin neighbourhoods) -->
-    <string name="district_desc_mitte">Berlin's historic core — Brandenburg Gate, Museum Island, central everything.</string>
-    <string name="district_desc_charlottenburg">Old West Berlin — KaDeWe, Kurfürstendamm, City West shopping.</string>
-    <string name="district_desc_friedrichshain">East Berlin nightlife — clubs, street art, young energy.</string>
-    <string name="district_desc_kreuzberg">Multicultural and lively — Turkish kitchens, hip cafés, late-night bars.</string>
-    <string name="district_desc_neukoelln">Immigrant-rooted, fast-changing — new restaurants and bars open weekly.</string>
-    <string name="district_desc_prenzlauer_berg">Gentrified family neighbourhood — playgrounds, cafés, brunch spots.</string>
-    <string name="district_desc_schoeneberg">Quiet and storied — gay village, old Jewish history, pleasant streets.</string>
-    <string name="district_desc_wedding">Working-class roots, gentrifying fast — affordable, diverse food.</string>
-    <string name="district_desc_tiergarten">Berlin's central park district — embassies and government quarter.</string>
-    <string name="district_desc_moabit">Workers' housing on a Spree island — strong immigrant communities.</string>
-    <string name="district_desc_pankow">Northeast residential — quieter than its inner-city neighbours.</string>
-    <string name="district_desc_spandau">Westernmost Berlin — feels almost like its own town.</string>
-    <string name="district_desc_tempelhof">Around the old airport-turned-park — south-side residential.</string>
-    <string name="district_desc_wilmersdorf">Old West-Berlin bourgeois — leafy, calm, large Iranian community.</string>
-    <string name="district_desc_steglitz">Southwest residential and shopping — student-friendly Schloßstraße.</string>
-    <string name="district_desc_lichtenberg">East-Berlin Plattenbau and Berlin's largest Vietnamese community.</string>
-    <string name="district_desc_marzahn">East-Berlin Plattenbau, Vietnamese groceries and food courts.</string>
-    <string name="district_desc_hellersdorf">Far east-Berlin Plattenbau — residential edge of the city.</string>
-    <string name="district_desc_reinickendorf">Northwest residential — quiet, lakes and forest nearby.</string>
-    <string name="district_desc_dahlem">Free University quarter — leafy, embassy villas.</string>
-    <string name="district_desc_tegel">Northwest near the old TXL airport — residential and lakeside.</string>
-    <string name="district_desc_friedenau">Small, cosy, between Schöneberg and Steglitz.</string>
-    <string name="district_desc_halensee">Tiny district by the lake — between Charlottenburg and Wilmersdorf.</string>
-    <string name="district_desc_westend">Western Charlottenburg — leafy villas around Messe Berlin.</string>
-    <string name="district_desc_schmargendorf">Quiet residential pocket of Wilmersdorf.</string>
-    <string name="district_desc_lichterfelde">Southwest leafy residential — early-20th-century villas.</string>
-    <string name="district_desc_lankwitz">Quiet south Berlin residential pocket.</string>
-    <string name="district_desc_britz">South Neukölln — Hufeisensiedlung garden city.</string>
-    <string name="district_desc_mariendorf">Southern residential along Tempelhofer Damm.</string>
-    <string name="district_desc_marienfelde">Outer south, residential and industrial mix.</string>
-    <string name="district_desc_lichtenrade">Quiet southern fringe — village feel.</string>
-    <string name="district_desc_rudow">Southeast residential at the Brandenburg border.</string>
-    <string name="district_desc_franzoesisch_buchholz">Northern Pankow — outer-ring residential.</string>
-    <string name="district_desc_hermsdorf">Northern Reinickendorf — green, lakeside calm.</string>
-    <string name="district_desc_johannisthal">Southeast Treptow-Köpenick — quiet residential.</string>
-    <string name="district_desc_wittenau">Northern Reinickendorf — small residential pocket.</string>
 
     <!-- Search -->
     <string name="search_hint">Search restaurants...</string>
@@ -284,7 +242,22 @@
     <string name="team_pinwo_bio">Pinwo is a Berlin-based Chinese dining brand. They curate restaurants across the city, run a partner program with member deals and tasting events, and help newcomers and long-timers alike find places worth coming back to.\n\nPinwo is our co-brand partner on Berlin Food Map — same city, same scene, complementary takes on it: they curate the dining experience for their members; Berlin Food Map maps every Chinese restaurant in Berlin we can find, free and open to anyone.</string>
     <string name="team_pinwo_visit">View on Xiaohongshu</string>
 
+    <!-- Favorites screen (bottom nav heart + search-grid Favorites card) -->
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty_cta">Browse the map</string>
+    <string name="nav_favorites">Favorites</string>
+
+    <!-- Walking radius (5min/15min isochrone rings, toggled by tapping the locate FAB) -->
+    <string name="map_radius_5min">5 min</string>
+    <string name="map_radius_15min">15 min</string>
+
+    <!-- Search bar (grid view bottom) -->
+    <string name="search_hint_long">What do you want to eat today?</string>
+
     <!-- Splash screen -->
+    <string name="splash_tagline_line1">Chinese Food Map</string>
+    <string name="splash_tagline_line2">Berlin</string>
+    <string name="splash_powered_by">Powered by</string>
     <string name="splash_brand_lockup">Novawerk × Pinwo</string>
 
     <!-- Onboarding (first-launch tour) -->
@@ -306,6 +279,8 @@
     <string name="onboarding_p2_body">No more scrolling through the map page by page.</string>
     <string name="onboarding_p3_title">One tap to save a place for next time.</string>
     <string name="onboarding_p3_body">Browse your saved spots, plus our hand-curated picks.</string>
+    <string name="onboarding_p4_title">Free dishes &amp; discount —\nClaim instantly!</string>
+    <string name="onboarding_p4_body">Pinwo partner restaurants offer exclusive perks for members. Spot them on the map by the discount badge.</string>
 
     <!-- Open-source licenses sheet -->
     <string name="licenses_title">Open-source licenses</string>

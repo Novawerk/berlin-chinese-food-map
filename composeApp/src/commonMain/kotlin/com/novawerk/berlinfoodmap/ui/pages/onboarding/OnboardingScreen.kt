@@ -42,9 +42,12 @@ import berlinfoodmap.composeapp.generated.resources.onboarding_p2_body
 import berlinfoodmap.composeapp.generated.resources.onboarding_p2_title
 import berlinfoodmap.composeapp.generated.resources.onboarding_p3_body
 import berlinfoodmap.composeapp.generated.resources.onboarding_p3_title
+import berlinfoodmap.composeapp.generated.resources.onboarding_p4_body
+import berlinfoodmap.composeapp.generated.resources.onboarding_p4_title
 import berlinfoodmap.composeapp.generated.resources.onboarding_page1
 import berlinfoodmap.composeapp.generated.resources.onboarding_page2
 import berlinfoodmap.composeapp.generated.resources.onboarding_page3
+import berlinfoodmap.composeapp.generated.resources.onboarding_page4
 import berlinfoodmap.composeapp.generated.resources.onboarding_skip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
@@ -74,6 +77,11 @@ private val Pages = listOf(
         title = Res.string.onboarding_p3_title,
         body = Res.string.onboarding_p3_body,
     ),
+    OnboardingPage(
+        image = Res.drawable.onboarding_page4,
+        title = Res.string.onboarding_p4_title,
+        body = Res.string.onboarding_p4_body,
+    ),
 )
 
 // Onboarding fixes the Pinwo brand red regardless of light/dark theme — the
@@ -89,6 +97,19 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     val scope = rememberCoroutineScope()
     val currentPage = pagerState.currentPage
 
+    // Shared "advance" closure used by both the AdvanceButton and the
+    // tap-anywhere gesture on the page body. Pre-final → next page;
+    // final → onComplete. Per the May-24 PM note, users want to be able
+    // to advance by tapping anywhere on the screen (not just the FAB).
+    val advance = {
+        if (currentPage == Pages.lastIndex) {
+            onComplete()
+        } else {
+            scope.launch { pagerState.animateScrollToPage(currentPage + 1) }
+            Unit
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -98,7 +119,10 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
         ) { index ->
-            OnboardingPageView(page = Pages[index])
+            OnboardingPageView(
+                page = Pages[index],
+                onTap = { advance() },
+            )
         }
 
         // Skip control, top-right. Flips straight to Main from any page.
@@ -132,21 +156,25 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             Spacer(Modifier.width(16.dp).fillMaxWidth().weight(1f))
             AdvanceButton(
                 isLast = currentPage == Pages.lastIndex,
-                onClick = {
-                    if (currentPage == Pages.lastIndex) {
-                        onComplete()
-                    } else {
-                        scope.launch { pagerState.animateScrollToPage(currentPage + 1) }
-                    }
-                },
+                onClick = { advance() },
             )
         }
     }
 }
 
 @Composable
-private fun OnboardingPageView(page: OnboardingPage) {
-    Box(Modifier.fillMaxSize()) {
+private fun OnboardingPageView(
+    page: OnboardingPage,
+    onTap: () -> Unit,
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            // Tap-anywhere advance (May-24 redesign). Doesn't fight the
+            // pager's swipe gesture — HorizontalPager consumes drag
+            // events before this clickable layer sees them.
+            .clickable(onClick = onTap),
+    ) {
         Image(
             painter = painterResource(page.image),
             contentDescription = null,

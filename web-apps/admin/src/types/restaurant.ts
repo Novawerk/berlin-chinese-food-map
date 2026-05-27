@@ -87,6 +87,7 @@ export interface Restaurant {
   viewCount: number;
   hidden?: boolean;
   featured?: boolean;
+  hasDiscount?: boolean;
   editorialNote?: Localizable;
   chain?: Chain;
   createdAt?: Timestamp;

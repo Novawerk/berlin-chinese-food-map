@@ -342,6 +342,12 @@ const RestaurantForm = () => (
       label="Featured (柏林慢慢游甄选)"
       defaultValue={false}
     />
+    <BooleanInput
+      source="hasDiscount"
+      label="Discount partner (Pinwo 合作优惠)"
+      helperText="Mark this restaurant as offering Pinwo partner discounts/coupons."
+      defaultValue={false}
+    />
     <TextInput source="editorialNote.zh" label="Editorial note (中文)" multiline />
     <TextInput source="editorialNote.en" label="Editorial note (English)" multiline />
 
@@ -515,6 +521,7 @@ export const RestaurantShow = () => (
       <TextField source="description.en" />
       <TextField source="description.de" />
       <BooleanField source="featured" label="Featured (甄选)" />
+      <BooleanField source="hasDiscount" label="Discount partner (优惠)" />
       <TextField source="editorialNote.zh" label="Editorial note (中文)" />
       <TextField source="editorialNote.en" label="Editorial note (English)" />
       <TextField source="chain.brand" label="Chain brand" />

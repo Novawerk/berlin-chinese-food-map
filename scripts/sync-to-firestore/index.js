@@ -156,6 +156,7 @@ async function loadRestaurants() {
       hidden: data.hidden ?? DEFAULTS.hidden,
       galleries: data.galleries ?? DEFAULTS.galleries,
       featured: data.featured ?? false,
+      hasDiscount: data.hasDiscount ?? false,
     };
 
     restaurants.push({ id, file, data: restaurant });

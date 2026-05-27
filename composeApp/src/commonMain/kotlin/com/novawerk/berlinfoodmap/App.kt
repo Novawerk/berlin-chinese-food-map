@@ -6,13 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,13 +20,13 @@ import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.domain.analytics.AnalyticsService
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
+import com.novawerk.berlinfoodmap.domain.restaurant.family
 import com.novawerk.berlinfoodmap.ui.pages.detail.DetailScreen
-import com.novawerk.berlinfoodmap.ui.pages.map.DistrictPickerSheet
+import com.novawerk.berlinfoodmap.ui.pages.favorites.FavoritesSheet
 import com.novawerk.berlinfoodmap.ui.pages.map.MapCommands
 import com.novawerk.berlinfoodmap.ui.pages.map.MapControlViewModel
 import com.novawerk.berlinfoodmap.ui.pages.map.MapScreen
 import com.novawerk.berlinfoodmap.ui.pages.map.MapViewModel
-import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.pages.onboarding.OnboardingScreen
 import com.novawerk.berlinfoodmap.ui.pages.search.SearchAndFilterSheet
 import com.novawerk.berlinfoodmap.ui.pages.settings.SettingsScreen
@@ -41,11 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
-import berlinfoodmap.composeapp.generated.resources.filter_favorites_only
-import berlinfoodmap.composeapp.generated.resources.filter_featured_only
-import berlinfoodmap.composeapp.generated.resources.filter_open_now
-import berlinfoodmap.composeapp.generated.resources.filter_reset
-import berlinfoodmap.composeapp.generated.resources.filters_active_multi
+import berlinfoodmap.composeapp.generated.resources.nav_favorites
 import berlinfoodmap.composeapp.generated.resources.nav_locate
 import berlinfoodmap.composeapp.generated.resources.nav_search
 import berlinfoodmap.composeapp.generated.resources.settings
@@ -219,22 +211,23 @@ private fun MainShell(
     onLanguageChange: (String?) -> Unit,
 ) {
     // Map stays full-screen with a 3-icon bottom bar overlaid on top.
-    // Search, Settings, and District-picker are all ModalBottomSheets; Locate
-    // is a one-shot action that flows into MapScreen via [MapCommands]. None
-    // of the three nav buttons is a "tab" in the navigational sense — there's
-    // no selected state.
+    // Settings · Search · Favorites are all ModalBottomSheets; Locate is a
+    // one-shot action triggered by the top-right LocateFab on MapScreen
+    // (also toggles walking-radius rings). None of the bottom-nav buttons
+    // is a "tab" in the navigational sense — there's no selected state.
     val mapCommands = remember { MapCommands() }
     var searchSheetOpen by rememberSaveable { mutableStateOf(false) }
     var settingsSheetOpen by rememberSaveable { mutableStateOf(false) }
-    var districtSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var favoritesSheetOpen by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(searchSheetOpen, settingsSheetOpen, isActive) {
+    LaunchedEffect(searchSheetOpen, settingsSheetOpen, favoritesSheetOpen, isActive) {
         // Suppress while we're mounted invisibly behind the splash overlay.
         if (!isActive) return@LaunchedEffect
         val screen = when {
             settingsSheetOpen -> "Settings"
             searchSheetOpen -> "Search"
+            favoritesSheetOpen -> "Favorites"
             else -> "Map"
         }
         analytics.logScreenView(screen)
@@ -243,18 +236,9 @@ private fun MainShell(
     Scaffold(
         bottomBar = {
             MainBottomBar(
-                isLocating = mapControlViewModel.isLocating,
-                activeFilterLabel = activeFilterLabel(mapViewModel),
-                onSearchClick = { searchSheetOpen = true },
-                onClearFilters = { mapViewModel.resetFilters() },
-                onLocateClick = {
-                    // Permission-denied / unavailable cases need user-visible
-                    // feedback. The command holder itself is purely a
-                    // request channel — MapScreen owns the snackbar host
-                    // and translates LocationOutcome into a message.
-                    mapCommands.requestLocate()
-                },
                 onSettingsClick = { settingsSheetOpen = true },
+                onSearchClick = { searchSheetOpen = true },
+                onFavoritesClick = { favoritesSheetOpen = true },
             )
         },
         snackbarHost = {
@@ -298,17 +282,26 @@ private fun MainShell(
         SearchAndFilterSheet(
             allRestaurants = mapViewModel.allRestaurants,
             favorites = mapViewModel.favorites,
-            selectedCuisines = mapViewModel.selectedCuisines,
-            selectedFormats = mapViewModel.selectedFormats,
-            favoritesOnly = mapViewModel.favoritesOnly,
-            featuredOnly = mapViewModel.featuredOnly,
-            openNow = mapViewModel.openNow,
-            onCuisinesChange = { mapViewModel.setCuisines(it) },
-            onFormatsChange = { mapViewModel.setFormats(it) },
-            onFavoritesOnlyChange = { mapViewModel.toggleFavoritesOnly(it) },
-            onFeaturedOnlyChange = { mapViewModel.toggleFeaturedOnly(it) },
-            onOpenNowChange = { mapViewModel.toggleOpenNow(it) },
-            onReset = { mapViewModel.resetFilters() },
+            onPickTag = { tag ->
+                // Apply as sole filter for its family; clear any prior selection
+                // so single-tap really means "show me this and only this".
+                mapViewModel.resetFilters()
+                when (tag.family()) {
+                    com.novawerk.berlinfoodmap.domain.restaurant.TagFamily.REGIONAL ->
+                        mapViewModel.setCuisines(setOf(tag))
+                    com.novawerk.berlinfoodmap.domain.restaurant.TagFamily.FORMAT ->
+                        mapViewModel.setFormats(setOf(tag))
+                }
+            },
+            onShowOnMap = { mapViewModel.resetFilters() },
+            onShowFavoritesOnMap = {
+                mapViewModel.resetFilters()
+                mapViewModel.toggleFavoritesOnly(true)
+            },
+            onOpenFavorites = {
+                searchSheetOpen = false
+                favoritesSheetOpen = true
+            },
             onRestaurantClick = { restaurant ->
                 searchSheetOpen = false
                 mapCommands.requestPan(
@@ -317,20 +310,29 @@ private fun MainShell(
                 )
                 onDetailIdChange(restaurant.id)
             },
-            onBrowseDistricts = { districtSheetOpen = true },
             onDismiss = { searchSheetOpen = false },
         )
     }
 
-    if (districtSheetOpen) {
-        DistrictPickerSheet(
-            restaurants = mapViewModel.allRestaurants,
-            onDistrictSelected = { center ->
-                districtSheetOpen = false
-                searchSheetOpen = false
-                mapCommands.requestPan(target = center, zoom = 14f)
+    if (favoritesSheetOpen) {
+        val favoriteRestaurants = remember(mapViewModel.allRestaurants, mapViewModel.favorites) {
+            mapViewModel.allRestaurants.filter { it.id in mapViewModel.favorites }
+        }
+        FavoritesSheet(
+            favorites = favoriteRestaurants,
+            onRestaurantClick = { id ->
+                favoritesSheetOpen = false
+                val r = mapViewModel.allRestaurants.firstOrNull { it.id == id }
+                if (r != null) {
+                    mapCommands.requestPan(
+                        target = LatLng(r.latitude, r.longitude),
+                        zoom = 16f,
+                    )
+                }
+                onDetailIdChange(id)
             },
-            onDismiss = { districtSheetOpen = false },
+            onBrowseMap = { favoritesSheetOpen = false },
+            onDismiss = { favoritesSheetOpen = false },
         )
     }
 
@@ -354,18 +356,12 @@ private fun MainShell(
 
 @Composable
 private fun MainBottomBar(
-    isLocating: Boolean,
-    activeFilterLabel: FilterPillLabel?,
-    onSearchClick: () -> Unit,
-    onClearFilters: () -> Unit,
-    onLocateClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
 ) {
-    // Custom 3-icon bar instead of `NavigationBar` — none of the three
-    // buttons represents a navigation destination (they're all actions /
-    // overlays), so the selected-pill chrome would be misleading. We still
-    // want the M3 bottom-bar visual treatment (elevated surface, height,
-    // shadow) without the navigation semantics.
+    // Custom 3-icon bar — Settings · Search · Favorites (per May-24 design).
+    // Locate moved to a top-right FAB on the map itself.
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = 0.dp,
@@ -379,127 +375,21 @@ private fun MainBottomBar(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (activeFilterLabel != null) {
-                FilterPill(
-                    label = activeFilterLabel,
-                    onClick = onSearchClick,
-                    onClear = onClearFilters,
-                )
-            } else {
-                BottomBarIcon(
-                    icon = Icons.Filled.Search,
-                    contentDescription = stringResource(Res.string.nav_search),
-                    onClick = onSearchClick,
-                )
-            }
-            BottomBarIcon(
-                icon = Icons.Filled.MyLocation,
-                contentDescription = stringResource(Res.string.nav_locate),
-                busy = isLocating,
-                onClick = onLocateClick,
-            )
             BottomBarIcon(
                 icon = Icons.Filled.Settings,
                 contentDescription = stringResource(Res.string.settings),
                 onClick = onSettingsClick,
             )
-        }
-    }
-}
-
-/**
- * Surface representation of the current filter for the bottom-nav pill.
- * Either a single chip-style entry (icon + tag/toggle label) or a count
- * summary when multiple filters stack — keeps the pill from overflowing.
- */
-private data class FilterPillLabel(
-    val text: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector?,
-)
-
-/**
- * Builds the pill descriptor from the live MapViewModel filter state.
- * Picks the most visually informative single filter when exactly one is
- * active, otherwise collapses to "N filters".
- */
-@Composable
-private fun activeFilterLabel(vm: MapViewModel): FilterPillLabel? {
-    val count = vm.activeFilterCount
-    if (count == 0) return null
-    if (count == 1) {
-        vm.selectedCuisines.firstOrNull()?.let {
-            return FilterPillLabel(tagDisplayName(it), null)
-        }
-        vm.selectedFormats.firstOrNull()?.let {
-            return FilterPillLabel(tagDisplayName(it), null)
-        }
-        if (vm.favoritesOnly) {
-            return FilterPillLabel(
-                stringResource(Res.string.filter_favorites_only),
-                Icons.Filled.Favorite,
+            BottomBarIcon(
+                icon = Icons.Filled.Search,
+                contentDescription = stringResource(Res.string.nav_search),
+                onClick = onSearchClick,
             )
-        }
-        if (vm.featuredOnly) {
-            return FilterPillLabel(
-                stringResource(Res.string.filter_featured_only),
-                Icons.Filled.Star,
+            BottomBarIcon(
+                icon = Icons.Filled.Favorite,
+                contentDescription = stringResource(Res.string.nav_favorites),
+                onClick = onFavoritesClick,
             )
-        }
-        if (vm.openNow) {
-            return FilterPillLabel(
-                stringResource(Res.string.filter_open_now),
-                Icons.Filled.AccessTime,
-            )
-        }
-    }
-    return FilterPillLabel(
-        stringResource(Res.string.filters_active_multi, count),
-        null,
-    )
-}
-
-@Composable
-private fun FilterPill(
-    label: FilterPillLabel,
-    onClick: () -> Unit,
-    onClear: () -> Unit,
-) {
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-        shape = RoundedCornerShape(percent = 50),
-        modifier = Modifier
-            .height(40.dp)
-            .clip(RoundedCornerShape(percent = 50))
-            .clickable(onClick = onClick),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 14.dp, end = 4.dp),
-        ) {
-            if (label.icon != null) {
-                Icon(
-                    imageVector = label.icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                )
-                Spacer(Modifier.size(6.dp))
-            }
-            Text(
-                text = label.text,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Medium,
-            )
-            IconButton(
-                onClick = onClear,
-                modifier = Modifier.size(32.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = stringResource(Res.string.filter_reset),
-                    modifier = Modifier.size(16.dp),
-                )
-            }
         }
     }
 }
