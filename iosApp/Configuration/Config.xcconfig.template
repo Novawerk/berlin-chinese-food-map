@@ -12,4 +12,4 @@ MAPS_API_KEY=
 // Both auto-synced from gradle/libs.versions.toml by `./gradlew syncVersionToIos`
 // (run automatically by .github/workflows/bump-version.yml on every push to main).
 CURRENT_PROJECT_VERSION=1
-MARKETING_VERSION=1.0.0
+MARKETING_VERSION=1.0.1

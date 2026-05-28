@@ -11,7 +11,7 @@ androidx-lifecycle = "2.9.2"
 # hand-edited for releases. CI builds can override either via the
 # VERSION_CODE / VERSION_NAME environment variables.
 app-versionCode = "47"
-app-versionName = "1.0.0"
+app-versionName = "1.0.1"
 buildkonfig = "0.18.0"
 
 composeMultiplatform = "1.10.3"
