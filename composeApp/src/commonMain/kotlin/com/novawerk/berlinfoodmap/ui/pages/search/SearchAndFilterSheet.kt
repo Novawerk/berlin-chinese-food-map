@@ -17,7 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -120,6 +124,13 @@ fun SearchAndFilterSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
+        // Only consume the top inset here. The default modalWindowInsets pads
+        // the content column's *bottom* by the nav-bar inset, which lifts the
+        // sticky [BottomActionBar] off the screen edge and leaves a dead
+        // surface-coloured strip below it. The bar already handles its own
+        // bottom inset via imePadding + navigationBarsPadding, so it should
+        // reach the edge with the nav-bar area filled by its own background.
+        contentWindowInsets = { WindowInsets.safeDrawing.only(WindowInsetsSides.Top) },
     ) {
         SheetBody(
             allRestaurants = allRestaurants,

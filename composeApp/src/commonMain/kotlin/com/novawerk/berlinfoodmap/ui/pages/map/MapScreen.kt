@@ -7,22 +7,35 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.favorites_title
+import berlinfoodmap.composeapp.generated.resources.filter_clear
+import berlinfoodmap.composeapp.generated.resources.filter_open_now
+import berlinfoodmap.composeapp.generated.resources.filters_active_multi
 import berlinfoodmap.composeapp.generated.resources.marker_location
+import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import eu.buney.maps.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,10 +82,15 @@ fun MapScreen(
     // hidden `ComposeView` (Android) that needs a live composition context.
     val descriptorCache = rememberMarkerDescriptorCache()
     val dotDescriptorCache = rememberMarkerDotDescriptorCache()
-    LaunchedEffect(restaurantsFiltered) {
-        // Drop entries for restaurants no longer in the filter — otherwise
-        // descriptors leak bitmap memory until MapScreen disposes.
-        val keep = restaurantsFiltered.mapTo(HashSet()) { it.id }
+    LaunchedEffect(viewModel.allRestaurants) {
+        // Evict descriptors only when a restaurant leaves the dataset, NOT
+        // when it's merely filtered out. Keying this on the filtered list
+        // threw away every hidden pill the moment a tag filter was applied,
+        // so clearing the filter (e.g. tapping the active-filter chip) had to
+        // re-rasterise ~180 pills synchronously on the UI thread (~5-15ms
+        // each) — the map-wide stutter. The cache ceiling is the full dataset
+        // either way, which is just the unfiltered steady state.
+        val keep = viewModel.allRestaurants.mapTo(HashSet()) { it.id }
         descriptorCache.keys.toList().forEach { id ->
             if (id !in keep) descriptorCache.remove(id)
         }
@@ -208,10 +226,23 @@ fun MapScreen(
             // tiles appear first, with pins dropping in shortly after.
             if (mapLoaded) {
                 val denseIds = viewModel.denseIds
+                val classifiedIds = viewModel.classifiedIds
                 val favorites = viewModel.favorites
                 restaurantsFiltered.forEach { restaurant ->
                     val isFavorite = restaurant.id in favorites
-                    if (restaurant.id in denseIds) {
+                    // Compact dot when the marker is known dense, OR when it
+                    // appeared after a filter change and the recompute hasn't
+                    // classified it yet — defaulting those to dots avoids a
+                    // flash of full pills collapsing to dots (the big→small
+                    // blink on clearing a filter); they bloom up to pills on
+                    // the next recompute if sparse. Cold start (nothing
+                    // classified) falls back to pills to match first paint.
+                    val isDot = when {
+                        restaurant.id in classifiedIds -> restaurant.id in denseIds
+                        classifiedIds.isEmpty() -> false
+                        else -> true
+                    }
+                    if (isDot) {
                         val kind = when {
                             isFavorite && restaurant.hasDiscount -> MarkerDotKind.DISCOUNT_FAVORITE
                             restaurant.hasDiscount -> MarkerDotKind.DISCOUNT
@@ -354,6 +385,88 @@ fun MapScreen(
                         onLongClick = { onNavigateDetail(restaurant.id) },
                     )
                 }
+            }
+        }
+
+        // Active-filter chip — appears once a tag (or the favorites / open-now
+        // toggle) is applied from the search sheet. Tapping it clears every
+        // filter; this is the "cancel" affordance that was missing after the
+        // sheet dismissed. Neutral surface chrome per the map-FAB convention so
+        // it stays quiet against the red marker pins.
+        if (viewModel.activeFilterCount > 0) {
+            ActiveFilterChip(
+                label = activeFilterLabel(viewModel),
+                onClear = { viewModel.resetFilters() },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 8.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun activeFilterLabel(vm: MapViewModel): String {
+    val count = vm.activeFilterCount
+    return when {
+        count == 1 && vm.selectedCuisines.size == 1 ->
+            tagDisplayName(vm.selectedCuisines.first())
+        count == 1 && vm.selectedFormats.size == 1 ->
+            tagDisplayName(vm.selectedFormats.first())
+        count == 1 && vm.favoritesOnly -> stringResource(Res.string.favorites_title)
+        count == 1 && vm.openNow -> stringResource(Res.string.filter_open_now)
+        else -> stringResource(Res.string.filters_active_multi, count)
+    }
+}
+
+@Composable
+private fun ActiveFilterChip(
+    label: String,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Brand-pink container (primaryContainer / onPrimaryContainer) makes the
+    // chip read as active state and stand out from the map's neutral chrome,
+    // while staying off the reserved brand-red `primary` that the marker pins
+    // use. Leading filter glyph + a dedicated circular close affordance make
+    // "tap to clear" obvious.
+    Surface(
+        onClick = onClear,
+        modifier = modifier,
+        shape = RoundedCornerShape(percent = 50),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        shadowElevation = 6.dp,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 7.dp, bottom = 7.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.FilterList,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(
+                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.14f),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.filter_clear),
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
     }
