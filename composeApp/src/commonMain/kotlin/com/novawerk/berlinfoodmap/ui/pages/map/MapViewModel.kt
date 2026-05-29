@@ -14,8 +14,6 @@ import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 import com.novawerk.berlinfoodmap.domain.restaurant.computeOpeningStatus
 import eu.buney.maps.LatLngBounds
 import eu.buney.maps.Projection
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -99,6 +97,19 @@ class MapViewModel(
         private set
 
     /**
+     * The filtered-restaurant ids that [denseIds] was last computed against.
+     * Lets the map distinguish "this marker is known to be sparse" from "this
+     * marker only just appeared (e.g. a filter was cleared) and hasn't been
+     * classified yet". The latter render as compact dots until the next
+     * recompute instead of flashing as full pills that then collapse — the
+     * jarring big-card→small-card blink on clearing a filter. Empty only
+     * before the very first recompute (cold start), where markers fall back
+     * to pills.
+     */
+    var classifiedIds by mutableStateOf<Set<String>>(emptySet())
+        private set
+
+    /**
      * Current map viewport. Pushed in by the composable each time
      * `cameraPositionState.projection.visibleBounds` changes; the rest of
      * the screen reads [visibleRestaurants] derived from it.
@@ -142,10 +153,13 @@ class MapViewModel(
     }
 
     /**
-     * Two-phase dense-marker detection: project on Main (caller's
-     * dispatcher), grid on Default. Skips state writes when the new
-     * dense set is identical so pan-induced no-op recomputes don't
-     * cascade into marker re-emissions.
+     * Dense-marker detection: project on the caller's (Main) dispatcher,
+     * then run the O(n) grid overlap inline. For our dataset size (~hundreds
+     * of pins) detection is sub-millisecond, so keeping it synchronous lets
+     * [denseIds] / [classifiedIds] land in the same frame the trigger fired —
+     * a deferred dispatch was what let freshly-shown pills paint before they
+     * were reclassified. Skips the [denseIds] write when the set is identical
+     * so pan-induced no-op recomputes don't cascade into marker re-emissions.
      *
      * [widthEstimator] returns each restaurant's pill width in px. Caller
      * computes this with `Density` in scope (composable side); the VM
@@ -163,18 +177,20 @@ class MapViewModel(
         val current = restaurantsFiltered
         val projected = projectAll(current, projection)
         val widths = FloatArray(current.size) { i -> widthEstimator(current[i]) }
-        val next = withContext(Dispatchers.Default) {
-            detectDenseRestaurants(
-                restaurants = current,
-                projected = projected,
-                widthsPx = widths,
-                heightPx = heightPx,
-                paddingPx = paddingPx,
-                maxOverlapPx = maxOverlapPx,
-            )
-        }
+        val next = detectDenseRestaurants(
+            restaurants = current,
+            projected = projected,
+            widthsPx = widths,
+            heightPx = heightPx,
+            paddingPx = paddingPx,
+            maxOverlapPx = maxOverlapPx,
+        )
         if (next != denseIds) {
             denseIds = next
+        }
+        val ids = current.mapTo(HashSet()) { it.id }
+        if (ids != classifiedIds) {
+            classifiedIds = ids
         }
     }
 }
