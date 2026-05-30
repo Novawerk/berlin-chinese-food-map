@@ -2,6 +2,7 @@ package com.novawerk.berlinfoodmap.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ fun MenuRow(
     modifier: Modifier = Modifier,
     supportingText: String? = null,
     trailingIcon: ImageVector? = null,
+    leading: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
     val effectiveTrailing = trailingIcon
@@ -37,6 +39,14 @@ fun MenuRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (leading != null) {
+            Box(
+                modifier = Modifier.padding(end = 12.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                leading()
+            }
+        }
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,

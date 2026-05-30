@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.app_name
+import berlinfoodmap.composeapp.generated.resources.nova_star
 import berlinfoodmap.composeapp.generated.resources.pinwo_wordmark
 import berlinfoodmap.composeapp.generated.resources.splash_brand_lockup
 import berlinfoodmap.composeapp.generated.resources.splash_powered_by
@@ -102,6 +104,12 @@ fun SplashScreen() {
                 .padding(bottom = 36.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Image(
+                painter = painterResource(Res.drawable.nova_star),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.height(6.dp))
             Text(
                 text = stringResource(Res.string.splash_powered_by),
                 style = MaterialTheme.typography.labelSmall,

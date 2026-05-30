@@ -1,5 +1,6 @@
 package com.novawerk.berlinfoodmap.ui.pages.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -15,8 +16,10 @@ import com.novawerk.berlinfoodmap.BuildKonfig
 import com.novawerk.berlinfoodmap.domain.feedback.FeedbackRepository
 import com.novawerk.berlinfoodmap.ui.components.MenuRow
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.nova_star
 import berlinfoodmap.composeapp.generated.resources.dark_mode
 import berlinfoodmap.composeapp.generated.resources.feedback_subtitle
 import berlinfoodmap.composeapp.generated.resources.feedback_title
@@ -138,6 +141,13 @@ fun SettingsScreen(
             MenuRow(
                 title = stringResource(Res.string.team_novawerk_name),
                 supportingText = stringResource(Res.string.team_novawerk_role),
+                leading = {
+                    Image(
+                        painter = painterResource(Res.drawable.nova_star),
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                    )
+                },
                 onClick = { showNovawerkSheet = true },
             )
         }
