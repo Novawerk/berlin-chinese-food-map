@@ -240,7 +240,7 @@
     <string name="team_pinwo_name">Pinwo</string>
     <string name="team_pinwo_role">用中餐，打开柏林。</string>
     <string name="team_pinwo_bio">Pinwo 是一个扎根柏林的华人美食项目，连接这座城市里的餐厅、社群与在地发现。\n\n过去两年里，我们走访、记录并梳理了柏林数百家中餐厅。正是这些经历，让我们做出了「柏林中餐地图」——帮助更多人发现这座城市中餐的丰富与多元。\n\n如今，地图的纸质版可以在柏林各处的餐厅和文化空间免费取阅。\n\n我们携手 Novawerk，把这张地图搬上数字端，让柏林中餐对每个人都更触手可及、更易于探索。\n\n除了地图，pinwo.de 还分享精选推荐、在地活动和专属合作优惠——帮助大家更直接地走进柏林不断生长的中餐场景。</string>
-    <string name="team_pinwo_visit">获取优惠，发现更多</string>
+    <string name="team_pinwo_offers">获取优惠，发现更多</string>
     <string name="team_pinwo_community">加入社群</string>
 
     <!-- Favorites screen (bottom nav heart + search-grid Favorites card) -->

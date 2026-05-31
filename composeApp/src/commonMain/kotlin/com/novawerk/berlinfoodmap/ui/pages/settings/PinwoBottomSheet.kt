@@ -19,7 +19,7 @@ import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_bio
-import berlinfoodmap.composeapp.generated.resources.team_pinwo_visit
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_offers
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_community
 
 private const val PINWO_SITE_URL = "https://pinwo.de"
@@ -54,7 +54,7 @@ fun PinwoBottomSheet(onDismiss: () -> Unit) {
                     onClick = { urlLauncher.open(PINWO_SITE_URL) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(stringResource(Res.string.team_pinwo_visit))
+                    Text(stringResource(Res.string.team_pinwo_offers))
                 }
                 Spacer(Modifier.height(10.dp))
                 OutlinedButton(

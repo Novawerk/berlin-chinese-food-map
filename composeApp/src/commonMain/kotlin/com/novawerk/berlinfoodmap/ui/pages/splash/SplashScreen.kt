@@ -26,8 +26,11 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -127,12 +130,30 @@ fun SplashScreen() {
                     tint = SplashBackground,
                     modifier = Modifier.size(14.dp),
                 )
+                // Only the "Novawerk" wordmark gets the Cabinet Grotesk brand
+                // face; the "× Pinwo" co-brand half stays in the body face so
+                // we're not recreating Pinwo's name in Novawerk's typeface.
+                val lockup = stringResource(Res.string.splash_brand_lockup)
                 Text(
-                    text = stringResource(Res.string.splash_brand_lockup),
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontFamily = novawerkWordmarkFamily(),
-                        letterSpacing = (-0.02).em,
-                    ),
+                    text = buildAnnotatedString {
+                        val mark = "Novawerk"
+                        val at = lockup.indexOf(mark)
+                        if (at < 0) {
+                            append(lockup)
+                        } else {
+                            append(lockup.substring(0, at))
+                            withStyle(
+                                SpanStyle(
+                                    fontFamily = novawerkWordmarkFamily(),
+                                    letterSpacing = (-0.02).em,
+                                ),
+                            ) {
+                                append(mark)
+                            }
+                            append(lockup.substring(at + mark.length))
+                        }
+                    },
+                    style = MaterialTheme.typography.labelLarge,
                     color = SplashBackground,
                 )
             }

@@ -240,7 +240,7 @@
     <string name="team_pinwo_name">Pinwo</string>
     <string name="team_pinwo_role">Open Berlin with Chinese food.</string>
     <string name="team_pinwo_bio">Pinwo is a Berlin-based Chinese food project connecting restaurants, communities, and local discoveries across the city.\n\nOver the past two years, we\'ve visited, documented, and navigated hundreds of Chinese restaurants across Berlin. From these experiences, we created the Berlin Chinese Food Map — helping more people discover the richness and diversity of Chinese food in the city.\n\nToday, printed versions of the map can be freely picked up in restaurants and cultural spaces across Berlin.\n\nTogether with Novawerk, we are bringing the map into a digital format, making Berlin Chinese food more accessible and easier to navigate for everyone.\n\nBeyond the map, pinwo.de shares curated recommendations, local events, and exclusive partner offers — helping people connect more directly with Berlin\'s evolving Chinese food scene.</string>
-    <string name="team_pinwo_visit">Get Offers &amp; Discover More</string>
+    <string name="team_pinwo_offers">Get Offers &amp; Discover More</string>
     <string name="team_pinwo_community">Join Community</string>
 
     <!-- Favorites screen (bottom nav heart + search-grid Favorites card) -->
