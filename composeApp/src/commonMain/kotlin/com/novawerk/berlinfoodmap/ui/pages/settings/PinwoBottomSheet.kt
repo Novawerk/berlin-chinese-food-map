@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,9 +20,11 @@ import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_role
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_bio
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_visit
+import berlinfoodmap.composeapp.generated.resources.team_pinwo_community
 
-private const val PINWO_XHS_URL =
-    "https://www.xiaohongshu.com/user/profile/6251a0cc000000001000cc43"
+private const val PINWO_SITE_URL = "https://pinwo.de"
+private const val PINWO_COMMUNITY_URL =
+    "https://chat.whatsapp.com/BShah69krZo3HUnjPkPZvg?mode=gi_t"
 
 @Composable
 fun PinwoBottomSheet(onDismiss: () -> Unit) {
@@ -47,11 +50,18 @@ fun PinwoBottomSheet(onDismiss: () -> Unit) {
                 )
 
                 Spacer(Modifier.height(20.dp))
-                FilledTonalButton(
-                    onClick = { urlLauncher.open(PINWO_XHS_URL) },
+                Button(
+                    onClick = { urlLauncher.open(PINWO_SITE_URL) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(stringResource(Res.string.team_pinwo_visit))
+                }
+                Spacer(Modifier.height(10.dp))
+                OutlinedButton(
+                    onClick = { urlLauncher.open(PINWO_COMMUNITY_URL) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(Res.string.team_pinwo_community))
                 }
             }
         }

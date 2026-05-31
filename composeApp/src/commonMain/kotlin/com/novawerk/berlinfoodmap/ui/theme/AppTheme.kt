@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.Font
 import berlinfoodmap.composeapp.generated.resources.Res
+import berlinfoodmap.composeapp.generated.resources.cabinet_grotesk_extrabold
 import berlinfoodmap.composeapp.generated.resources.noto_sans_sc_bold
 import berlinfoodmap.composeapp.generated.resources.noto_sans_sc_medium
 import berlinfoodmap.composeapp.generated.resources.noto_sans_sc_regular
@@ -57,6 +58,16 @@ private fun brandLightColorScheme(): ColorScheme = lightColorScheme(
     onSurface = PinwoInk,
     surfaceVariant = PinwoBeige,
     onSurfaceVariant = PinwoCharcoal,
+    // Warm-neutral surface-container ramp (cream → beige). Without these the
+    // M3 baseline (violet) tonal palette leaks into NavigationBar, bottom
+    // sheets, menu rows and other container chrome, which read as purple.
+    surfaceBright = PinwoCream,
+    surfaceDim = Color(0xFFE6E1D9),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFFAF6F0),
+    surfaceContainer = Color(0xFFF4EFE8),
+    surfaceContainerHigh = Color(0xFFEEE9E1),
+    surfaceContainerHighest = Color(0xFFE8E3DB),
     surfaceTint = PinwoRed,
     inverseSurface = PinwoInk,
     inverseOnSurface = PinwoCream,
@@ -84,6 +95,16 @@ private fun brandDarkColorScheme(): ColorScheme = darkColorScheme(
     onSurface = PinwoCream,
     surfaceVariant = Color(0xFF3A3232),
     onSurfaceVariant = PinwoBeige,
+    // Warm-neutral dark surface-container ramp (matches the 0xFF3A3232 warm
+    // brown-grey family) so container chrome stays on-brand instead of
+    // falling back to the M3 baseline violet darks.
+    surfaceBright = Color(0xFF494040),
+    surfaceDim = Color(0xFF1B1514),
+    surfaceContainerLowest = Color(0xFF161010),
+    surfaceContainerLow = Color(0xFF1F1919),
+    surfaceContainer = Color(0xFF231D1D),
+    surfaceContainerHigh = Color(0xFF2E2727),
+    surfaceContainerHighest = Color(0xFF393131),
     outline = PinwoCharcoal,
     error = Color(0xFFFFB4AB),
     onError = PinwoWine,
@@ -103,6 +124,18 @@ private fun pinwoFontFamily(): FontFamily = FontFamily(
     Font(Res.font.source_sans_3_bold, FontWeight.Bold),
     Font(Res.font.noto_sans_sc_bold, FontWeight.Bold),
 )
+// Cabinet Grotesk 800 (Extrabold) — the Novawerk wordmark face, per the
+// Novawerk visual-identity guide (brand/visual-identity.md). Reserved for the
+// "Novawerk" wordmark wherever it appears as a name (splash credit, settings
+// team row, Novawerk sheet title). The rest of the app stays on the Pinwo
+// type pair — this is *its own* product brand. The VI guide explicitly forbids
+// re-lettering the wordmark in another typeface, so do not widen this beyond
+// the Novawerk name.
+@Composable
+fun novawerkWordmarkFamily(): FontFamily = FontFamily(
+    Font(Res.font.cabinet_grotesk_extrabold, FontWeight.ExtraBold),
+)
+
 @Composable
 private fun pinwoTypography(): Typography {
     val family = pinwoFontFamily()

@@ -2,6 +2,7 @@ package com.novawerk.berlinfoodmap.ui.pages.map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -425,47 +426,51 @@ private fun ActiveFilterChip(
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Brand-pink container (primaryContainer / onPrimaryContainer) makes the
-    // chip read as active state and stand out from the map's neutral chrome,
-    // while staying off the reserved brand-red `primary` that the marker pins
-    // use. Leading filter glyph + a dedicated circular close affordance make
-    // "tap to clear" obvious.
+    // White (`surface`) container keeps the chip off the reserved brand-red
+    // `primary` fill that the marker pins use, and reads cleanly over the
+    // map's light tiles — surfaceContainerHigh tinted mauve/purple in the
+    // expressive light scheme, which looked off. The "active" state is
+    // signalled by decoration instead of a coloured fill: a brand-coloured
+    // outline ring plus a brand-tinted leading filter glyph. A dedicated
+    // circular close affordance makes "tap to clear" obvious.
     Surface(
         onClick = onClear,
         modifier = modifier,
         shape = RoundedCornerShape(percent = 50),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        color = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         shadowElevation = 6.dp,
+        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 7.dp, bottom = 7.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(start = 18.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
         ) {
             Icon(
                 imageVector = Icons.Filled.FilterList,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp),
             )
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
             )
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(28.dp)
                     .clip(CircleShape)
                     .background(
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.14f),
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f),
                     ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
                     contentDescription = stringResource(Res.string.filter_clear),
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(18.dp),
                 )
             }
         }
