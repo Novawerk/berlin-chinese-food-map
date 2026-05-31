@@ -124,7 +124,12 @@ To launch on a connected device after install:
   `stringResource(Res.string.*)`. **No hardcoded UI text.**
 - **Theming:** Use `MaterialTheme.colorScheme.*` everywhere — never
   hardcode colours in UI files. Pinwo palette is defined in
-  `ui/theme/AppTheme.kt`. Brand-red `primary` is reserved for map
+  `ui/theme/AppTheme.kt`, which also pins explicit warm-neutral
+  `surfaceBright/Dim/surfaceContainer*` ramps on both schemes — M3
+  leaves those tonal tokens unspecified, so the bottom nav, sheets,
+  and chips were falling back to the baseline violet tint. Keep the
+  ramps cream/ink-warm; don't let surfaces drift lavender. Brand-red
+  `primary` is reserved for map
   content — POI marker pins, cluster badges, brand emphasis on cards.
   Map FABs (locate, filter) use neutral `surfaceContainerHigh` +
   `onSurface` for quiet chrome that won't compete with markers; an

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -25,6 +26,7 @@ fun MenuRow(
     supportingText: String? = null,
     trailingIcon: ImageVector? = null,
     leading: (@Composable () -> Unit)? = null,
+    titleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     onClick: (() -> Unit)? = null,
 ) {
     val effectiveTrailing = trailingIcon
@@ -50,7 +52,7 @@ fun MenuRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = titleStyle,
             )
             if (supportingText != null) {
                 Text(

@@ -12,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import com.novawerk.berlinfoodmap.ui.theme.novawerkWordmarkFamily
 import com.novawerk.berlinfoodmap.BuildKonfig
 import com.novawerk.berlinfoodmap.domain.feedback.FeedbackRepository
 import com.novawerk.berlinfoodmap.ui.components.MenuRow
@@ -141,11 +143,16 @@ fun SettingsScreen(
             MenuRow(
                 title = stringResource(Res.string.team_novawerk_name),
                 supportingText = stringResource(Res.string.team_novawerk_role),
+                titleStyle = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = novawerkWordmarkFamily(),
+                    letterSpacing = (-0.02).em,
+                ),
                 leading = {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.nova_star),
                         contentDescription = null,
-                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(22.dp),
                     )
                 },
                 onClick = { showNovawerkSheet = true },
