@@ -89,6 +89,11 @@
     <string name="action_directions">在地图查看</string>
     <string name="action_website">官网</string>
 
+    <!-- Detail: Pinwo discount perks card (shown when hasDiscount) -->
+    <string name="discount_card_title">Pinwo 会员优惠</string>
+    <string name="discount_card_body">本店为 Pinwo 合作商家，会员可享专属优惠与免费菜品。</string>
+    <string name="discount_visit_pinwo">前往 pinwo.de 查看优惠</string>
+
     <!-- Detail: photos -->
     <string name="photo_count">%1$d / %2$d</string>
     <string name="photos_label">图片</string>
@@ -249,8 +254,8 @@
     <string name="nav_favorites">收藏</string>
 
     <!-- Walking radius (5min/15min isochrone rings, toggled by tapping the locate FAB) -->
-    <string name="map_radius_5min">5 分钟</string>
-    <string name="map_radius_15min">15 分钟</string>
+    <string name="map_radius_5min">步行 5 分钟</string>
+    <string name="map_radius_15min">步行 15 分钟</string>
 
     <!-- Search bar (grid view bottom) -->
     <string name="search_hint_long">今天想吃点儿什么？</string>

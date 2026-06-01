@@ -85,6 +85,13 @@ function toYaml(r: Restaurant & { id: string }): string {
     lines.push("hasDiscount: true");
   }
 
+  if (r.discountInfo && (r.discountInfo.zh || r.discountInfo.en)) {
+    lines.push("");
+    lines.push("discountInfo:");
+    if (r.discountInfo.zh) lines.push(`  zh: "${esc(r.discountInfo.zh)}"`);
+    if (r.discountInfo.en) lines.push(`  en: "${esc(r.discountInfo.en)}"`);
+  }
+
   if (r.editorialNote && (r.editorialNote.zh || r.editorialNote.en)) {
     lines.push("");
     lines.push("editorialNote:");

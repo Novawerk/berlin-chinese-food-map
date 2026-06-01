@@ -58,9 +58,16 @@ hidden: false                  # true = soft-deleted, hidden from public
 featured: false
 
 # Pinwo partner discount/coupon flag. Drives the discount-marker variant on
-# the map and (eventually) a perks surface in the detail sheet. Independent
-# from `featured`; a restaurant can be one, both, or neither.
+# the map and the perks card in the detail sheet. Independent from `featured`;
+# a restaurant can be one, both, or neither.
 hasDiscount: false
+
+# Optional offer text for the detail-sheet perks card (only shown when
+# hasDiscount is true). Keep it short — one line describing the partner offer.
+# Without it the card shows generic copy plus the pinwo.de link.
+discountInfo:
+  zh: "会员到店赠送一道招牌小菜"
+  en: ""                        # optional, leave empty until translated
 
 editorialNote:
   zh: "广式点心｜凌晨营业｜宵夜江湖"

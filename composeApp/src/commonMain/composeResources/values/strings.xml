@@ -89,6 +89,11 @@
     <string name="action_directions">View on Map</string>
     <string name="action_website">Website</string>
 
+    <!-- Detail: Pinwo discount perks card (shown when hasDiscount) -->
+    <string name="discount_card_title">Pinwo member perks</string>
+    <string name="discount_card_body">A Pinwo partner restaurant — members enjoy exclusive discounts and free dishes here.</string>
+    <string name="discount_visit_pinwo">See the offer on pinwo.de</string>
+
     <!-- Detail: photos -->
     <string name="photo_count">%1$d / %2$d</string>
     <string name="photos_label">Photos</string>
@@ -249,8 +254,8 @@
     <string name="nav_favorites">Favorites</string>
 
     <!-- Walking radius (5min/15min isochrone rings, toggled by tapping the locate FAB) -->
-    <string name="map_radius_5min">5 min</string>
-    <string name="map_radius_15min">15 min</string>
+    <string name="map_radius_5min">5 min walk</string>
+    <string name="map_radius_15min">15 min walk</string>
 
     <!-- Search bar (grid view bottom) -->
     <string name="search_hint_long">What do you want to eat today?</string>

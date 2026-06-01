@@ -1,5 +1,6 @@
 package com.novawerk.berlinfoodmap.ui.pages.detail
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -44,6 +45,10 @@ import berlinfoodmap.composeapp.generated.resources.action_unfavorite
 import berlinfoodmap.composeapp.generated.resources.action_website
 import berlinfoodmap.composeapp.generated.resources.closed_now
 import berlinfoodmap.composeapp.generated.resources.closed_today
+import berlinfoodmap.composeapp.generated.resources.discount_card_body
+import berlinfoodmap.composeapp.generated.resources.discount_card_title
+import berlinfoodmap.composeapp.generated.resources.discount_visit_pinwo
+import berlinfoodmap.composeapp.generated.resources.marker_discount
 import berlinfoodmap.composeapp.generated.resources.closes_at
 import berlinfoodmap.composeapp.generated.resources.closes_in_min
 import berlinfoodmap.composeapp.generated.resources.hours_hide
@@ -80,11 +85,15 @@ import com.novawerk.berlinfoodmap.domain.restaurant.currentBerlinMinuteOfWeek
 import com.novawerk.berlinfoodmap.domain.restaurant.mowToDayIndex
 import com.novawerk.berlinfoodmap.domain.restaurant.mowToTimeOfDay
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 
 private val SECTION_SHAPE = RoundedCornerShape(28.dp)
+
+/** Pinwo offers landing page, opened from the discount perks card. */
+private const val PINWO_OFFER_URL = "https://pinwo.de"
 
 /**
  * Sheet-friendly detail content. Hosted inside a [ModalBottomSheet] at the
@@ -164,6 +173,14 @@ fun DetailScreen(
                 TitleBlock(restaurant = r)
 
                 ChipsRow(restaurant = r)
+
+                if (r.hasDiscount) {
+                    DiscountCard(
+                        offer = r.discountInfo?.preferred(LocalAppLocale.current)
+                            ?.takeIf { it.isNotBlank() },
+                        onVisitPinwo = { urlLauncher.open(PINWO_OFFER_URL) },
+                    )
+                }
 
                 HoursCard(
                     periods = r.googleData?.periods.orEmpty(),
@@ -1018,6 +1035,62 @@ private fun DescriptionCard(text: String) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(20.dp),
         )
+    }
+}
+
+/**
+ * Pinwo partner perks card, shown when [Restaurant.hasDiscount]. Leads with the
+ * discount marker symbol so it reads as the same identity users see on the map,
+ * states the offer ([offer], falling back to generic copy), and links out to
+ * pinwo.de for the full details.
+ */
+@Composable
+private fun DiscountCard(offer: String?, onVisitPinwo: () -> Unit) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        shape = SECTION_SHAPE,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.marker_discount),
+                    contentDescription = null,
+                    modifier = Modifier.size(26.dp),
+                )
+                Text(
+                    text = stringResource(Res.string.discount_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            Text(
+                text = offer ?: stringResource(Res.string.discount_card_body),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(
+                onClick = onVisitPinwo,
+                contentPadding = PaddingValues(vertical = 4.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Language,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = stringResource(Res.string.discount_visit_pinwo),
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+        }
     }
 }
 
