@@ -19,6 +19,10 @@ data class Restaurant(
     val hidden: Boolean = false,
     val featured: Boolean = false,
     val hasDiscount: Boolean = false,
+    // Pinwo partner offer text, shown in the detail sheet's perks card when
+    // [hasDiscount] is true (e.g. "会员到店赠送一道小菜"). Optional — without it
+    // the card falls back to generic copy plus the pinwo.de link.
+    val discountInfo: Localizable? = null,
     val editorialNote: Localizable? = null,
     val chain: Chain? = null,
     val googleData: GooglePlaceData? = null,

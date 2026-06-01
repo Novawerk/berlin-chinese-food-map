@@ -71,6 +71,20 @@ in the admin panel). The map renders these with a special outlined-circle
 marker variant, and the search/filter surface can highlight them. The field
 defaults to `false` and is independent from `featured`.
 
+To describe the actual offer, add an optional `discountInfo` block (bilingual,
+same shape as `editorialNote`):
+
+```yaml
+hasDiscount: true
+discountInfo:
+  zh: "会员到店赠送一道招牌小菜"
+  en: ""        # optional
+```
+
+When `hasDiscount` is on, the detail sheet shows a perks card with this text
+(falling back to generic copy if `discountInfo` is empty) plus a button that
+opens **pinwo.de** so users can see the full offer.
+
 ### Add a new tag
 
 1. Add it to `data/_tags.yaml` under the right family.

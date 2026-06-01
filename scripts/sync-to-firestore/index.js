@@ -535,10 +535,13 @@ async function syncToFirestore(restaurants) {
     if (existingData && "cuisineType" in existingData) {
       doc.cuisineType = FieldValue.delete();
     }
-    // Same idea for editorialNote / chain — when YAML drops them we need
-    // to remove them from Firestore (merge:true alone won't).
+    // Same idea for editorialNote / discountInfo / chain — when YAML drops
+    // them we need to remove them from Firestore (merge:true alone won't).
     if (existingData?.editorialNote && !data.editorialNote) {
       doc.editorialNote = FieldValue.delete();
+    }
+    if (existingData?.discountInfo && !data.discountInfo) {
+      doc.discountInfo = FieldValue.delete();
     }
     if (existingData?.chain && !data.chain) {
       doc.chain = FieldValue.delete();

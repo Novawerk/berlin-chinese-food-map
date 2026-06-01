@@ -120,6 +120,7 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
     val descMap = try { get<Map<String, String>?>("description") } catch (_: Exception) { null }
 
     val editorialMap = try { get<Map<String, String>?>("editorialNote") } catch (_: Exception) { null }
+    val discountMap = try { get<Map<String, String>?>("discountInfo") } catch (_: Exception) { null }
     val chainMap = try { get<Map<String, String?>?>("chain") } catch (_: Exception) { null }
 
     return Restaurant(
@@ -163,6 +164,13 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
         hidden = try { get<Boolean>("hidden") } catch (_: Exception) { false },
         featured = try { get<Boolean>("featured") } catch (_: Exception) { false },
         hasDiscount = try { get<Boolean>("hasDiscount") } catch (_: Exception) { false },
+        discountInfo = discountMap?.takeIf { it["zh"]?.isNotBlank() == true || it["en"]?.isNotBlank() == true }?.let {
+            Localizable(
+                en = it["en"] ?: "",
+                zh = it["zh"] ?: "",
+                de = it["de"],
+            )
+        },
         editorialNote = editorialMap?.takeIf { it["zh"]?.isNotBlank() == true || it["en"]?.isNotBlank() == true }?.let {
             Localizable(
                 en = it["en"] ?: "",

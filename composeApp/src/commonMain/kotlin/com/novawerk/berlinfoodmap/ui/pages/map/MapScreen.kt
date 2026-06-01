@@ -29,6 +29,8 @@ import berlinfoodmap.composeapp.generated.resources.favorites_title
 import berlinfoodmap.composeapp.generated.resources.filter_clear
 import berlinfoodmap.composeapp.generated.resources.filter_open_now
 import berlinfoodmap.composeapp.generated.resources.filters_active_multi
+import berlinfoodmap.composeapp.generated.resources.map_radius_15min
+import berlinfoodmap.composeapp.generated.resources.map_radius_5min
 import berlinfoodmap.composeapp.generated.resources.marker_location
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import eu.buney.maps.*
@@ -37,6 +39,12 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+
+// Below this zoom the walking-radius rings shrink to indistinct dots, so we
+// hide them (and their time labels) entirely. The locate FAB animates to
+// zoom 15, well above this, so the rings are always visible right after a
+// locate; they fade out only once the user deliberately zooms way out.
+private const val RING_VISIBLE_MIN_ZOOM = 12f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,10 +77,29 @@ fun MapScreen(
         }
     } else null
 
+    // Walking-radius ring labels ("步行 5 分钟" / "步行 15 分钟"). Rendered to
+    // marker bitmaps via the same compose-to-bitmap pipeline as the pills, so
+    // they sit on the dashed rings and the solid pill masks the dashes behind
+    // them. Keyed by text so a locale switch re-rasterises.
+    val ringLabel5 = stringResource(Res.string.map_radius_5min)
+    val ringLabel15 = stringResource(Res.string.map_radius_15min)
+    val ringLabel5Icon: eu.buney.maps.BitmapDescriptor? = if (mapLoaded) {
+        rememberStableComposeBitmapDescriptor("__ring_5__", ringLabel5) { RingLabel(ringLabel5) }
+    } else null
+    val ringLabel15Icon: eu.buney.maps.BitmapDescriptor? = if (mapLoaded) {
+        rememberStableComposeBitmapDescriptor("__ring_15__", ringLabel15) { RingLabel(ringLabel15) }
+    } else null
+
     val mapConfig = rememberBerlinMapConfig()
 
     val cameraPositionState = rememberCameraPositionState {
         position = DEFAULT_BERLIN_CAMERA
+    }
+
+    // Flips only when crossing the zoom threshold, so panning/zooming inside
+    // the same band doesn't churn the ring recomposition.
+    val ringsVisibleAtZoom by remember {
+        derivedStateOf { cameraPositionState.position.zoom >= RING_VISIBLE_MIN_ZOOM }
     }
 
     // Cover bitmaps are owned by the VM (loaded via `imageLoader.execute`,
@@ -288,7 +315,8 @@ fun MapScreen(
                 // MKCircleRenderer which has no strokePattern equivalent) and
                 // falls back to a solid stroke — see the upstream Circle.kt
                 // docstring. Acceptable for v1; revisit if needed.
-                if (controlVm.walkingRadiusVisible) {
+                // Hidden below RING_VISIBLE_MIN_ZOOM — too small to read.
+                if (controlVm.walkingRadiusVisible && ringsVisibleAtZoom) {
                     val ringColor = androidx.compose.ui.graphics.Color(0xFF780A09)
                     val ringPattern = listOf(
                         eu.buney.maps.PatternItem.Dash(20f),
@@ -312,6 +340,31 @@ fun MapScreen(
                         strokePattern = ringPattern,
                         zIndex = 5f,
                     )
+
+                    // Distance labels pinned to the top (due-north) point of
+                    // each ring so users read walking time at a glance. 1° of
+                    // latitude ≈ 111_320 m, so a radius of R metres is R/111320
+                    // degrees north of the centre. Centred anchor sits the pill
+                    // on the ring line; zIndex 6 keeps it above the strokes but
+                    // below the location dot (10).
+                    ringLabel5Icon?.let { icon ->
+                        val pos = LatLng(loc.latitude + 350.0 / 111_320.0, loc.longitude)
+                        Marker(
+                            state = rememberMarkerState(key = "__ring_5__", position = pos),
+                            icon = icon,
+                            anchor = Offset(0.5f, 0.5f),
+                            zIndex = 6f,
+                        )
+                    }
+                    ringLabel15Icon?.let { icon ->
+                        val pos = LatLng(loc.latitude + 1000.0 / 111_320.0, loc.longitude)
+                        Marker(
+                            state = rememberMarkerState(key = "__ring_15__", position = pos),
+                            icon = icon,
+                            anchor = Offset(0.5f, 0.5f),
+                            zIndex = 6f,
+                        )
+                    }
                 }
             }
         }
@@ -474,5 +527,29 @@ private fun ActiveFilterChip(
                 )
             }
         }
+    }
+}
+
+/**
+ * Small solid-red pill rendered to a marker bitmap and pinned on a
+ * walking-radius ring. Brand red matches the ring stroke (#780A09); the
+ * opaque fill masks the dashes passing behind it so the label reads cleanly
+ * over any map tile.
+ */
+@Composable
+private fun RingLabel(text: String) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .background(androidx.compose.ui.graphics.Color(0xFF780A09))
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            color = androidx.compose.ui.graphics.Color.White,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
