@@ -40,6 +40,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
+// Below this zoom the walking-radius rings shrink to indistinct dots, so we
+// hide them (and their time labels) entirely. The locate FAB animates to
+// zoom 15, well above this, so the rings are always visible right after a
+// locate; they fade out only once the user deliberately zooms way out.
+private const val RING_VISIBLE_MIN_ZOOM = 12f
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
@@ -88,6 +94,12 @@ fun MapScreen(
 
     val cameraPositionState = rememberCameraPositionState {
         position = DEFAULT_BERLIN_CAMERA
+    }
+
+    // Flips only when crossing the zoom threshold, so panning/zooming inside
+    // the same band doesn't churn the ring recomposition.
+    val ringsVisibleAtZoom by remember {
+        derivedStateOf { cameraPositionState.position.zoom >= RING_VISIBLE_MIN_ZOOM }
     }
 
     // Cover bitmaps are owned by the VM (loaded via `imageLoader.execute`,
@@ -303,7 +315,8 @@ fun MapScreen(
                 // MKCircleRenderer which has no strokePattern equivalent) and
                 // falls back to a solid stroke — see the upstream Circle.kt
                 // docstring. Acceptable for v1; revisit if needed.
-                if (controlVm.walkingRadiusVisible) {
+                // Hidden below RING_VISIBLE_MIN_ZOOM — too small to read.
+                if (controlVm.walkingRadiusVisible && ringsVisibleAtZoom) {
                     val ringColor = androidx.compose.ui.graphics.Color(0xFF780A09)
                     val ringPattern = listOf(
                         eu.buney.maps.PatternItem.Dash(20f),
