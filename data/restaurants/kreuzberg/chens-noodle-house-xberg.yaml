@@ -22,3 +22,8 @@ chain:
   brand: Chen’s Noodle House
   branch: Xberg
 placeId: ChIJCyZZvOtPqEcRgMeSHBVXk9Y
+
+hasDiscount: true
+discountInfo:
+  zh: "免费饮料/凉菜"
+  en: "Free Drink/Cold Dish"
