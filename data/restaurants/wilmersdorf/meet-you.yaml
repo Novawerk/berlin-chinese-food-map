@@ -19,3 +19,8 @@ editorialNote:
   zh: 中式早餐｜周末点心｜海鲜粤菜
   en: ""
 placeId: ChIJvaQ5_PlQqEcRFcVmJ9C-3PE
+
+hasDiscount: true
+discountInfo:
+  zh: "立减10欧"
+  en: "€10 coupon"

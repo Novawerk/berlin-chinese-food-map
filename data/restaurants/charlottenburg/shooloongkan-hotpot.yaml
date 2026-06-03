@@ -10,3 +10,8 @@ address:
 latitude: 52.5015419
 longitude: 13.3292051
 placeId: ChIJk2Yq2atRqEcRTdJ-5C8dw70
+
+hasDiscount: true
+discountInfo:
+  zh: "全场8折"
+  en: "All 20% off"

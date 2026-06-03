@@ -13,3 +13,8 @@ chain:
   brand: Xi Mian Hand-Pulled Noodles
   branch: Mitte
 placeId: ChIJRXaOXF9RqEcRLgDDy_GPsaE
+
+hasDiscount: true
+discountInfo:
+  zh: "免费饮料/前菜"
+  en: "Free drink/starter"

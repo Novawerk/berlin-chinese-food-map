@@ -21,3 +21,8 @@ chain:
   brand: Shaniu‘s House of Noodles
   branch: Tiergarten
 placeId: ChIJf2yQenpRqEcRx3Fz34jYMXc
+
+hasDiscount: true
+discountInfo:
+  zh: "甜点+小菜双福利"
+  en: "Dessert + Side dish"
