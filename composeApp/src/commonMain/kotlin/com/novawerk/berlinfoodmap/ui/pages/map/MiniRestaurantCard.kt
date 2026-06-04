@@ -51,7 +51,6 @@ import coil3.compose.asPainter
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
-import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 
 /**
  * Pill-shaped marker label.
@@ -67,13 +66,21 @@ import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
  * the pill's top-left corner (heart for favorite, star for featured).
  * Favorite wins when both are true — the user's saved state is more
  * informative than editorial curation. Subtitle line below the name
- * shows the restaurant's [cardTags] joined with `·`.
+ * shows [tagLabels] joined with `·`.
+ *
+ * [tagLabels] are passed in already localised rather than resolved here
+ * via `tagDisplayName`/`stringResource`: this composable is rasterised in
+ * a detached off-screen ComposeView (see `StableMarkerIcon`) that doesn't
+ * inherit the app's locale override, so resolving strings inside it pinned
+ * the tag line to the wrong language. The caller resolves them in the live
+ * map composition. See `RestaurantMarker`.
  */
 @Composable
 internal fun MiniRestaurantCard(
     restaurant: Restaurant,
     coverImage: Image?,
     isFavorite: Boolean = false,
+    tagLabels: List<String> = emptyList(),
 ) {
     val isClosed = rememberIsCurrentlyClosed(restaurant.googleData?.periods.orEmpty())
     val nameColor = if (isClosed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
@@ -164,11 +171,9 @@ internal fun MiniRestaurantCard(
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    val displayTags = restaurant.cardTags()
-                    if (displayTags.isNotEmpty()) {
-                        val labels = displayTags.map { tagDisplayName(it) }
+                    if (tagLabels.isNotEmpty()) {
                         Text(
-                            text = labels.joinToString(" · "),
+                            text = tagLabels.joinToString(" · "),
                             style = MaterialTheme.typography.labelSmall,
                             color = secondaryColor,
                             maxLines = 1,

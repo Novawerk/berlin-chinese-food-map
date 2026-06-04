@@ -5,6 +5,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.geometry.Offset
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
+import com.novawerk.berlinfoodmap.ui.components.cardTags
+import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import eu.buney.maps.BitmapDescriptor
 import eu.buney.maps.LatLng
 import eu.buney.maps.Marker
@@ -37,6 +39,15 @@ internal fun RestaurantMarker(
 
     val coverReady = cover is MarkerCover.Loaded
     val hasDiscount = restaurant.hasDiscount
+    // Resolve the tag labels HERE, in the live map composition where the
+    // app's locale override is in effect. `MiniRestaurantCard` is rasterised
+    // into a detached off-screen ComposeView (see `StableMarkerIcon`) whose
+    // own platform locale shadows the override, so a `stringResource` /
+    // `tagDisplayName` call inside it renders the wrong language — the pill's
+    // tag line stayed Chinese in English mode. Passing the already-localised
+    // strings down (and keying the bitmap on them) keeps the pill in the
+    // selected language, same approach as the walking-radius ring labels.
+    val tagLabels = restaurant.cardTags().map { tagDisplayName(it) }
     val state = rememberUpdatedMarkerState(
         position = LatLng(restaurant.latitude, restaurant.longitude),
     )
@@ -46,22 +57,24 @@ internal fun RestaurantMarker(
         cached != null &&
         cached.coverReady == coverReady &&
         cached.isFavorite == isFavorite &&
-        cached.hasDiscount == hasDiscount
+        cached.hasDiscount == hasDiscount &&
+        cached.tagLabels == tagLabels
     ) {
         cached.descriptor
     } else {
         val rendered = rememberStableComposeBitmapDescriptor(
-            restaurant.id, coverReady, isFavorite, hasDiscount,
+            restaurant.id, coverReady, isFavorite, hasDiscount, tagLabels,
         ) {
             MiniRestaurantCard(
                 restaurant = restaurant,
                 coverImage = (cover as? MarkerCover.Loaded)?.image,
                 isFavorite = isFavorite,
+                tagLabels = tagLabels,
             )
         }
         SideEffect {
             descriptorCache[restaurant.id] =
-                CachedMarkerDescriptor(coverReady, isFavorite, hasDiscount, rendered)
+                CachedMarkerDescriptor(coverReady, isFavorite, hasDiscount, tagLabels, rendered)
         }
         rendered
     }
