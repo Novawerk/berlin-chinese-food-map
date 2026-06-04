@@ -42,6 +42,11 @@
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-cream: var(--cream);
+  --color-wine: var(--wine);
+  --color-wine-foreground: var(--wine-foreground);
+  --color-olive: var(--olive);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,78 +57,90 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Pinwo Brandbook V2 — warm cream surfaces, brand-red + wine accents */
+  --background: #fffcf8; /* PinwoCream */
+  --foreground: #2b2828; /* PinwoInk */
+  --card: #ffffff;
+  --card-foreground: #2b2828;
+  --popover: #ffffff;
+  --popover-foreground: #2b2828;
+  --primary: #b51f1f; /* PinwoRed — brand-forward CTAs */
+  --primary-foreground: #fffcf8;
+  --secondary: #f4efe8; /* warm surfaceContainer */
+  --secondary-foreground: #2b2828;
+  --muted: #f1ece4;
+  --muted-foreground: #514646; /* PinwoCharcoal */
+  --accent: #f1ece4;
+  --accent-foreground: #2b2828;
+  --destructive: #b51f1f;
+  --border: #e7e1d7;
+  --input: #e7e1d7;
+  --ring: #b51f1f;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --brand: oklch(0.62 0.222 28);
-  --brand-foreground: oklch(0.985 0 0);
-  --cream: oklch(0.985 0.012 80);
+  --sidebar: #fffcf8;
+  --sidebar-foreground: #2b2828;
+  --sidebar-primary: #b51f1f;
+  --sidebar-primary-foreground: #fffcf8;
+  --sidebar-accent: #f1ece4;
+  --sidebar-accent-foreground: #2b2828;
+  --sidebar-border: #e7e1d7;
+  --sidebar-ring: #b51f1f;
+  --brand: #b51f1f; /* PinwoRed */
+  --brand-foreground: #fffcf8;
+  --cream: #fffcf8;
+  --wine: #780a09; /* PinwoWine — deep red */
+  --wine-foreground: #fffcf8;
+  --olive: #66753c; /* PinwoOliveDark */
+  --gold: #f7dd6d; /* PinwoGold */
+  --gold-foreground: #2b2828;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  /* Warm ink surfaces — mirrors the app's PinwoInk dark scheme */
+  --background: #201a1a;
+  --foreground: #fffcf8;
+  --card: #2a2322;
+  --card-foreground: #fffcf8;
+  --popover: #2a2322;
+  --popover-foreground: #fffcf8;
+  --primary: #e5564b; /* brightened red for dark CTAs */
+  --primary-foreground: #2b1010;
+  --secondary: #2e2625;
+  --secondary-foreground: #fffcf8;
+  --muted: #2e2625;
+  --muted-foreground: #c0b4b0;
+  --accent: #2e2625;
+  --accent-foreground: #fffcf8;
+  --destructive: #ef7e70;
+  --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: #e5564b;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-  --brand: oklch(0.7 0.2 28);
-  --brand-foreground: oklch(0.985 0 0);
-  --cream: oklch(0.22 0.012 80);
+  --sidebar: #2a2322;
+  --sidebar-foreground: #fffcf8;
+  --sidebar-primary: #e5564b;
+  --sidebar-primary-foreground: #2b1010;
+  --sidebar-accent: #2e2625;
+  --sidebar-accent-foreground: #fffcf8;
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: #e5564b;
+  --brand: #f08a7e; /* lighter red for headings/highlights on dark */
+  --brand-foreground: #2b1010;
+  --cream: #2a2322;
+  --wine: #f0a59a; /* wine reads as warm rose on dark */
+  --wine-foreground: #2b1010;
+  --olive: #aeb86a;
+  --gold: #f7dd6d;
+  --gold-foreground: #2b2828;
 }
 
 @layer base {

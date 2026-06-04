@@ -26,7 +26,7 @@ export function Navbar() {
             width={40}
             height={40}
             priority
-            className="h-9 w-9 rounded-lg sm:h-10 sm:w-10"
+            className="h-9 w-9 rounded-[22%] sm:h-10 sm:w-10"
           />
           <span className="text-lg font-bold whitespace-nowrap sm:text-xl">
             <span className="hidden sm:inline">
