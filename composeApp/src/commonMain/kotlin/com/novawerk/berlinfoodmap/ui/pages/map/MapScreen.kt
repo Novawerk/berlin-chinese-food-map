@@ -32,7 +32,9 @@ import berlinfoodmap.composeapp.generated.resources.filters_active_multi
 import berlinfoodmap.composeapp.generated.resources.map_radius_15min
 import berlinfoodmap.composeapp.generated.resources.map_radius_5min
 import berlinfoodmap.composeapp.generated.resources.marker_location
+import com.novawerk.berlinfoodmap.domain.common.preferred
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
+import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import eu.buney.maps.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -157,10 +159,17 @@ fun MapScreen(
     // Worst-case centre-to-centre overlap distance: two MARKER_MAX_WIDTH
     // pills + padding. Used as the spatial-grid cell size.
     val maxOverlapPx = markerMaxWidthPx + markerPaddingPx
+    // Locale-resolved so the overlap estimate matches the name actually drawn
+    // on each pill (English in English mode). key(language) above re-creates
+    // this whole screen on a language switch, but capturing the locale in the
+    // remember key keeps the estimator correct regardless.
+    val locale = LocalAppLocale.current
     val widthEstimator: (com.novawerk.berlinfoodmap.domain.restaurant.Restaurant) -> Float =
-        remember(density) {
+        remember(density, locale) {
             { restaurant ->
-                with(density) { estimatedMarkerWidth(restaurant).toPx() }
+                with(density) {
+                    estimatedMarkerWidth(restaurant, restaurant.name.preferred(locale)).toPx()
+                }
             }
         }
 

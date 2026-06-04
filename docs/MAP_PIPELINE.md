@@ -353,9 +353,19 @@ handles the camera pan in its own coroutine scope.
 
 - **Touching `RestaurantMarker.kt` / `MiniRestaurantCard.kt`**:
   remember the bitmap is rasterised inside an off-screen `ComposeView`
-  (Android). Don't read composition locals that don't survive that
-  context, and avoid expensive layouts — every change rasterises a
-  fresh bitmap per restaurant.
+  (Android) / detached `renderComposeScene` (iOS). Don't read
+  composition locals that don't survive that context, and avoid
+  expensive layouts — every change rasterises a fresh bitmap per
+  restaurant. **In particular, the app locale does NOT reach inside the
+  bitmap** — the off-screen view re-establishes its own platform
+  `LocalConfiguration`, so `stringResource` / `tagDisplayName` /
+  `Localizable.preferred(...)` called inside the content render the
+  wrong language (the pill name + tags stayed Chinese in English mode).
+  Resolve locale-dependent strings in the live map composition
+  (`RestaurantMarker`) and pass them into `MiniRestaurantCard` as plain
+  strings, and add them to the descriptor cache key + the
+  `rememberStableComposeBitmapDescriptor` keys so a language switch
+  re-rasterises. Same trick the walking-radius ring labels use.
 - **Adding a new VM property**: decide if it belongs in
   `MapViewModel` (restaurant data) or `MapControlViewModel` (map
   control). If you find yourself touching both VMs from one feature,

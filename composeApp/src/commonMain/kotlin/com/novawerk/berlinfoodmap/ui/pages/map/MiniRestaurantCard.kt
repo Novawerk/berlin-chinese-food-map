@@ -51,7 +51,6 @@ import coil3.compose.asPainter
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
-import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 
 /**
  * Pill-shaped marker label.
@@ -67,13 +66,23 @@ import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
  * the pill's top-left corner (heart for favorite, star for featured).
  * Favorite wins when both are true — the user's saved state is more
  * informative than editorial curation. Subtitle line below the name
- * shows the restaurant's [cardTags] joined with `·`.
+ * shows [tagLabels] joined with `·`.
+ *
+ * [name] and [tagLabels] are passed in already localised rather than
+ * resolved here via `preferred`/`tagDisplayName`/`stringResource`: this
+ * composable is rasterised in a detached off-screen ComposeView (see
+ * `StableMarkerIcon`) that doesn't inherit the app's locale override, so
+ * resolving locale-dependent strings inside it pinned the text to the wrong
+ * language. The caller resolves them in the live map composition. See
+ * `RestaurantMarker`.
  */
 @Composable
 internal fun MiniRestaurantCard(
     restaurant: Restaurant,
     coverImage: Image?,
+    name: String,
     isFavorite: Boolean = false,
+    tagLabels: List<String> = emptyList(),
 ) {
     val isClosed = rememberIsCurrentlyClosed(restaurant.googleData?.periods.orEmpty())
     val nameColor = if (isClosed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
@@ -157,18 +166,16 @@ internal fun MiniRestaurantCard(
                 // is calibrated against this max. Names that exceed it ellipsize.
                 Column(modifier = Modifier.widthIn(max = MARKER_TEXT_COLUMN_MAX_WIDTH)) {
                     Text(
-                        text = restaurant.name.zh,
+                        text = name,
                         style = MaterialTheme.typography.labelMedium,
                         color = nameColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    val displayTags = restaurant.cardTags()
-                    if (displayTags.isNotEmpty()) {
-                        val labels = displayTags.map { tagDisplayName(it) }
+                    if (tagLabels.isNotEmpty()) {
                         Text(
-                            text = labels.joinToString(" · "),
+                            text = tagLabels.joinToString(" · "),
                             style = MaterialTheme.typography.labelSmall,
                             color = secondaryColor,
                             maxLines = 1,
@@ -253,19 +260,21 @@ private val MarkerBadgeOuter = Color(0xFFCE4847)
  * [MARKER_MAX_WIDTH], then doubled by the badge overhang on both sides
  * (always added — most pills don't have a badge but the overhead is small
  * compared to the safety padding the AABB predicate applies anyway).
- * Per-character widths approximate the rendered `labelMedium` (zh name)
- * and `labelSmall` (tag joiner) at typical typography sizes — fine-grained
+ * Per-character widths approximate the rendered `labelMedium` (name) and
+ * `labelSmall` (tag joiner) at typical typography sizes — fine-grained
  * accuracy isn't needed because the clustering predicate already adds a
- * safety padding.
+ * safety padding. [displayName] is the locale-resolved name actually drawn
+ * on the pill (English in English mode, Chinese in Chinese mode) so the
+ * overlap estimate tracks the shown text rather than always the zh name.
  */
 internal fun estimatedMarkerWidth(
     restaurant: com.novawerk.berlinfoodmap.domain.restaurant.Restaurant,
+    displayName: String,
 ): androidx.compose.ui.unit.Dp {
-    val name = restaurant.name.zh
     // Rough char widths in dp at the rendered text styles. CJK fonts are
     // squarer than Latin, so we use the same ~14dp/char for the name row
     // (labelMedium ≈ 14sp) and a slimmer ~9dp average for the tag row.
-    val nameWidth = (name.length * 14).dp
+    val nameWidth = (displayName.length * 14).dp
     val tags = restaurant.cardTags()
     val tagsText = if (tags.isEmpty()) {
         ""

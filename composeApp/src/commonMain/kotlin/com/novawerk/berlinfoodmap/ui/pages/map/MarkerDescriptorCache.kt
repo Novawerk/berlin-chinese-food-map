@@ -12,11 +12,20 @@ import eu.buney.maps.BitmapDescriptor
  * the photo loads; `isFavorite` and `hasDiscount` re-rasterise the pill
  * with the matching corner badge (diamond / outlined circle / both)
  * when the underlying flags change.
+ *
+ * `name` and `tagLabels` are the already-localised pill text. They're part
+ * of the key so switching the app language re-rasterises the pill in the
+ * new language — the text is drawn into a detached off-screen ComposeView
+ * (see `StableMarkerIcon`) that doesn't pick up the app's locale override,
+ * so the strings are resolved in the live composition and passed in (same
+ * trick the walking-radius ring labels use).
  */
 internal data class CachedMarkerDescriptor(
     val coverReady: Boolean,
     val isFavorite: Boolean,
     val hasDiscount: Boolean,
+    val name: String,
+    val tagLabels: List<String>,
     val descriptor: BitmapDescriptor,
 )
 
