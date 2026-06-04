@@ -32,11 +32,13 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.novawerk.berlinfoodmap.domain.common.preferred
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
 import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
+import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 
 // Cover decode size for the 44 dp NearbyCard thumbnail (rendered side × 4
 // for xxxhdpi). Saves ~95% of the bitmap memory vs decoding the source
@@ -122,9 +124,17 @@ internal fun NearbyCard(
             }
             Spacer(Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
+                // In English mode show the English name only (falling back to
+                // zh when the English name is blank). In Chinese mode keep the
+                // bilingual stack: zh as the primary line, en as secondary.
+                val locale = LocalAppLocale.current
+                val isZh = locale.startsWith("zh", ignoreCase = true)
+                val primaryName = if (isZh) restaurant.name.zh else restaurant.name.preferred(locale)
+                val secondaryName = restaurant.name.en
+                    .takeIf { isZh && it.isNotBlank() && it != primaryName }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = restaurant.name.zh,
+                        text = primaryName,
                         style = MaterialTheme.typography.titleSmall,
                         color = nameColor,
                         maxLines = 1,
@@ -141,12 +151,14 @@ internal fun NearbyCard(
                         )
                     }
                 }
-                Text(
-                    text = restaurant.name.en,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = secondaryColor,
-                    maxLines = 1,
-                )
+                if (secondaryName != null) {
+                    Text(
+                        text = secondaryName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = secondaryColor,
+                        maxLines = 1,
+                    )
+                }
                 val displayTags = restaurant.cardTags()
                 if (displayTags.isNotEmpty()) {
                     Spacer(Modifier.height(2.dp))
