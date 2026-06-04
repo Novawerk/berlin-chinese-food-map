@@ -104,8 +104,9 @@ fun SplashScreen() {
             }
         }
 
-        // "Powered by Novawerk × Pinwo" sits in the cream strip below the
-        // wine curve, in PinwoWine for legibility.
+        // "Powered by Novawerk" sits in the cream strip below the wine curve,
+        // in PinwoWine for legibility. Pinwo is already the hero lockup above,
+        // so the footer credits Novawerk only to avoid repeating the name.
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -130,9 +131,9 @@ fun SplashScreen() {
                     tint = SplashBackground,
                     modifier = Modifier.size(14.dp),
                 )
-                // Only the "Novawerk" wordmark gets the Cabinet Grotesk brand
-                // face; the "× Pinwo" co-brand half stays in the body face so
-                // we're not recreating Pinwo's name in Novawerk's typeface.
+                // The "Novawerk" wordmark gets the Cabinet Grotesk brand face.
+                // (The lockup is resolved by substring so any surrounding
+                // co-brand text would stay in the body face — currently none.)
                 val lockup = stringResource(Res.string.splash_brand_lockup)
                 Text(
                     text = buildAnnotatedString {

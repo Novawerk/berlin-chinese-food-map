@@ -264,7 +264,7 @@
     <string name="splash_tagline_line1">Chinese Food Map</string>
     <string name="splash_tagline_line2">Berlin</string>
     <string name="splash_powered_by">Powered by</string>
-    <string name="splash_brand_lockup">Novawerk × Pinwo</string>
+    <string name="splash_brand_lockup">Novawerk</string>
 
     <!-- Onboarding (first-launch tour) -->
     <string name="onboarding_skip">跳过</string>
