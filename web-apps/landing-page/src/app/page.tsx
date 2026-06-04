@@ -11,6 +11,7 @@ import { MarqueeTags } from "@/components/animated/MarqueeTags";
 const SUBMIT_URL =
   "https://github.com/Novawerk/berlin-chinese-food-map/issues/new?template=restaurant-submission.yml";
 const REPO_URL = "https://github.com/Novawerk/berlin-chinese-food-map";
+const APP_STORE_URL = "https://apps.apple.com/app/id6766082989";
 
 const features = [
   {
@@ -113,20 +114,20 @@ const roadmapPhases = [
       en: ["Play Store CI", "Xcode Cloud", "Community Beta", "Submissions"],
       zh: ["Play Store CI", "Xcode Cloud", "社区内测", "餐厅征集"],
     },
-    status: "current",
+    status: "done",
   },
   {
     phase: 4,
     title: { en: "Launch & Growth", zh: "正式发布与增长" },
     desc: {
-      en: "Public launch on App Store and Google Play. Continuous iteration on user feedback, broader UGC contribution flow, editorial collections, and curated themed routes.",
-      zh: "正式上架 App Store 与 Google Play。根据用户反馈持续迭代，扩展社区 UGC 投稿通路，推出编辑精选与主题美食路线。",
+      en: "Live on the App Store now, with the Android build close behind. Continuous iteration on user feedback, broader UGC contribution flow, editorial collections, and curated themed routes.",
+      zh: "iOS 版已在 App Store 上线，Android 版紧随其后。根据用户反馈持续迭代，扩展社区 UGC 投稿通路，推出编辑精选与主题美食路线。",
     },
     tags: {
       en: ["App Store", "Google Play", "UGC", "Editorial"],
       zh: ["App Store", "Google Play", "社区提交", "编辑精选"],
     },
-    status: "upcoming",
+    status: "current",
   },
 ] as const;
 
@@ -269,8 +270,8 @@ export default function HomePage() {
               style={{ animationDelay: "0.41s" }}
             >
               {t(
-                "A non-profit, community-driven guide to 200+ Chinese restaurants in Berlin. Bilingual, privacy-first, open source — coming soon to Android and iOS.",
-                "非营利的社区驱动指南，覆盖柏林 200+ 家中餐馆。双语支持、隐私优先、完全开源——即将登陆 Android 与 iOS。"
+                "A non-profit, community-driven guide to 200+ Chinese restaurants in Berlin. Bilingual, privacy-first, open source — now on the App Store, Android coming soon.",
+                "非营利的社区驱动指南，覆盖柏林 200+ 家中餐馆。双语支持、隐私优先、完全开源——现已登陆 App Store，Android 版即将上线。"
               )}
             </p>
 
@@ -752,8 +753,8 @@ export default function HomePage() {
             </h2>
             <p className="mt-5 text-xl text-[#FFFCF8]/75 sm:text-2xl">
               {t(
-                "Internal beta running now via TestFlight and Play Store internal track. Public release is next.",
-                "内测版本已通过 TestFlight 与 Play Store 内测轨道运行中，正式发布即将到来。"
+                "Live now on the App Store. The Android build is on the way.",
+                "现已在 App Store 上线，Android 版本马上就来。"
               )}
             </p>
           </FadeIn>
@@ -761,7 +762,9 @@ export default function HomePage() {
           <FadeIn delay={0.1}>
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
-                href="#"
+                href={APP_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group inline-flex h-16 items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-7 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/15"
               >
                 <svg
@@ -781,9 +784,9 @@ export default function HomePage() {
                 </div>
               </a>
 
-              <a
-                href="#"
-                className="group inline-flex h-16 items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-7 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/15"
+              <div
+                aria-disabled="true"
+                className="inline-flex h-16 cursor-default items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-7 opacity-60"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -795,18 +798,18 @@ export default function HomePage() {
                   <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 0 1 0 1.732l-2.808 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z" />
                 </svg>
                 <div className="text-left">
-                  <div className="text-sm text-[#FFFCF8]/60">
-                    {t("Get it on", "下载于")}
+                  <div className="text-sm text-[#FFFCF8]/60">Google Play</div>
+                  <div className="text-base font-semibold">
+                    {t("Coming soon", "即将上线")}
                   </div>
-                  <div className="text-base font-semibold">Google Play</div>
                 </div>
-              </a>
+              </div>
             </div>
 
             <p className="mt-10 text-base text-[#FFFCF8]/60">
               {t(
-                "Want a beta invite or to suggest a restaurant we missed? Open a GitHub issue — link in the navbar.",
-                "想加入内测、或推荐我们漏掉的餐厅？欢迎通过导航栏的 GitHub 入口提交。"
+                "Spotted a restaurant we missed? Open a GitHub issue — link in the navbar.",
+                "发现我们漏掉的餐厅？欢迎通过导航栏的 GitHub 入口提交。"
               )}
             </p>
           </FadeIn>
