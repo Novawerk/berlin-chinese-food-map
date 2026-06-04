@@ -129,7 +129,7 @@ const roadmapPhases = [
     },
     status: "current",
   },
-] as const;
+];
 
 const stats = [
   {
