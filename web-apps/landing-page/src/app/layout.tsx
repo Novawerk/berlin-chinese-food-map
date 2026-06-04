@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://berlinfoodmap.novawerk.io"),
   title: "Berlin Chinese Food Map | 柏林中餐地图",
   description:
     "Community-driven guide to the best Chinese restaurants in Berlin. Discover authentic Chinese cuisine with map view, smart filters, and bilingual support.",
@@ -25,9 +26,24 @@ export const metadata: Metadata = {
       "Community-driven guide to the best Chinese restaurants in Berlin.",
     url: "https://berlinfoodmap.novawerk.io",
     siteName: "Berlin Chinese Food Map",
+    images: [{ url: "/logo.png", width: 1024, height: 1024, alt: "PinWo — Berlin Chinese Food Map" }],
     locale: "en_US",
     type: "website",
   },
+  twitter: {
+    card: "summary",
+    title: "Berlin Chinese Food Map | 柏林中餐地图",
+    description:
+      "Community-driven guide to the best Chinese restaurants in Berlin.",
+    images: ["/logo.png"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFCF8" },
+    { media: "(prefers-color-scheme: dark)", color: "#201A1A" },
+  ],
 };
 
 export default function RootLayout({

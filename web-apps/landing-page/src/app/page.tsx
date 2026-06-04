@@ -11,6 +11,7 @@ import { MarqueeTags } from "@/components/animated/MarqueeTags";
 const SUBMIT_URL =
   "https://github.com/Novawerk/berlin-chinese-food-map/issues/new?template=restaurant-submission.yml";
 const REPO_URL = "https://github.com/Novawerk/berlin-chinese-food-map";
+const APP_STORE_URL = "https://apps.apple.com/app/id6766082989";
 
 const features = [
   {
@@ -113,22 +114,22 @@ const roadmapPhases = [
       en: ["Play Store CI", "Xcode Cloud", "Community Beta", "Submissions"],
       zh: ["Play Store CI", "Xcode Cloud", "社区内测", "餐厅征集"],
     },
-    status: "current",
+    status: "done",
   },
   {
     phase: 4,
     title: { en: "Launch & Growth", zh: "正式发布与增长" },
     desc: {
-      en: "Public launch on App Store and Google Play. Continuous iteration on user feedback, broader UGC contribution flow, editorial collections, and curated themed routes.",
-      zh: "正式上架 App Store 与 Google Play。根据用户反馈持续迭代，扩展社区 UGC 投稿通路，推出编辑精选与主题美食路线。",
+      en: "Live on the App Store now, with the Android build close behind. Continuous iteration on user feedback, broader UGC contribution flow, editorial collections, and curated themed routes.",
+      zh: "iOS 版已在 App Store 上线，Android 版紧随其后。根据用户反馈持续迭代，扩展社区 UGC 投稿通路，推出编辑精选与主题美食路线。",
     },
     tags: {
       en: ["App Store", "Google Play", "UGC", "Editorial"],
       zh: ["App Store", "Google Play", "社区提交", "编辑精选"],
     },
-    status: "upcoming",
+    status: "current",
   },
-] as const;
+];
 
 const stats = [
   {
@@ -269,8 +270,8 @@ export default function HomePage() {
               style={{ animationDelay: "0.41s" }}
             >
               {t(
-                "A non-profit, community-driven guide to 200+ Chinese restaurants in Berlin. Bilingual, privacy-first, open source — coming soon to Android and iOS.",
-                "非营利的社区驱动指南，覆盖柏林 200+ 家中餐馆。双语支持、隐私优先、完全开源——即将登陆 Android 与 iOS。"
+                "A non-profit, community-driven guide to 200+ Chinese restaurants in Berlin. Bilingual, privacy-first, open source — now on the App Store, Android coming soon.",
+                "非营利的社区驱动指南，覆盖柏林 200+ 家中餐馆。双语支持、隐私优先、完全开源——现已登陆 App Store，Android 版即将上线。"
               )}
             </p>
 
@@ -401,14 +402,14 @@ export default function HomePage() {
         id="story"
         className="relative overflow-hidden border-t border-border bg-muted/30"
       >
-        <div className="pointer-events-none absolute -right-24 top-1/2 -translate-y-1/2 opacity-10 sm:opacity-15">
+        <div className="pointer-events-none absolute -right-24 top-1/2 -translate-y-1/2 opacity-[0.07] sm:opacity-[0.10]">
           <Image
             src="/logo.png"
             alt=""
             width={520}
             height={520}
             aria-hidden
-            className="h-[24rem] w-[24rem] rounded-[3rem] sm:h-[32rem] sm:w-[32rem]"
+            className="h-[24rem] w-[24rem] rounded-[22%] sm:h-[32rem] sm:w-[32rem]"
           />
         </div>
 
@@ -726,23 +727,34 @@ export default function HomePage() {
       </section>
 
       {/* ─────────── Download ─────────── */}
+      {/* Wine panel with cream text — echoes the app's splash screen.
+          Brand colours are pinned regardless of light/dark theme, same as
+          the in-app SplashScreen. */}
       <section
         id="download"
-        className="relative overflow-hidden border-t border-border bg-muted/30"
+        className="relative overflow-hidden border-t border-[#5e0807] bg-[#780A09] text-[#FFFCF8]"
       >
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="animate-blob-a absolute left-1/4 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl" />
+          <div className="animate-blob-a absolute left-1/4 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[#B51F1F]/40 blur-3xl" />
+          <div className="animate-blob-b absolute right-1/4 top-0 h-72 w-72 rounded-full bg-[#F7DD6D]/15 blur-3xl" />
         </div>
 
         <div className="mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
           <FadeIn>
+            <Image
+              src="/logo.png"
+              alt="PinWo"
+              width={88}
+              height={88}
+              className="mx-auto mb-8 h-20 w-20 rounded-[22%] shadow-xl shadow-black/30 ring-1 ring-white/10"
+            />
             <h2 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               {t("Get the App", "获取应用")}
             </h2>
-            <p className="mt-5 text-xl text-muted-foreground sm:text-2xl">
+            <p className="mt-5 text-xl text-[#FFFCF8]/75 sm:text-2xl">
               {t(
-                "Internal beta running now via TestFlight and Play Store internal track. Public release is next.",
-                "内测版本已通过 TestFlight 与 Play Store 内测轨道运行中，正式发布即将到来。"
+                "Live now on the App Store. The Android build is on the way.",
+                "现已在 App Store 上线，Android 版本马上就来。"
               )}
             </p>
           </FadeIn>
@@ -750,8 +762,10 @@ export default function HomePage() {
           <FadeIn delay={0.1}>
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
-                href="#"
-                className="group inline-flex h-16 items-center gap-3 rounded-2xl border border-border bg-card px-7 transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md"
+                href={APP_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex h-16 items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-7 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/15"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -763,16 +777,16 @@ export default function HomePage() {
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                 </svg>
                 <div className="text-left">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-[#FFFCF8]/60">
                     {t("Download on the", "下载于")}
                   </div>
                   <div className="text-base font-semibold">App Store</div>
                 </div>
               </a>
 
-              <a
-                href="#"
-                className="group inline-flex h-16 items-center gap-3 rounded-2xl border border-border bg-card px-7 transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md"
+              <div
+                aria-disabled="true"
+                className="inline-flex h-16 cursor-default items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-7 opacity-60"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -784,18 +798,18 @@ export default function HomePage() {
                   <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 0 1 0 1.732l-2.808 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z" />
                 </svg>
                 <div className="text-left">
-                  <div className="text-sm text-muted-foreground">
-                    {t("Get it on", "下载于")}
+                  <div className="text-sm text-[#FFFCF8]/60">Google Play</div>
+                  <div className="text-base font-semibold">
+                    {t("Coming soon", "即将上线")}
                   </div>
-                  <div className="text-base font-semibold">Google Play</div>
                 </div>
-              </a>
+              </div>
             </div>
 
-            <p className="mt-10 text-base text-muted-foreground">
+            <p className="mt-10 text-base text-[#FFFCF8]/60">
               {t(
-                "Want a beta invite or to suggest a restaurant we missed? Open a GitHub issue — link in the navbar.",
-                "想加入内测、或推荐我们漏掉的餐厅？欢迎通过导航栏的 GitHub 入口提交。"
+                "Spotted a restaurant we missed? Open a GitHub issue — link in the navbar.",
+                "发现我们漏掉的餐厅？欢迎通过导航栏的 GitHub 入口提交。"
               )}
             </p>
           </FadeIn>
