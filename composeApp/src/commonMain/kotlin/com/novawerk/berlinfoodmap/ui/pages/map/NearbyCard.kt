@@ -151,14 +151,17 @@ internal fun NearbyCard(
                         )
                     }
                 }
-                if (secondaryName != null) {
-                    Text(
-                        text = secondaryName,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = secondaryColor,
-                        maxLines = 1,
-                    )
-                }
+                // Always render the secondary slot — empty when there's no
+                // second name (English mode, or zh == en) — so the card height
+                // stays constant whether one or two name lines are shown.
+                // minLines = 1 reserves the line height even when blank.
+                Text(
+                    text = secondaryName.orEmpty(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = secondaryColor,
+                    maxLines = 1,
+                    minLines = 1,
+                )
                 val displayTags = restaurant.cardTags()
                 if (displayTags.isNotEmpty()) {
                     Spacer(Modifier.height(2.dp))
