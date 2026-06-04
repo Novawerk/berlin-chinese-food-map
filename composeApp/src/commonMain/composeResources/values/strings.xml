@@ -239,12 +239,12 @@
     <string name="team_title">The team behind</string>
     <string name="team_novawerk_name">Novawerk.io</string>
     <string name="team_novawerk_role">Not profitable, but meaningful.</string>
-    <string name="team_novawerk_bio">Novawerk is an open, non-profit community hub, established in 2025. We exist to lower the barriers to creating positive change — helping people turn meaningful ideas into real projects through collaboration, creativity, and action.\n\nGreat ideas shouldn\'t stay as concepts. Real change happens when people choose to build, learn, and contribute together.\n\nThree principles guide our work. Purposeful innovation: we build for real positive change, not short-term trends. Build, learn, together: people of any background can grow through practical work on real projects. Responsibility for positive change: each of us takes part in caring, contributing, and acting.\n\nBerlin Food Map is one of the projects built under that idea.</string>
+    <string name="team_novawerk_bio">Novawerk is an open, non-profit community hub, established in 2025. We exist to lower the barriers to creating positive change — helping people turn meaningful ideas into real projects through collaboration, creativity, and action.\n\nGreat ideas shouldn't stay as concepts. Real change happens when people choose to build, learn, and contribute together.\n\nThree principles guide our work. Purposeful innovation: we build for real positive change, not short-term trends. Build, learn, together: people of any background can grow through practical work on real projects. Responsibility for positive change: each of us takes part in caring, contributing, and acting.\n\nBerlin Food Map is one of the projects built under that idea.</string>
     <string name="team_novawerk_visit">Visit website</string>
 
     <string name="team_pinwo_name">Pinwo</string>
     <string name="team_pinwo_role">Open Berlin with Chinese food.</string>
-    <string name="team_pinwo_bio">Pinwo is a Berlin-based Chinese food project connecting restaurants, communities, and local discoveries across the city.\n\nOver the past two years, we\'ve visited, documented, and navigated hundreds of Chinese restaurants across Berlin. From these experiences, we created the Berlin Chinese Food Map — helping more people discover the richness and diversity of Chinese food in the city.\n\nToday, printed versions of the map can be freely picked up in restaurants and cultural spaces across Berlin.\n\nTogether with Novawerk, we are bringing the map into a digital format, making Berlin Chinese food more accessible and easier to navigate for everyone.\n\nBeyond the map, pinwo.de shares curated recommendations, local events, and exclusive partner offers — helping people connect more directly with Berlin\'s evolving Chinese food scene.</string>
+    <string name="team_pinwo_bio">Pinwo is a Berlin-based Chinese food project connecting restaurants, communities, and local discoveries across the city.\n\nOver the past two years, we've visited, documented, and navigated hundreds of Chinese restaurants across Berlin. From these experiences, we created the Berlin Chinese Food Map — helping more people discover the richness and diversity of Chinese food in the city.\n\nToday, printed versions of the map can be freely picked up in restaurants and cultural spaces across Berlin.\n\nTogether with Novawerk, we are bringing the map into a digital format, making Berlin Chinese food more accessible and easier to navigate for everyone.\n\nBeyond the map, pinwo.de shares curated recommendations, local events, and exclusive partner offers — helping people connect more directly with Berlin's evolving Chinese food scene.</string>
     <string name="team_pinwo_offers">Get Offers &amp; Discover More</string>
     <string name="team_pinwo_community">Join Community</string>
 
@@ -264,7 +264,7 @@
     <string name="splash_tagline_line1">Chinese Food Map</string>
     <string name="splash_tagline_line2">Berlin</string>
     <string name="splash_powered_by">Powered by</string>
-    <string name="splash_brand_lockup">Novawerk × Pinwo</string>
+    <string name="splash_brand_lockup">Novawerk</string>
 
     <!-- Onboarding (first-launch tour) -->
     <string name="onboarding_skip">Skip</string>

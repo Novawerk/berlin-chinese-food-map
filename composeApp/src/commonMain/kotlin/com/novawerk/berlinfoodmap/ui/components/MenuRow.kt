@@ -42,6 +42,8 @@ fun MenuRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leading != null) {
+            // Brand mark on the left, vertically centred against the whole
+            // (title + supporting text) row.
             Box(
                 modifier = Modifier.padding(end = 12.dp),
                 contentAlignment = Alignment.Center,

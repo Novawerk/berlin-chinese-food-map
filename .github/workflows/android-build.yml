@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Fast fail before the slow build: Compose renders \' / \" literally,
+      # so a stray escape in strings.xml would ship a visible backslash.
+      - name: Lint string resources
+        run: bash scripts/check-string-escapes.sh
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:

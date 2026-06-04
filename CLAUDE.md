@@ -121,7 +121,12 @@ To launch on a connected device after install:
 - **Code style:** Kotlin official style.
 - **Localisation:** All UI strings in `composeResources/values/strings.xml`
   (EN) and `values-zh/strings.xml` (ZH). Access via
-  `stringResource(Res.string.*)`. **No hardcoded UI text.**
+  `stringResource(Res.string.*)`. **No hardcoded UI text.** Write
+  apostrophes/quotes raw (`don't`, `"x"`) — **never escape them** as `\'`
+  / `\"`. Compose Resources, unlike Android's aapt, renders the backslash
+  literally on screen. `\n` (paragraph break) is the only allowed escape;
+  `scripts/check-string-escapes.sh` enforces this and fails the Android
+  Build workflow on any other stray backslash.
 - **Theming:** Use `MaterialTheme.colorScheme.*` everywhere — never
   hardcode colours in UI files. Pinwo palette is defined in
   `ui/theme/AppTheme.kt`, which also pins explicit warm-neutral
