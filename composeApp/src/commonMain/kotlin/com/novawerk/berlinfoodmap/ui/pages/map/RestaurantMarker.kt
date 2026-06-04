@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.geometry.Offset
+import com.novawerk.berlinfoodmap.domain.common.preferred
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
+import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
 import eu.buney.maps.BitmapDescriptor
 import eu.buney.maps.LatLng
 import eu.buney.maps.Marker
@@ -39,14 +41,18 @@ internal fun RestaurantMarker(
 
     val coverReady = cover is MarkerCover.Loaded
     val hasDiscount = restaurant.hasDiscount
-    // Resolve the tag labels HERE, in the live map composition where the
-    // app's locale override is in effect. `MiniRestaurantCard` is rasterised
-    // into a detached off-screen ComposeView (see `StableMarkerIcon`) whose
-    // own platform locale shadows the override, so a `stringResource` /
-    // `tagDisplayName` call inside it renders the wrong language — the pill's
-    // tag line stayed Chinese in English mode. Passing the already-localised
-    // strings down (and keying the bitmap on them) keeps the pill in the
-    // selected language, same approach as the walking-radius ring labels.
+    // Resolve the pill text (name + tag labels) HERE, in the live map
+    // composition where the app's locale override is in effect.
+    // `MiniRestaurantCard` is rasterised into a detached off-screen
+    // ComposeView (see `StableMarkerIcon`) whose own platform locale shadows
+    // the override, so resolving locale-dependent strings inside it renders
+    // the wrong language. Resolving here and passing the strings down (and
+    // keying the bitmap on them) keeps the pill in the selected language —
+    // same approach as the walking-radius ring labels. In English mode the
+    // name shows the English name (falling back to zh only when the English
+    // name is blank); in Chinese mode it shows the Chinese name.
+    val locale = LocalAppLocale.current
+    val displayName = restaurant.name.preferred(locale)
     val tagLabels = restaurant.cardTags().map { tagDisplayName(it) }
     val state = rememberUpdatedMarkerState(
         position = LatLng(restaurant.latitude, restaurant.longitude),
@@ -58,23 +64,27 @@ internal fun RestaurantMarker(
         cached.coverReady == coverReady &&
         cached.isFavorite == isFavorite &&
         cached.hasDiscount == hasDiscount &&
+        cached.name == displayName &&
         cached.tagLabels == tagLabels
     ) {
         cached.descriptor
     } else {
         val rendered = rememberStableComposeBitmapDescriptor(
-            restaurant.id, coverReady, isFavorite, hasDiscount, tagLabels,
+            restaurant.id, coverReady, isFavorite, hasDiscount, displayName, tagLabels,
         ) {
             MiniRestaurantCard(
                 restaurant = restaurant,
                 coverImage = (cover as? MarkerCover.Loaded)?.image,
                 isFavorite = isFavorite,
+                name = displayName,
                 tagLabels = tagLabels,
             )
         }
         SideEffect {
             descriptorCache[restaurant.id] =
-                CachedMarkerDescriptor(coverReady, isFavorite, hasDiscount, tagLabels, rendered)
+                CachedMarkerDescriptor(
+                    coverReady, isFavorite, hasDiscount, displayName, tagLabels, rendered,
+                )
         }
         rendered
     }
