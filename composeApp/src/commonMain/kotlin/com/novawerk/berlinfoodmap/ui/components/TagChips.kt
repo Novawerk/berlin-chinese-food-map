@@ -10,6 +10,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
 import com.novawerk.berlinfoodmap.domain.restaurant.TagFamily
@@ -63,6 +64,12 @@ import berlinfoodmap.composeapp.generated.resources.tag_vegetarian_desc
 import berlinfoodmap.composeapp.generated.resources.tag_xinjiang
 import berlinfoodmap.composeapp.generated.resources.tag_xinjiang_desc
 
+/** testTag for the "All" (clear selection) chip. */
+const val TAG_CHIP_ALL = "tagChip_all"
+
+/** Stable testTag for a tag's filter chip, e.g. `tagChip_SICHUAN`. */
+fun tagChipTestTag(tag: Tag): String = "tagChip_${tag.name}"
+
 /**
  * Inline horizontally-scrollable tag filter. Multi-select; tapping the
  * "All" chip clears the selection.
@@ -87,6 +94,7 @@ fun TagChips(
             selected = selected.isEmpty(),
             onClick = onClear,
             label = { Text(stringResource(Res.string.all)) },
+            modifier = Modifier.testTag(TAG_CHIP_ALL),
         )
         // Stable order: regional first, then format, in declaration order.
         Tag.entries
@@ -96,6 +104,7 @@ fun TagChips(
                     selected = tag in selected,
                     onClick = { onToggle(tag) },
                     label = { Text(tagDisplayName(tag)) },
+                    modifier = Modifier.testTag(tagChipTestTag(tag)),
                 )
             }
     }

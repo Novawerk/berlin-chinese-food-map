@@ -116,6 +116,47 @@ To launch on a connected device after install:
   -p com.novawerk.berlinfoodmap -c android.intent.category.LAUNCHER 1
 ```
 
+## Testing
+
+```bash
+./gradlew :composeApp:testDebugUnitTest     # All unit + UI tests (JVM, headless)
+```
+
+`testDebugUnitTest` runs the whole suite on the JVM — no emulator. The
+Android Build workflow runs it on every push (it gates the APK build).
+
+Two layers, by source set:
+
+- **`commonTest/`** — pure logic, shared across all targets (`kotlin.test` +
+  `kotlinx-coroutines-test`). Covers opening-hours (`OpeningStatus`),
+  localization (`Localizable.preferred`), the tag taxonomy, restaurant
+  helpers, the **map filter logic** (`filterRestaurants` in
+  `ui/pages/map/MapFilters.kt`), and the repo's **geo/search helpers**
+  (`haversineKm` / `nameMatchesQuery` in `data/remote/RestaurantQuery.kt`).
+- **`androidUnitTest/`** — Compose UI ("e2e") tests via Robolectric +
+  `createComposeRule()`, run headless on the JVM (`@RunWith(RobolectricTestRunner)`,
+  `@GraphicsMode(NATIVE)`, `@Config(sdk = [34])`). Target the non-map
+  list/detail **components** (`RestaurantCard`, `TagChips`,
+  `OpeningStatusBadge`).
+
+Two deliberate seams exist so the meaty logic is testable without standing up
+DI/Firestore: `MapFilters.kt` (the VM's `restaurantsFiltered` is a thin
+`derivedStateOf` over it) and `RestaurantQuery.kt` (the Firestore repo can't be
+constructed in a test — it touches `Firebase.firestore` at field init). Keep
+new business logic in pure functions like these rather than inline in VMs/repos.
+
+**The map screen has no UI test** — it embeds a native Google Maps view that
+can't render under Robolectric (and a worktree build has no `secrets.properties`,
+so the map is blank anyway). Its filter/cluster logic is covered by the unit
+tests instead. UI tests are Android-only because common `runComposeUiTest` on
+iOS/desktop needs Compose Multiplatform 1.11 (this repo is on 1.10.3); the
+non-map components are platform-agnostic, so that's no real coverage loss.
+
+When adding a UI test, give the component a `testTag` (see `TAG_CHIP_ALL`,
+`tagChipTestTag`, `OPENING_STATUS_BADGE_TAG`) rather than asserting on
+localized strings, which differ by locale. Build fixtures with
+`commonTest/.../testutil/Fixtures.kt`.
+
 ## Development Guidelines
 
 - **Code style:** Kotlin official style.

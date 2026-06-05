@@ -42,12 +42,7 @@ class FirestoreRestaurantRepository : RestaurantRepository {
 
     override suspend fun search(query: String): List<Restaurant> {
         val all = getAll()
-        val q = query.lowercase()
-        return all.filter {
-            it.name.en.lowercase().contains(q) ||
-                it.name.zh.contains(q) ||
-                (it.name.de?.lowercase()?.contains(q) == true)
-        }
+        return all.filter { nameMatchesQuery(it, query) }
     }
 
     override suspend fun filterByTag(tag: Tag): List<Restaurant> {
@@ -72,7 +67,7 @@ class FirestoreRestaurantRepository : RestaurantRepository {
         // Client-side filtering — Firestore doesn't support geo-queries natively
         val all = getAll()
         return all.filter { restaurant ->
-            haversineDistance(latitude, longitude, restaurant.latitude, restaurant.longitude) <= radiusKm
+            haversineKm(latitude, longitude, restaurant.latitude, restaurant.longitude) <= radiusKm
         }
     }
 
@@ -96,22 +91,6 @@ class FirestoreRestaurantRepository : RestaurantRepository {
         // Count is tracked via sub-collection; no direct restaurant doc update
         // to avoid PERMISSION_DENIED for anonymous users
     }
-
-    private fun haversineDistance(
-        lat1: Double, lon1: Double,
-        lat2: Double, lon2: Double,
-    ): Double {
-        val r = 6371.0 // Earth radius in km
-        val dLat = toRadians(lat2 - lat1)
-        val dLon = toRadians(lon2 - lon1)
-        val a = kotlin.math.sin(dLat / 2) * kotlin.math.sin(dLat / 2) +
-            kotlin.math.cos(toRadians(lat1)) * kotlin.math.cos(toRadians(lat2)) *
-            kotlin.math.sin(dLon / 2) * kotlin.math.sin(dLon / 2)
-        val c = 2 * kotlin.math.atan2(kotlin.math.sqrt(a), kotlin.math.sqrt(1 - a))
-        return r * c
-    }
-
-    private fun toRadians(deg: Double): Double = deg * kotlin.math.PI / 180.0
 }
 
 private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Restaurant {

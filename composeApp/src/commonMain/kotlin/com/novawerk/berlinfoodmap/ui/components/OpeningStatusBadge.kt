@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,9 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val OPENING_SOON_MIN = 60
 private const val CLOSING_SOON_MIN = 30
+
+/** testTag on [OpeningStatusBadge]'s pill — absent from the tree when the venue is open/24h/unknown. */
+const val OPENING_STATUS_BADGE_TAG = "openingStatusBadge"
 
 private enum class StatusFlavor { Closed, OpeningSoon, ClosingSoon }
 
@@ -126,7 +130,7 @@ fun OpeningStatusBadge(
     Surface(
         color = container,
         shape = RoundedCornerShape(50),
-        modifier = modifier,
+        modifier = modifier.testTag(OPENING_STATUS_BADGE_TAG),
     ) {
         Box(modifier = Modifier.padding(horizontal = hPad, vertical = vPad)) {
             Text(
