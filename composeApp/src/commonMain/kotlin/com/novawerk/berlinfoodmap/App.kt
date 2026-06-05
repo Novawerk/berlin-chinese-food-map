@@ -2,9 +2,7 @@ package com.novawerk.berlinfoodmap
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -15,7 +13,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.di.AppComponent
 import com.novawerk.berlinfoodmap.domain.analytics.AnalyticsService
@@ -399,25 +396,15 @@ private fun BottomBarIcon(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
-    busy: Boolean = false,
 ) {
     IconButton(
         onClick = onClick,
-        enabled = !busy,
         modifier = Modifier.size(48.dp),
     ) {
-        if (busy) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        } else {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

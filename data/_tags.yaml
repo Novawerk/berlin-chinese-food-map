@@ -3,15 +3,16 @@
 # A restaurant carries 1~3 tags (see _schema.yaml > tags). The first tag
 # is treated as the primary one for default filter behaviour.
 #
-# Add or rename tags here, then run
-#   node scripts/sync-to-firestore/check-tags.mjs
-# to verify the Kotlin enum, the admin TS list, and the sync script's
-# KNOWN_TAGS set still match. CI runs the same check before sync.
+# Add or rename tags here, then regenerate the downstream mirrors:
+#   cd scripts/sync-to-firestore && npm run gen:tags
+# That rewrites the @gen:tags fenced regions in the sync script's KNOWN_TAGS,
+# the admin REGIONAL_TAGS/FORMAT_TAGS, and the mobile app's tag display-name
+# strings (values{,-zh}/strings.xml). The Kotlin `Tag` enum and the per-tag
+# `*_desc` editorial strings stay hand-written. Then run `npm run check:tags`
+# (CI runs it too) to verify nothing drifted and the enum still matches.
 #
-# Display names below feed the admin form; the mobile app reads its
-# strings from composeApp/.../composeResources/values{,-zh}/strings.xml
-# (those need to be edited by hand for now — if the count of tags grows
-# significantly, code-gen the strings.xml entries from this file too).
+# The en/zh display names below are the source for both the admin form and
+# the generated strings.xml entries.
 
 regional:
   SICHUAN:        { en: Sichuan,       zh: 川菜 }

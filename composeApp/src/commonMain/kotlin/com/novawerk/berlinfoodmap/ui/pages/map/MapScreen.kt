@@ -32,6 +32,7 @@ import berlinfoodmap.composeapp.generated.resources.filters_active_multi
 import berlinfoodmap.composeapp.generated.resources.map_radius_15min
 import berlinfoodmap.composeapp.generated.resources.map_radius_5min
 import berlinfoodmap.composeapp.generated.resources.marker_location
+import com.novawerk.berlinfoodmap.data.store.retainKeys
 import com.novawerk.berlinfoodmap.domain.common.preferred
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.locale.LocalAppLocale
@@ -121,9 +122,7 @@ fun MapScreen(
         // each) — the map-wide stutter. The cache ceiling is the full dataset
         // either way, which is just the unfiltered steady state.
         val keep = viewModel.allRestaurants.mapTo(HashSet()) { it.id }
-        descriptorCache.keys.toList().forEach { id ->
-            if (id !in keep) descriptorCache.remove(id)
-        }
+        descriptorCache.retainKeys(keep)
     }
 
     val listState = rememberLazyListState()
@@ -411,12 +410,9 @@ fun MapScreen(
                 .align(Alignment.BottomEnd)
                 .padding(end = 12.dp, bottom = if (hasCards) 100.dp else 16.dp),
             onClick = {
-                if (controlVm.walkingRadiusVisible) {
-                    controlVm.toggleWalkingRadius()
-                } else {
-                    controlVm.toggleWalkingRadius()
-                    commands.requestLocate()
-                }
+                // Always toggle the walking rings; only recentre when turning them on.
+                if (!controlVm.walkingRadiusVisible) commands.requestLocate()
+                controlVm.toggleWalkingRadius()
             },
         )
 

@@ -16,8 +16,9 @@ export interface Address {
   country: string;
 }
 
-// Mirror of the Kotlin `Tag` enum (composeApp/.../domain/restaurant/Tag.kt)
-// and the migration script's `KNOWN_TAGS`. Keep all three in sync.
+// Generated from data/_tags.yaml — do not edit by hand.
+// Run `npm run gen:tags` in scripts/sync-to-firestore.
+// @gen:tags:admin
 export const REGIONAL_TAGS = [
   "SICHUAN",
   "CANTONESE",
@@ -45,6 +46,7 @@ export const FORMAT_TAGS = [
   "STREET_FOOD",
   "FUSION",
 ] as const;
+// @gen:tags:end
 
 export const TAGS = [...REGIONAL_TAGS, ...FORMAT_TAGS] as const;
 

@@ -87,6 +87,7 @@ import com.novawerk.berlinfoodmap.domain.restaurant.mowToTimeOfDay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.novawerk.berlinfoodmap.ui.components.MIDDOT_SEP
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
 
@@ -1012,7 +1013,7 @@ private fun AddressCard(
                     Text(
                         text = buildString {
                             append(chain.brand)
-                            chain.branch?.let { append(" · ").append(it) }
+                            chain.branch?.let { append(MIDDOT_SEP).append(it) }
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,

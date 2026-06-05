@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "sync": "node index.js"
+    "sync": "node index.js",
+    "gen:tags": "node gen-tags.mjs",
+    "check:tags": "node gen-tags.mjs --check && node check-tags.mjs"
   },
   "dependencies": {
     "firebase-admin": "^13.0.0",

@@ -2,15 +2,8 @@
     <string name="app_name">Berlin Chinese Food</string>
 
     <!-- Navigation -->
-    <string name="nav_map">Map</string>
-    <string name="nav_list">List</string>
     <string name="settings">Settings</string>
     <string name="back">Back</string>
-
-    <!-- Placeholder screens -->
-    <string name="map_coming_soon">Map View</string>
-    <string name="list_coming_soon">List View</string>
-    <string name="detail_coming_soon">Restaurant Detail</string>
 
     <!-- Settings -->
     <string name="dark_mode">Appearance</string>
@@ -109,7 +102,7 @@
     <string name="tag_family_regional">Regional</string>
     <string name="tag_family_format">Format</string>
 
-    <!-- Tags: regional cuisines -->
+    <!-- Tags: regional cuisines. @gen:tags:names-regional — generated from data/_tags.yaml; run npm run gen:tags -->
     <string name="tag_sichuan">Sichuan</string>
     <string name="tag_cantonese">Cantonese</string>
     <string name="tag_northern">Northern</string>
@@ -120,6 +113,7 @@
     <string name="tag_taiwanese">Taiwanese</string>
     <string name="tag_muslim">Halal</string>
     <string name="tag_mongolian">Mongolian Grill</string>
+    <!-- @gen:tags:end -->
 
     <!-- Tag descriptions: regional cuisines -->
     <string name="tag_sichuan_desc">Bold, numbing, fiery — Sichuan peppercorn at the centre.</string>
@@ -133,7 +127,7 @@
     <string name="tag_muslim_desc">Halal-certified Chinese kitchens, mostly Northwestern.</string>
     <string name="tag_mongolian_desc">All-you-can-grill buffet — a Berlin invention, not authentic Mongolian.</string>
 
-    <!-- Tags: formats -->
+    <!-- Tags: formats. @gen:tags:names-format — generated from data/_tags.yaml; run npm run gen:tags -->
     <string name="tag_hotpot">Hotpot</string>
     <string name="tag_bbq">BBQ</string>
     <string name="tag_noodles">Noodles</string>
@@ -146,6 +140,7 @@
     <string name="tag_bakery">Bakery</string>
     <string name="tag_street_food">Street Food</string>
     <string name="tag_fusion">Modern Chinese</string>
+    <!-- @gen:tags:end -->
 
     <!-- Tag descriptions: formats -->
     <string name="tag_hotpot_desc">Cook your own at the table — bubbling broth, social meal.</string>
@@ -268,15 +263,7 @@
 
     <!-- Onboarding (first-launch tour) -->
     <string name="onboarding_skip">Skip</string>
-    <string name="onboarding_next">Next</string>
     <string name="onboarding_get_started">Get started</string>
-
-    <string name="onboarding_welcome_title">Berlin Chinese Food Map</string>
-    <string name="onboarding_welcome_subtitle">A non-profit guide to Chinese restaurants in Berlin — built and maintained by the community.</string>
-    <string name="onboarding_welcome_body">Every restaurant on this map was added by someone who actually eats there. The data lives as plain YAML files in a public GitHub repository — open-source, ad-free, and free of trackers. No accounts, no ads, no analytics. Just food.\n\nTwo independent teams keep the project alive — meet them next.</string>
-
-    <string name="onboarding_team_one_eyebrow">Team 1 of 2</string>
-    <string name="onboarding_team_two_eyebrow">Team 2 of 2</string>
 
     <!-- Onboarding pages 1-3 (Pinwo design tour) -->
     <string name="onboarding_p1_title">Every Chinese restaurant in Berlin</string>

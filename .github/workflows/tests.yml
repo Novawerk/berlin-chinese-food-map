@@ -7,6 +7,18 @@ name: Tests
 # `testDebugUnitTest` step before assembling.
 on:
   pull_request:
+    # App test suite only — PRs that touch only docs, data, web apps, or the
+    # data pipeline skip this. Tag-mirror drift is gated by tag-check.yml.
+    paths:
+      - 'composeApp/**'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'scripts/check-string-escapes.sh'
+      - '.github/workflows/tests.yml'
 
 jobs:
   test:
