@@ -32,6 +32,14 @@ coil = "3.0.4"
 ktor = "3.0.3"
 compass = "1.2.2"
 
+# Testing
+junit = "4.13.2"
+robolectric = "4.14.1"
+# AndroidX Compose version that Compose Multiplatform 1.10.3 builds on (per the
+# JetBrains compatibility table). Only the code-free ui-test-manifest artifact —
+# which JetBrains doesn't republish — is pulled from AndroidX at this version.
+androidx-compose-ui = "1.10.5"
+
 [libraries]
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 kotlin-inject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlin-inject" }
@@ -62,6 +70,15 @@ compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile"
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+
+# Testing — UI tests run on the JVM via Robolectric (no emulator). The
+# compose ui-test artifacts are pinned to the Compose Multiplatform version
+# so they line up with the Compose runtime the app is built against.
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+junit = { module = "junit:junit", version.ref = "junit" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+compose-ui-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-ui" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

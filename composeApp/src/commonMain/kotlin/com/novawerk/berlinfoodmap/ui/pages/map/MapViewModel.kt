@@ -8,10 +8,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import com.novawerk.berlinfoodmap.data.store.RestaurantStore
 import com.novawerk.berlinfoodmap.di.AppScope
-import com.novawerk.berlinfoodmap.domain.restaurant.OpeningStatus
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.Tag
-import com.novawerk.berlinfoodmap.domain.restaurant.computeOpeningStatus
 import eu.buney.maps.LatLngBounds
 import eu.buney.maps.Projection
 import me.tatarka.inject.annotations.Inject
@@ -63,12 +61,14 @@ class MapViewModel(
         private set
 
     val restaurantsFiltered: List<Restaurant> by derivedStateOf {
-        store.restaurants.filter { r ->
-            (selectedCuisines.isEmpty() || selectedCuisines.any { it in r.tags }) &&
-                (selectedFormats.isEmpty() || selectedFormats.any { it in r.tags }) &&
-                (!favoritesOnly || r.id in store.favorites) &&
-                (!openNow || isCurrentlyServing(r))
-        }
+        filterRestaurants(
+            restaurants = store.restaurants,
+            selectedCuisines = selectedCuisines,
+            selectedFormats = selectedFormats,
+            favoritesOnly = favoritesOnly,
+            favorites = store.favorites,
+            openNow = openNow,
+        )
     }
 
     val activeFilterCount: Int by derivedStateOf {
@@ -76,13 +76,6 @@ class MapViewModel(
             selectedFormats.size +
             (if (favoritesOnly) 1 else 0) +
             (if (openNow) 1 else 0)
-    }
-
-    private fun isCurrentlyServing(r: Restaurant): Boolean {
-        // Unknown hours and 24/7 venues pass through — we can't say with
-        // confidence they're closed, so don't filter them out.
-        val status = computeOpeningStatus(r.googleData?.periods.orEmpty())
-        return status !is OpeningStatus.Closed
     }
 
     /**

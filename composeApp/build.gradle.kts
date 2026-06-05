@@ -97,6 +97,22 @@ kotlin {
             implementation(libs.compass.geolocation)
             implementation(libs.compass.geolocation.mobile)
         }
+        // Pure logic tests (domain models, opening-hours, filters, geo/search
+        // helpers). Shared across all targets — run on the JVM via the Android
+        // unit-test task and on iOS via the simulator test tasks.
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        // Compose UI ("e2e") tests. Android-only and run headless on the JVM
+        // with Robolectric — no emulator needed, so they execute in CI. The
+        // map screen embeds a native Google Maps view that can't render under
+        // Robolectric, so UI tests target the non-map screens and components.
+        androidUnitTest.dependencies {
+            implementation(libs.junit)
+            implementation(libs.robolectric)
+            implementation(libs.compose.ui.test.junit4)
+        }
     }
 }
 
@@ -138,6 +154,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    testOptions {
+        unitTests {
+            // Robolectric + Compose Resources need the merged Android
+            // resources/manifest on the unit-test classpath so stringResource()
+            // resolves and createComposeRule() can find its host activity.
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 // Exposes `BuildKonfig.VERSION_NAME` and `BuildKonfig.VERSION_CODE` to
@@ -177,6 +201,9 @@ tasks.register("syncVersionToIos") {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     debugImplementation(compose.uiTooling)
+    // Provides the empty ComponentActivity that createComposeRule() hosts the
+    // composition in; must live in the debug manifest Robolectric reads.
+    debugImplementation(libs.compose.ui.test.manifest)
     add("kspAndroid", libs.kotlin.inject.compiler)
     add("kspIosX64", libs.kotlin.inject.compiler)
     add("kspIosArm64", libs.kotlin.inject.compiler)

@@ -25,6 +25,19 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # Gate the build on tests: pure-logic tests (commonTest) plus the
+      # Robolectric Compose UI tests both run on the JVM here — no emulator,
+      # no secrets, no keystore needed.
+      - name: Run unit + UI tests
+        run: ./gradlew :composeApp:testDebugUnitTest
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-report
+          path: composeApp/build/reports/tests/testDebugUnitTest/
+
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
 
