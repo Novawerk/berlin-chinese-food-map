@@ -38,17 +38,22 @@ display district comes from the YAML's `address.district` field.
 
 Defined in `_tags.yaml`. 10 regional + 12 format = 22 tags. A restaurant
 carries 1–3, with the first being the "primary" tag (used for the default
-chip ordering). The same list is mirrored in:
+chip ordering). The downstream copies are **generated** from `_tags.yaml`
+by `scripts/sync-to-firestore/gen-tags.mjs` (run `npm run gen:tags`), which
+rewrites the `@gen:tags` fenced regions in:
 
-- `composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/domain/restaurant/Tag.kt` (Kotlin enum)
 - `scripts/sync-to-firestore/index.js` (`KNOWN_TAGS` set)
 - `web-apps/admin/src/types/restaurant.ts` (`REGIONAL_TAGS`/`FORMAT_TAGS`)
 - `composeApp/src/commonMain/composeResources/values{,-zh}/strings.xml` (display strings)
 
-Drift is caught at CI time by `scripts/sync-to-firestore/check-tags.mjs`,
-which runs as a pre-sync step. **When you add or rename a tag you must
-update all five places.** The validator will fail the workflow if any
-diverge.
+The Kotlin enum (`Tag.kt`) and the `tagDisplayName`/`tagPhoto` `when (tag)`
+mappings stay hand-written — the compiler enforces exhaustiveness — and the
+per-tag `*_desc` editorial strings have no source in the YAML.
+
+Drift is caught at CI time by `npm run check:tags`
+(`gen-tags --check` + `check-tags.mjs`), which runs as a pre-sync step.
+**When you add or rename a tag, edit `_tags.yaml` then run `npm run gen:tags`;**
+the validator will fail the workflow if the generated files or the enum drift.
 
 ## Common operations
 
@@ -87,14 +92,18 @@ opens **pinwo.de** so users can see the full offer.
 
 ### Add a new tag
 
-1. Add it to `data/_tags.yaml` under the right family.
-2. Add to the Kotlin enum in `Tag.kt` and the `TAG_FAMILY` map.
-3. Add to `KNOWN_TAGS` in `scripts/sync-to-firestore/index.js`.
-4. Add to `REGIONAL_TAGS` or `FORMAT_TAGS` in `web-apps/admin/src/types/restaurant.ts`,
-   and add a label to `TAG_LABEL` / `TAG_CHOICES` in `restaurants.tsx`.
-5. Add `tag_xxx` strings to both `strings.xml` files (en + zh).
-6. Add a case to `tagDisplayName` in `TagChips.kt`.
-7. Run `node scripts/sync-to-firestore/check-tags.mjs` locally to confirm.
+1. Add it to `data/_tags.yaml` under the right family (with `en` + `zh` names).
+2. Run `cd scripts/sync-to-firestore && npm run gen:tags`. This regenerates
+   `KNOWN_TAGS`, the admin `REGIONAL_TAGS`/`FORMAT_TAGS`, and the `tag_xxx`
+   display strings in both `strings.xml` files.
+3. Add the value to the Kotlin enum in `Tag.kt` and the `TAG_FAMILY` map.
+   The compiler will then force you to add a branch to `tagDisplayName` /
+   `tagPhoto` in `TagChips.kt`.
+4. Add the `tag_xxx_desc` editorial strings to both `strings.xml` files (en +
+   zh) — these are hand-written, not generated.
+5. If the admin form needs a label, add it to `TAG_LABEL` / `TAG_CHOICES` in
+   `restaurants.tsx`.
+6. Run `npm run check:tags` locally to confirm nothing drifted.
 
 ### Editing via the admin panel
 

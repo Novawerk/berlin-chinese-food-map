@@ -15,7 +15,6 @@ open class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     private companion object {
         val DARK_MODE = stringPreferencesKey("dark_mode")
         val LANGUAGE = stringPreferencesKey("language")
-        val VIEW_MODE = stringPreferencesKey("view_mode")
         val ONBOARDING_SHOWN = booleanPreferencesKey("onboarding_shown")
     }
 
@@ -34,13 +33,6 @@ open class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             if (value == null) it.remove(LANGUAGE)
             else it[LANGUAGE] = value
         }
-    }
-
-    suspend fun getViewMode(): String =
-        dataStore.data.map { it[VIEW_MODE] ?: "map" }.first()
-
-    suspend fun setViewMode(value: String) {
-        dataStore.edit { it[VIEW_MODE] = value }
     }
 
     suspend fun getOnboardingShown(): Boolean =

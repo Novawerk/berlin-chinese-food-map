@@ -74,9 +74,7 @@ class RestaurantStore(
 
     private fun reconcileCovers(list: List<Restaurant>) {
         val keep = list.mapTo(HashSet()) { it.id }
-        markerCovers.keys.toList().forEach { id ->
-            if (id !in keep) markerCovers.remove(id)
-        }
+        markerCovers.retainKeys(keep)
         for (r in list) {
             if (r.id in markerCovers) continue
             val url = r.previewImageUrl()

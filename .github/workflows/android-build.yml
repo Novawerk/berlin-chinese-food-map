@@ -3,6 +3,18 @@ name: Android Build
 on:
   push:
     branches: ['*']
+    # App build only — skip pushes that touch only docs, data, web apps, or
+    # the data pipeline. Tag-mirror drift is gated separately (tag-check.yml).
+    paths:
+      - 'composeApp/**'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'scripts/check-string-escapes.sh'
+      - '.github/workflows/android-build.yml'
 
 jobs:
   build:

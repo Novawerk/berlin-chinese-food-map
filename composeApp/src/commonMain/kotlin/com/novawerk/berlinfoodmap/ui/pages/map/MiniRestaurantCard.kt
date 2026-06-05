@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
@@ -49,6 +48,7 @@ import coil3.Image
 import coil3.compose.LocalPlatformContext
 import coil3.compose.asPainter
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
+import com.novawerk.berlinfoodmap.ui.components.MIDDOT_SEP
 import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 
@@ -175,7 +175,7 @@ internal fun MiniRestaurantCard(
                     )
                     if (tagLabels.isNotEmpty()) {
                         Text(
-                            text = tagLabels.joinToString(" · "),
+                            text = tagLabels.joinToString(MIDDOT_SEP),
                             style = MaterialTheme.typography.labelSmall,
                             color = secondaryColor,
                             maxLines = 1,
@@ -199,12 +199,9 @@ internal fun MiniRestaurantCard(
         // so the badge centres on the pill's top-left corner (half
         // outside, half inside) instead of sitting fully inside.
         val badgeRes = when {
-            isFavorite && restaurant.hasDiscount ->
-                Res.drawable.marker_discount
-            restaurant.hasDiscount ->
-                Res.drawable.marker_discount
-            isFavorite ->
-                Res.drawable.marker_favorite
+            // discount wins over favorite when both apply
+            restaurant.hasDiscount -> Res.drawable.marker_discount
+            isFavorite -> Res.drawable.marker_favorite
             else -> null
         }
         if (badgeRes != null) {
@@ -279,7 +276,7 @@ internal fun estimatedMarkerWidth(
     val tagsText = if (tags.isEmpty()) {
         ""
     } else {
-        tags.joinToString(" · ") { tag ->
+        tags.joinToString(MIDDOT_SEP) { tag ->
             // Display labels are short enough that we approximate length
             // by the tag's enum name; doesn't need to be exact.
             tag.name

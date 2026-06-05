@@ -97,7 +97,7 @@ fun RestaurantCard(
                     Spacer(Modifier.height(4.dp))
                     val labels = displayTags.map { tagDisplayName(it) }
                     Text(
-                        text = labels.joinToString(" · "),
+                        text = labels.joinToString(MIDDOT_SEP),
                         style = MaterialTheme.typography.labelMedium,
                         color = tagColor,
                         maxLines = 1,
@@ -122,7 +122,7 @@ fun RestaurantCard(
                     )
                     if (!restaurant.priceRange.isNullOrBlank()) {
                         Text(
-                            text = "·",
+                            text = MIDDOT,
                             style = MaterialTheme.typography.bodySmall,
                             color = secondaryColor,
                         )

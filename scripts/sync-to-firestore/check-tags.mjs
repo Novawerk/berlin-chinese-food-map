@@ -143,6 +143,9 @@ function loadStringNames(path) {
   // them around so historical translations aren't lost on rename, but flag.
   for (const k of [...enNames, ...zhNames]) {
     if (NON_TAG_STRING_KEYS.has(k)) continue;
+    // `tag_xxx_desc` strings are hand-authored editorial descriptions, not
+    // tag identifiers — they have no entry in the manifest by design.
+    if (k.endsWith("_desc")) continue;
     const tag = k.slice(4).toUpperCase();
     if (!ALL.has(tag)) warn(`strings.xml: stale ${k} (not in manifest)`);
   }

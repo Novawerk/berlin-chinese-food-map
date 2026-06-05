@@ -105,13 +105,32 @@ const DEFAULTS = {
   viewCount: 0,
 };
 
-// Mirror of the Kotlin `Tag` enum (composeApp/.../domain/restaurant/Tag.kt).
-// Keep in sync when adding values.
+// Generated from data/_tags.yaml — do not edit by hand. Run `npm run gen:tags`.
 const KNOWN_TAGS = new Set([
-  "SICHUAN", "CANTONESE", "NORTHERN", "NORTHEASTERN",
-  "SHANGHAINESE", "HUNAN", "XINJIANG", "TAIWANESE", "MUSLIM", "MONGOLIAN",
-  "HOTPOT", "BBQ", "NOODLES", "DUMPLINGS", "DIM_SUM", "MALATANG",
-  "VEGETARIAN", "BREAKFAST", "TEA_HOUSE", "BAKERY", "STREET_FOOD", "FUSION",
+  // @gen:tags:known-tags
+  "SICHUAN",
+  "CANTONESE",
+  "NORTHERN",
+  "NORTHEASTERN",
+  "SHANGHAINESE",
+  "HUNAN",
+  "XINJIANG",
+  "TAIWANESE",
+  "MUSLIM",
+  "MONGOLIAN",
+  "HOTPOT",
+  "BBQ",
+  "NOODLES",
+  "DUMPLINGS",
+  "DIM_SUM",
+  "MALATANG",
+  "VEGETARIAN",
+  "BREAKFAST",
+  "TEA_HOUSE",
+  "BAKERY",
+  "STREET_FOOD",
+  "FUSION",
+  // @gen:tags:end
 ]);
 
 // --- Load YAML files ---

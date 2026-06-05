@@ -26,8 +26,11 @@ jobs:
         working-directory: scripts/sync-to-firestore
         run: npm ci
 
-      # Fail fast on tag drift before we burn API quota on the sync.
-      - name: Validate tag taxonomy
+      # Fail fast before we burn API quota: reject restaurant YAMLs that
+      # reference an unknown tag. Mirror/codegen drift is gated separately on
+      # every push/PR (Android Build + Tests), since those files live outside
+      # this workflow's data/restaurants/** trigger.
+      - name: Validate restaurant tags
         working-directory: scripts/sync-to-firestore
         run: node check-tags.mjs
 

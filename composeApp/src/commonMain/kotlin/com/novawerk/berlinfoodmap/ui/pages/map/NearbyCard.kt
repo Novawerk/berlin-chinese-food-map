@@ -35,6 +35,7 @@ import coil3.request.crossfade
 import com.novawerk.berlinfoodmap.domain.common.preferred
 import com.novawerk.berlinfoodmap.domain.restaurant.Restaurant
 import com.novawerk.berlinfoodmap.domain.restaurant.previewImageUrl
+import com.novawerk.berlinfoodmap.ui.components.MIDDOT_SEP
 import com.novawerk.berlinfoodmap.ui.components.cardTags
 import com.novawerk.berlinfoodmap.ui.components.rememberIsCurrentlyClosed
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
@@ -165,7 +166,7 @@ internal fun NearbyCard(
                 val displayTags = restaurant.cardTags()
                 if (displayTags.isNotEmpty()) {
                     Spacer(Modifier.height(2.dp))
-                    val tagLine = displayTags.map { tagDisplayName(it) }.joinToString(" · ")
+                    val tagLine = displayTags.map { tagDisplayName(it) }.joinToString(MIDDOT_SEP)
                     Text(
                         text = tagLine,
                         style = MaterialTheme.typography.labelSmall,

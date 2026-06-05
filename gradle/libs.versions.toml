@@ -26,7 +26,6 @@ gitlive-firebase = "2.4.0"
 google-services = "4.4.2"
 firebase-crashlytics-gradle = "3.0.7"
 kmp-maps = "0.5.0"
-play-services-location = "21.3.0"
 kotlinx-coroutines = "1.9.0"
 coil = "3.0.4"
 ktor = "3.0.3"
@@ -50,9 +49,6 @@ kotlinx-datetime-names = { module = "io.github.adrcotfas:kotlinx-datetime-names"
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 
 kmp-maps-compose = { module = "eu.buney.maps:kmp-maps-compose", version.ref = "kmp-maps" }
-
-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
-kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }

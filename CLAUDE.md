@@ -267,14 +267,20 @@ file under `ui/pages/map/`.** A handful of non-obvious things to know:
 ## Data & Tag Taxonomy
 
 - 22 tags = 10 regional (川/粤/京等) + 12 format (烤肉/火锅/小吃等).
-- Single source of truth: `data/_tags.yaml`.
-- Mirrored in **five** places:
-  - `composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/domain/restaurant/Tag.kt`
-  - `composeApp/src/commonMain/composeResources/values{,-zh}/strings.xml`
-  - `composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/ui/components/TagChips.kt` (`tagDisplayName`)
+- Single source of truth: `data/_tags.yaml`. After editing it, run
+  `cd scripts/sync-to-firestore && npm run gen:tags` to regenerate the mirrors.
+- **Generated** from `_tags.yaml` (rewritten between `@gen:tags` fences by
+  `scripts/sync-to-firestore/gen-tags.mjs` — don't hand-edit the fenced regions):
   - `scripts/sync-to-firestore/index.js` (`KNOWN_TAGS`)
   - `web-apps/admin/src/types/restaurant.ts` (`REGIONAL_TAGS` / `FORMAT_TAGS`)
-- CI fails the workflow if these drift (`scripts/sync-to-firestore/check-tags.mjs`).
+  - `composeApp/src/commonMain/composeResources/values{,-zh}/strings.xml`
+    (tag display names — the per-tag `*_desc` editorial strings stay hand-written)
+- **Hand-written** (the compiler keeps these honest — both are exhaustive
+  `when (tag)` over the enum, and `check-tags.mjs` guards the enum itself):
+  - `composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/domain/restaurant/Tag.kt`
+  - `composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/ui/components/TagChips.kt` (`tagDisplayName`)
+- CI fails the workflow if anything drifts (`npm run check:tags` =
+  `gen-tags --check` + `check-tags.mjs`).
 - See `data/README.md` for the full pipeline reference (add a restaurant,
   add a tag, audit Firestore, etc.).
 
@@ -284,8 +290,9 @@ file under `ui/pages/map/`.** A handful of non-obvious things to know:
 2. Submissions can come as CSV / Excel / Google Sheets — dev team
    converts to YAML.
 3. The 22-tag taxonomy is **canonical**. Don't extend it on a one-off
-   basis; if a new tag is needed, follow the five-place update in
-   `data/README.md`.
+   basis; if a new tag is needed, edit `data/_tags.yaml`, run
+   `npm run gen:tags`, add the Kotlin enum + `when` branches, then
+   `npm run check:tags` (see `data/README.md`).
 4. Favourites are wired through the UI (heart toggle on detail screen,
    floating heart badge on the map pill, "Favourites only" filter
    toggle, dedicated heart variant in the dense-marker dot). Visit
