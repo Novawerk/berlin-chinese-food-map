@@ -1,10 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // --- Admin allowlist helpers --------------------------------------------
+    // Who may write to the admin-managed collections is driven by the `admins`
+    // collection: one doc per teammate, keyed by their (lowercased) login
+    // email, e.g. admins/jane@example.com = { role: "admin"|"editor", disabled? }.
+    //
+    // Firestore rules can't lowercase strings, so allowlist doc ids MUST be the
+    // exact (lowercase) email the teammate signs in with. The admin panel
+    // lowercases on create.
+    //
+    // Bootstrap: rules can't detect an empty collection, so seed the FIRST
+    // admin doc by hand (Firebase console) before deploying these rules, or you
+    // will lock everyone out of writes:
+    //   collection "admins", document id "you@example.com",
+    //   fields { email: "you@example.com", role: "admin" }
+    function adminDoc() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.token.email)).data;
+    }
+    function isStaff() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+        && adminDoc().disabled != true;
+    }
+    function isAdminRole() {
+      return isStaff() && adminDoc().role == 'admin';
+    }
+
+    // The allowlist itself. Any signed-in staff member can read it (the panel
+    // needs to resolve its own role); only admins can change who's on the team.
+    match /admins/{email} {
+      allow read: if request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      allow write: if isAdminRole();
+    }
+
     match /restaurants/{restaurantId} {
       allow read: if true;
-      allow write: if request.auth != null
-        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      allow write: if isStaff();
 
       match /visits/{uid} {
         allow read: if true;
@@ -17,16 +51,16 @@ service cloud.firestore {
       }
     }
 
+    // Public team roster — admin-only to edit.
     match /team_members/{memberId} {
       allow read: if true;
-      allow write: if request.auth != null
-        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      allow write: if isAdminRole();
     }
 
+    // Changelog — admin-only to edit.
     match /changelog/{entryId} {
       allow read: if true;
-      allow write: if request.auth != null
-        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      allow write: if isAdminRole();
     }
 
     match /users/{uid} {
@@ -39,15 +73,14 @@ service cloud.firestore {
 
     // In-app feedback. Anonymous users can submit (the app already mints an
     // anonymous uid at startup), but only the uid on the document; only
-    // non-anonymous (admin) users can read or moderate.
+    // allowlisted staff can read or moderate.
     match /feedback/{id} {
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.message is string
         && request.resource.data.message.size() > 0
         && request.resource.data.message.size() <= 5000;
-      allow read, update, delete: if request.auth != null
-        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      allow read, update, delete: if isStaff();
     }
   }
 }

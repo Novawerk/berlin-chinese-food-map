@@ -1,6 +1,6 @@
 import { FirebaseDataProvider } from "react-admin-firebase";
-import { DataProvider } from "ra-core";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { CreateParams, DataProvider } from "ra-core";
+import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 const firebaseConfig = {
@@ -48,10 +48,31 @@ async function logChange(action: string, resource: string, data: Record<string, 
   });
 }
 
+// Admin allowlist docs are keyed by the teammate's login email so the
+// Firestore security rules can look them up via request.auth.token.email.
+// The generic provider would assign an auto id, so create it directly.
+async function createAdmin(params: CreateParams) {
+  const data = params.data as Record<string, unknown>;
+  const email = String(data.email ?? "").trim().toLowerCase();
+  if (!email) throw new Error("Login email is required");
+  const payload = {
+    ...data,
+    email,
+    role: data.role ?? "editor",
+    disabled: data.disabled ?? false,
+    createdAt: serverTimestamp(),
+  };
+  await setDoc(doc(db, "admins", email), payload);
+  return { data: { ...payload, id: email, createdAt: undefined } };
+}
+
 export const dataProvider: DataProvider = {
   ...baseProvider,
 
   async create(resource, params) {
+    if (resource === "admins") {
+      return createAdmin(params);
+    }
     const result = await baseProvider.create(resource, params);
     await logChange("create", resource, result.data as Record<string, unknown>);
     return result;

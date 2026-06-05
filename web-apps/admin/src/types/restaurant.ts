@@ -55,17 +55,33 @@ export interface Chain {
   branch?: string;
 }
 
+export interface GoogleReview {
+  text?: string | null;
+  rating?: number | null;
+  languageCode?: string | null;
+}
+
 export interface GoogleData {
   placeId: string;
   rating?: number;
   userRatingsTotal?: number;
   weekdayText?: string[];
+  // Compact "openMOW-closeMOW" strings (Sunday=0 minute-of-week) the sync
+  // pipeline emits so the mobile client can compute "open now" without
+  // re-parsing locale-specific weekdayText. ["OPEN_24H"] = always open.
+  periods?: string[];
   website?: string;
   googleMapsUrl?: string;
   formattedPhoneNumber?: string;
   formattedAddress?: string;
   photoUrls?: string[];
   coverPhotoUrl?: string;
+  // Tag-suggestion inputs cached by the sync pipeline so re-tagging passes can
+  // run straight from Firestore without re-hitting the Places API.
+  primaryType?: string | null;
+  types?: string[] | null;
+  editorialSummary?: string | null;
+  reviews?: GoogleReview[];
   fetchedAt?: Timestamp;
 }
 

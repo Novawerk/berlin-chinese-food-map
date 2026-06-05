@@ -5,6 +5,27 @@ import { Button } from "@/components/ui/button";
 import { TextInput } from "@/components/admin/text-input";
 import { Notification } from "@/components/admin/notification";
 
+const GoogleIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      fill="#4285F4"
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"
+    />
+    <path
+      fill="#34A853"
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"
+    />
+    <path
+      fill="#EA4335"
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"
+    />
+  </svg>
+);
+
 /**
  * Login page displayed when authentication is enabled and the user is not authenticated.
  *
@@ -20,33 +41,41 @@ export const LoginPage = (props: { redirectTo?: string }) => {
   const login = useLogin();
   const notify = useNotify();
 
+  const onError = (error: unknown) => {
+    setLoading(false);
+    const err = error as { message?: string } | string | undefined;
+    notify(
+      typeof err === "string"
+        ? err
+        : typeof err === "undefined" || !err.message
+          ? "ra.auth.sign_in_error"
+          : err.message,
+      {
+        type: "error",
+        messageArgs: {
+          _:
+            typeof err === "string"
+              ? err
+              : err && err.message
+                ? err.message
+                : undefined,
+        },
+      },
+    );
+  };
+
   const handleSubmit: SubmitHandler<FieldValues> = (values) => {
     setLoading(true);
     login(values, redirectTo)
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        notify(
-          typeof error === "string"
-            ? error
-            : typeof error === "undefined" || !error.message
-              ? "ra.auth.sign_in_error"
-              : error.message,
-          {
-            type: "error",
-            messageArgs: {
-              _:
-                typeof error === "string"
-                  ? error
-                  : error && error.message
-                    ? error.message
-                    : undefined,
-            },
-          },
-        );
-      });
+      .then(() => setLoading(false))
+      .catch(onError);
+  };
+
+  const handleGoogle = () => {
+    setLoading(true);
+    login({ method: "google" }, redirectTo)
+      .then(() => setLoading(false))
+      .catch(onError);
   };
 
   return (
@@ -76,6 +105,21 @@ export const LoginPage = (props: { redirectTo?: string }) => {
               <p className="text-sm leading-none text-muted-foreground">
                 Admin access only
               </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full cursor-pointer"
+              disabled={loading}
+              onClick={handleGoogle}
+            >
+              <GoogleIcon className="mr-2 h-4 w-4" />
+              Sign in with Google
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">or</span>
+              <div className="h-px flex-1 bg-border" />
             </div>
             <Form className="space-y-8" onSubmit={handleSubmit}>
               <TextInput

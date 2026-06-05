@@ -1,6 +1,6 @@
 import { Resource } from "ra-core";
 import { Admin } from "@/components/admin";
-import { UtensilsCrossed, Users, FileText, MessageSquare } from "lucide-react";
+import { UtensilsCrossed, Users, FileText, MessageSquare, ShieldCheck } from "lucide-react";
 import { dataProvider } from "./dataProvider";
 import { authProvider } from "./authProvider";
 import {
@@ -26,6 +26,12 @@ import {
   FeedbackShow,
   FeedbackEdit,
 } from "./resources/feedback";
+import {
+  AdminList,
+  AdminEdit,
+  AdminCreate,
+  AdminShow,
+} from "./resources/admins";
 
 const App = () => (
   <Admin dataProvider={dataProvider} authProvider={authProvider}>
@@ -62,6 +68,18 @@ const App = () => (
       list={FeedbackList}
       show={FeedbackShow}
       edit={FeedbackEdit}
+    />
+    <Resource
+      name="admins"
+      icon={ShieldCheck}
+      options={{ label: "Team Access" }}
+      list={AdminList}
+      edit={AdminEdit}
+      create={AdminCreate}
+      show={AdminShow}
+      recordRepresentation={(record) =>
+        record?.displayName || record?.email || String(record?.id ?? "")
+      }
     />
   </Admin>
 );

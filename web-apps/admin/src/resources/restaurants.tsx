@@ -18,7 +18,7 @@ import {
 } from "@/components/admin";
 import { useUpdate, useRecordContext, useRefresh } from "ra-core";
 import { Button } from "@/components/ui/button";
-import { Download, EyeOff, Eye, Star, ImageOff, Sparkles } from "lucide-react";
+import { Download, EyeOff, Eye, Star, ImageOff, BadgePercent } from "lucide-react";
 import { downloadYamlZip } from "@/lib/export-yaml";
 import { useState } from "react";
 import { REGIONAL_TAGS, FORMAT_TAGS } from "@/types/restaurant";
@@ -183,10 +183,29 @@ const PlaceIdCell = () => {
   return <Check ok={!!placeId} label={placeId ? "✓" : "—"} />;
 };
 
-const FeaturedCell = () => {
+const DiscountCell = () => {
   const record = useRecordContext();
-  return record?.featured ? (
-    <Sparkles className="h-4 w-4 fill-amber-300 text-amber-600" />
+  if (!record?.hasDiscount) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+  const offer =
+    (record?.discountInfo?.zh as string | undefined) ||
+    (record?.discountInfo?.en as string | undefined);
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-rose-600"
+      title={offer ? offer : "Pinwo discount partner"}
+    >
+      <BadgePercent className="h-4 w-4" />
+    </span>
+  );
+};
+
+const PriceCell = () => {
+  const record = useRecordContext();
+  const price = record?.priceRange as string | undefined;
+  return price ? (
+    <span className="tabular-nums">{price}</span>
   ) : (
     <span className="text-muted-foreground">—</span>
   );
@@ -273,8 +292,11 @@ export const RestaurantList = () => (
         <TagsCell />
       </DataTable.Col>
       <DataTable.Col source="address.district" label="District" />
-      <DataTable.Col source="featured" label="★" disableSort>
-        <FeaturedCell />
+      <DataTable.Col source="priceRange" label="€" disableSort>
+        <PriceCell />
+      </DataTable.Col>
+      <DataTable.Col source="hasDiscount" label="优惠" disableSort>
+        <DiscountCell />
       </DataTable.Col>
       <DataTable.Col label="Chain" disableSort>
         <ChainCell />
@@ -294,7 +316,6 @@ export const RestaurantList = () => (
       <DataTable.Col source="hidden" label="State" disableSort>
         <HiddenCell />
       </DataTable.Col>
-      <DataTable.Col source="visitCount" label="Visits" />
       <DataTable.Col source="viewCount" label="Views" />
       <DataTable.Col label="" disableSort>
         <ToggleHiddenButton />
@@ -328,6 +349,17 @@ const RestaurantForm = () => (
     <NumberInput source="longitude" label="Longitude" isRequired />
 
     <TextInput
+      source="phone"
+      label="Phone"
+      helperText="Manual phone number. Google's synced number shows separately on the detail view."
+    />
+    <TextInput
+      source="priceRange"
+      label="Price range"
+      helperText="€, €€, or €€€."
+    />
+
+    <TextInput
       source="placeId"
       label="Google placeId"
       helperText="Powers ratings, hours, photos sync. Leave empty to skip enrichment."
@@ -337,11 +369,6 @@ const RestaurantForm = () => (
     <TextInput source="description.zh" label="Description (Chinese)" multiline />
     <TextInput source="description.de" label="Description (German)" multiline />
 
-    <BooleanInput
-      source="featured"
-      label="Featured (柏林慢慢游甄选)"
-      defaultValue={false}
-    />
     <BooleanInput
       source="hasDiscount"
       label="Discount partner (Pinwo 合作优惠)"
@@ -364,6 +391,12 @@ const RestaurantForm = () => (
       helperText="Set on every branch sharing the same operator."
     />
     <TextInput source="chain.branch" label="Branch label" />
+
+    <TextInput
+      source="logoUrl"
+      label="Logo URL"
+      helperText="Optional brand logo. Falls back to gallery / Google cover when empty."
+    />
 
     <ArrayInput source="galleries" label="Manual gallery URLs">
       <SimpleFormIterator inline>
@@ -398,6 +431,62 @@ const TagsPanel = () => {
       {tags.map((tag, i) => (
         <TagChip key={tag} tag={tag} primary={i === 0} />
       ))}
+    </div>
+  );
+};
+
+// Decode the sync pipeline's compact "openMOW-closeMOW" period strings
+// (MOW = day*1440 + hour*60 + minute, Sunday = 0) into readable ranges so an
+// admin can sanity-check the "open now" signal against the weekdayText below.
+// Mirrors encodePeriods() in scripts/sync-to-firestore/index.js.
+const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const fmtMow = (mow: number): string => {
+  const day = Math.floor(mow / 1440) % 7;
+  const minutesIntoDay = mow % 1440;
+  const hh = String(Math.floor(minutesIntoDay / 60)).padStart(2, "0");
+  const mm = String(minutesIntoDay % 60).padStart(2, "0");
+  return `${DOW[day]} ${hh}:${mm}`;
+};
+
+const decodePeriod = (p: string): string => {
+  const [open, close] = p.split("-");
+  const o = Number(open);
+  const c = Number(close);
+  if (!Number.isFinite(o) || !Number.isFinite(c)) return p;
+  return `${fmtMow(o)} → ${fmtMow(c)}`;
+};
+
+const OpeningPeriods = ({ periods }: { periods?: string[] }) => {
+  if (!periods || periods.length === 0) {
+    return (
+      <div>
+        <span className="text-muted-foreground">Structured hours:</span> —
+      </div>
+    );
+  }
+  if (periods.length === 1 && periods[0] === "OPEN_24H") {
+    return (
+      <div>
+        <span className="text-muted-foreground">Structured hours:</span>{" "}
+        <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-700">
+          Open 24h
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <div className="text-muted-foreground mb-1">
+        Structured hours ({periods.length} periods — drives "open now"):
+      </div>
+      <ul className="space-y-0.5">
+        {periods.map((p) => (
+          <li key={p} className="font-mono text-xs">
+            {decodePeriod(p)}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
@@ -462,6 +551,49 @@ const GoogleDataPanel = () => {
           </ul>
         </div>
       )}
+      <OpeningPeriods periods={g.periods} />
+      {(g.primaryType || (g.types && g.types.length > 0) || g.editorialSummary || (g.reviews && g.reviews.length > 0)) && (
+        <div className="border-t pt-3">
+          <div className="text-muted-foreground mb-1 text-xs uppercase">
+            Tag-suggestion inputs (cached)
+          </div>
+          {g.primaryType && (
+            <div>
+              <span className="text-muted-foreground">Primary type:</span>{" "}
+              <code className="text-xs">{g.primaryType}</code>
+            </div>
+          )}
+          {g.types && g.types.length > 0 && (
+            <div>
+              <span className="text-muted-foreground">Types:</span>{" "}
+              <code className="text-xs">{g.types.join(", ")}</code>
+            </div>
+          )}
+          {g.editorialSummary && (
+            <div className="mt-1">
+              <span className="text-muted-foreground">Editorial summary:</span>{" "}
+              {g.editorialSummary}
+            </div>
+          )}
+          {g.reviews && g.reviews.length > 0 && (
+            <details className="mt-1">
+              <summary className="cursor-pointer text-muted-foreground">
+                Reviews ({g.reviews.length})
+              </summary>
+              <ul className="mt-1 space-y-1">
+                {g.reviews.map((rv, i: number) => (
+                  <li key={i} className="text-xs">
+                    {typeof rv.rating === "number" && (
+                      <span className="font-medium">{rv.rating.toFixed(1)}★ </span>
+                    )}
+                    {rv.text ?? "(no text)"}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
       {g.coverPhotoUrl && (
         <div>
           <div className="text-muted-foreground mb-1">Cover photo:</div>
@@ -524,10 +656,12 @@ export const RestaurantShow = () => (
       <TextField source="address.postalCode" />
       <NumberField source="latitude" />
       <NumberField source="longitude" />
+      <TextField source="phone" label="Phone" />
+      <TextField source="priceRange" label="Price range" />
+      <TextField source="logoUrl" label="Logo URL" />
       <TextField source="description.zh" />
       <TextField source="description.en" />
       <TextField source="description.de" />
-      <BooleanField source="featured" label="Featured (甄选)" />
       <BooleanField source="hasDiscount" label="Discount partner (优惠)" />
       <TextField source="discountInfo.zh" label="Offer text (中文)" />
       <TextField source="discountInfo.en" label="Offer text (English)" />
@@ -536,7 +670,6 @@ export const RestaurantShow = () => (
       <TextField source="chain.brand" label="Chain brand" />
       <TextField source="chain.branch" label="Branch label" />
       <TextField source="placeId" label="Google placeId" />
-      <NumberField source="visitCount" />
       <NumberField source="viewCount" />
       <BooleanField source="hidden" />
       <div className="my-4 border-t pt-4">
