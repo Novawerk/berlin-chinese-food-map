@@ -28,3 +28,4 @@ admin/.env
 # scripts/sync-to-firestore/{dump-firestore,tag-from-places}.mjs).
 data/firestore-dump/
 data/places-tag-suggestions.csv
+.env*.local

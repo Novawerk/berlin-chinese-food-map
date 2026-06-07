@@ -32,9 +32,14 @@ import {
   AdminCreate,
   AdminShow,
 } from "./resources/admins";
+import { Dashboard } from "./pages/Dashboard";
 
 const App = () => (
-  <Admin dataProvider={dataProvider} authProvider={authProvider}>
+  <Admin
+    dataProvider={dataProvider}
+    authProvider={authProvider}
+    dashboard={Dashboard}
+  >
     <Resource
       name="restaurants"
       icon={UtensilsCrossed}
