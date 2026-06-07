@@ -334,19 +334,26 @@ private fun MainShell(
     }
 
     detailRestaurantId?.let { id ->
-        val sheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true,
-        )
-        ModalBottomSheet(
-            onDismissRequest = { onDetailIdChange(null) },
-            sheetState = sheetState,
-        ) {
-            DetailScreen(
-                restaurantId = id,
-                repository = restaurantRepository,
-                favoritesRepository = favoritesRepository,
-                authService = authService,
+        // Resolve from the in-memory store — the detail sheet is only opened by
+        // tapping something already loaded, so this is present without a
+        // network round-trip. If it ever isn't (e.g. a stale id), skip the
+        // sheet rather than show a blank or crash.
+        val restaurant = mapViewModel.allRestaurants.firstOrNull { it.id == id }
+        if (restaurant != null) {
+            val sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
             )
+            ModalBottomSheet(
+                onDismissRequest = { onDetailIdChange(null) },
+                sheetState = sheetState,
+            ) {
+                DetailScreen(
+                    restaurant = restaurant,
+                    repository = restaurantRepository,
+                    favoritesRepository = favoritesRepository,
+                    authService = authService,
+                )
+            }
         }
     }
 }
