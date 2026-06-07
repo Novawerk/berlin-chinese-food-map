@@ -13,3 +13,6 @@ chain:
   brand: Han West
   branch: Wedding
 placeId: ChIJJXnGMy9RqEcRuMs38oCYX0A
+# Hidden 2026-06-07: venue turnover. Partner data shows Wen Cheng (Burgsdorfer)
+# now operating at this exact address (Burgsdorfstraße 7); Han West is gone.
+hidden: true

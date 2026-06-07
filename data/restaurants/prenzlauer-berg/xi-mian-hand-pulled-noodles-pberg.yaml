@@ -12,3 +12,6 @@ longitude: 13.4140012
 chain:
   brand: Xi Mian Hand-Pulled Noodles
   branch: Pberg
+# Hidden 2026-06-07: partner packet summary flags this identity_unresolved
+# (not_ready). Unhide once the venue is confirmed.
+hidden: true
