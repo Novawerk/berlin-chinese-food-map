@@ -13,3 +13,6 @@ chain:
   brand: HanWest
   branch: Neukölln
 placeId: ChIJo90A-YNPqEcRi6yGbEFZiao
+# Hidden 2026-06-07: venue turnover. Partner data shows Wen Cheng (Selchower)
+# now operating at this exact address (Selchower Str. 20); HanWest is gone.
+hidden: true

@@ -10,3 +10,6 @@ address:
 latitude: 52.4773112
 longitude: 13.4649213
 placeId: ChIJ086SlPBPqEcRZXu30lJqHVk
+# Hidden 2026-06-07: partner packet summary flags this temporarily_closed
+# (closed_or_relocated). Unhide if it reopens.
+hidden: true
