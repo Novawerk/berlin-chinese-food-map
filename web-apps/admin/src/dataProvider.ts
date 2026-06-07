@@ -1,16 +1,7 @@
 import { FirebaseDataProvider } from "react-admin-firebase";
 import { CreateParams, DataProvider } from "ra-core";
 import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "./firebase";
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "novawerk-7dd18",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
+import { db, firebaseConfig } from "./firebase";
 
 const baseProvider = FirebaseDataProvider(firebaseConfig, {
   logging: false,
