@@ -103,13 +103,19 @@ private const val PINWO_OFFER_URL = "https://pinwo.de"
  */
 @Composable
 fun DetailScreen(
-    restaurantId: String,
+    restaurant: Restaurant,
     repository: RestaurantRepository,
     favoritesRepository: FavoritesRepository,
     authService: AuthService,
 ) {
-    var restaurant by remember(restaurantId) { mutableStateOf<Restaurant?>(null) }
-    var loading by remember(restaurantId) { mutableStateOf(true) }
+    // The restaurant is handed in already-resolved from the in-memory
+    // RestaurantStore (the only ways to open this sheet — map marker, search,
+    // favorites — all source from it). No network read here means no spinner,
+    // no empty/error state, and no risk of an uncaught Firestore exception
+    // aborting the process on iOS. View tracking below is the only IO, and
+    // it's best-effort.
+    val r = restaurant
+    val restaurantId = r.id
     val urlLauncher = rememberUrlLauncher()
     val scope = rememberCoroutineScope()
 
@@ -118,28 +124,13 @@ fun DetailScreen(
     val isFavorite = restaurantId in favorites
 
     LaunchedEffect(restaurantId) {
-        restaurant = repository.getById(restaurantId)
-        loading = false
-
-        // Track view (best-effort — fails silently if anonymous auth hasn't
-        // landed yet on first launch).
+        // Track view (best-effort — silently no-ops on failure or if anonymous
+        // auth hasn't landed yet on first launch; see incrementViewCount).
         val uid = authService.getCurrentUid()
         if (uid != null) {
             repository.incrementViewCount(restaurantId, uid)
         }
     }
-
-    if (loading) {
-        Box(
-            Modifier.fillMaxWidth().padding(vertical = 48.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    val r = restaurant ?: return
     val photos = remember(r.galleries, r.googleData?.photoUrls) {
         buildList {
             addAll(r.galleries)

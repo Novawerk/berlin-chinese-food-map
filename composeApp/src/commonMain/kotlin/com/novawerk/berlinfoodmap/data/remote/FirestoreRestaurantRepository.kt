@@ -36,8 +36,16 @@ class FirestoreRestaurantRepository : RestaurantRepository {
         }
 
     override suspend fun getById(id: String): Restaurant? {
-        val doc = restaurantsRef.document(id).get()
-        return if (doc.exists) doc.toRestaurant() else null
+        // Resilient against transient Firestore failures (e.g. UNAVAILABLE on
+        // flaky mobile data): an uncaught FirebaseFirestoreException thrown from
+        // a `launch`/`LaunchedEffect` coroutine aborts the whole process on
+        // Kotlin/Native (iOS). Callers treat null as "not found / show empty".
+        return try {
+            val doc = restaurantsRef.document(id).get()
+            if (doc.exists) doc.toRestaurant() else null
+        } catch (_: Exception) {
+            null
+        }
     }
 
     override suspend fun search(query: String): List<Restaurant> {
@@ -72,24 +80,34 @@ class FirestoreRestaurantRepository : RestaurantRepository {
     }
 
     override suspend fun incrementViewCount(restaurantId: String, uid: String) {
-        val viewRef = restaurantsRef.document(restaurantId)
-            .collection("views").document(uid)
+        // Best-effort: this fires from DetailScreen's LaunchedEffect, and the
+        // views/{uid} doc isn't in the persistent cache, so the get() below
+        // needs the network. On flaky mobile data Firestore throws
+        // FirebaseFirestoreException (UNAVAILABLE) — left uncaught it aborts the
+        // whole process on Kotlin/Native (iOS). View tracking is non-critical,
+        // so swallow any failure rather than crash the detail screen.
+        try {
+            val viewRef = restaurantsRef.document(restaurantId)
+                .collection("views").document(uid)
 
-        val existing = viewRef.get()
-        if (existing.exists) {
-            viewRef.update(
-                "viewedAt" to Timestamp.now().seconds,
-                "count" to FieldValue.increment(1),
-            )
-        } else {
-            val data: Map<String, Any> = mapOf(
-                "viewedAt" to Timestamp.now().seconds,
-                "count" to 1,
-            )
-            viewRef.set(data)
+            val existing = viewRef.get()
+            if (existing.exists) {
+                viewRef.update(
+                    "viewedAt" to Timestamp.now().seconds,
+                    "count" to FieldValue.increment(1),
+                )
+            } else {
+                val data: Map<String, Any> = mapOf(
+                    "viewedAt" to Timestamp.now().seconds,
+                    "count" to 1,
+                )
+                viewRef.set(data)
+            }
+            // Count is tracked via sub-collection; no direct restaurant doc update
+            // to avoid PERMISSION_DENIED for anonymous users
+        } catch (_: Exception) {
+            // ignore — view tracking is best-effort
         }
-        // Count is tracked via sub-collection; no direct restaurant doc update
-        // to avoid PERMISSION_DENIED for anonymous users
     }
 }
 
