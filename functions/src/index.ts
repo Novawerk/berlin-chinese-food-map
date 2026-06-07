@@ -27,6 +27,12 @@ initializeApp();
 // (europe-west3 / Frankfurt) so trigger reads/writes don't cross regions.
 setGlobalOptions({ region: "europe-west3", maxInstances: 5 });
 
+// `analyticsReport` — callable that proxies the GA4 Data API for the admin
+// dashboard (see analytics.ts). Re-exported here so it's part of the
+// deployed function set. It pins its own region explicitly because this
+// import runs before setGlobalOptions() above.
+export { analyticsReport } from "./analytics";
+
 /**
  * Mirrors the diff in `count` from a single user's view doc up to the
  * parent restaurant's `viewCount` field, atomically.

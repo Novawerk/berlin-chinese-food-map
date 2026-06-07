@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getFunctions } from "firebase/functions";
 
 // Trim env values: Vercel-configured vars can carry a trailing newline, which
 // poisons the auth iframe URL ("Illegal url for new iframe ...%0A").
@@ -18,3 +19,6 @@ export const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+// Callable functions live in europe-west3 (see functions/src/index.ts) —
+// the region must match or `httpsCallable` resolves the wrong endpoint.
+export const functions = getFunctions(app, "europe-west3");
