@@ -1,0 +1,3 @@
+/* Localised CFBundleDisplayName — overrides INFOPLIST_KEY_CFBundleDisplayName
+   in the build settings when the device locale is English. */
+CFBundleDisplayName = "Berlin Chinese Food";

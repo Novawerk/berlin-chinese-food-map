@@ -1,0 +1,20 @@
+name:
+  en: Xi Mian Hand-Pulled Noodles (Mitte)
+  zh: 喜面
+tags:
+  - NOODLES
+address:
+  addressLine1: Invalidenstraße 159
+  postalCode: "10115"
+  district: Mitte
+latitude: 52.5323713
+longitude: 13.3973941
+chain:
+  brand: Xi Mian Hand-Pulled Noodles
+  branch: Mitte
+placeId: ChIJRXaOXF9RqEcRLgDDy_GPsaE
+
+hasDiscount: true
+discountInfo:
+  zh: "免费饮料/前菜"
+  en: "Free drink/starter"

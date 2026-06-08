@@ -1,0 +1,15 @@
+name:
+  en: Rotbohnen (Fhain)
+  zh: 红豆中餐馆
+tags:
+  - STREET_FOOD
+address:
+  addressLine1: Boxhagener Str. 55
+  postalCode: "10245"
+  district: Friedrichshain
+latitude: 52.5075241
+longitude: 13.4675199
+chain:
+  brand: Rotbohnen
+  branch: Fhain
+placeId: ChIJQWHHKQtPqEcRMhPswVnLjq0

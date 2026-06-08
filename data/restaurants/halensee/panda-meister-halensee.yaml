@@ -1,0 +1,15 @@
+name:
+  en: Panda Meister (Halensee)
+  zh: 熊猫师傅
+tags:
+  - STREET_FOOD
+address:
+  addressLine1: Westfälische Str. 46
+  postalCode: "10711"
+  district: Halensee
+latitude: 52.4968375
+longitude: 13.2924774
+chain:
+  brand: Panda Meister
+  branch: Halensee
+placeId: ChIJY4EaZTBRqEcRkWyxyHPzfEI

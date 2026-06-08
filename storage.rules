@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Pipeline-uploaded Place photos — world-readable, write only via the
+    // admin SDK in the sync script.
+    match /places/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Default: locked down. Tighten further per-feature when needed.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

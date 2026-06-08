@@ -1,0 +1,20 @@
+name:
+  en: Mr. Noodle Chen (Fhain)
+  zh: 陈香贵
+tags:
+  - NOODLES
+address:
+  addressLine1: Niederbarnimstraße 4
+  postalCode: "10247"
+  district: Friedrichshain
+latitude: 52.5144407
+longitude: 13.4590749
+chain:
+  brand: Mr. Noodle Chen
+  branch: Fhain
+placeId: ChIJuwTEGWxPqEcRemnAub4x0tg
+
+hasDiscount: true
+discountInfo:
+  zh: "+1欧换凉菜"
+  en: "+1€ free cold dish"

@@ -1,0 +1,43 @@
+name: Sync Restaurants to Firestore
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/restaurants/**"
+  workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: "Bypass the 14-day Place Details cache and re-fetch every restaurant (use after pipeline schema changes)"
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: scripts/sync-to-firestore
+        run: npm ci
+
+      # Fail fast before we burn API quota: reject restaurant YAMLs that
+      # reference an unknown tag. Mirror/codegen drift is gated separately on
+      # every push/PR (Android Build + Tests), since those files live outside
+      # this workflow's data/restaurants/** trigger.
+      - name: Validate restaurant tags
+        working-directory: scripts/sync-to-firestore
+        run: node check-tags.mjs
+
+      - name: Sync to Firestore
+        working-directory: scripts/sync-to-firestore
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: node index.js ${{ inputs.force_refresh && '--force-refresh' || '' }}

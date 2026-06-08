@@ -1,0 +1,15 @@
+name:
+  en: Chen’s Noodle House (Neukölln 1)
+  zh: 陈记牛肉面馆
+tags:
+  - NOODLES
+address:
+  addressLine1: Karl-Marx-Straße 78
+  postalCode: "12043"
+  district: Neukölln
+latitude: 52.4815003
+longitude: 13.4340353
+chain:
+  brand: Chen’s Noodle House
+  branch: Neukölln 1
+placeId: ChIJ13SYNQBPqEcRP2UKYnRjk-M

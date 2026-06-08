@@ -1,0 +1,17 @@
+name:
+  en: Shu Wei Ji
+  zh: 蜀味记
+tags:
+  - SICHUAN
+  - NOODLES
+address:
+  addressLine1: Anton-Wilhelm-Amo-Str. 50
+  postalCode: "10117"
+  district: Mitte
+latitude: 52.5118
+longitude: 13.3894
+
+hasDiscount: true
+discountInfo:
+  zh: "免费酒水/凉菜"
+  en: "Free drink/starter"

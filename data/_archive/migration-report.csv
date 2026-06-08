@@ -1,0 +1,208 @@
+id,zh,en,district,old_cuisine,new_tags,featured,editorialNote_zh,chain_brand,chain_branch,csv_matched
+howhow,好好酒楼,HowHow,Wittnau,,,,,,,yes
+yan-huo-bbq-hotpot,宴火,Yan Huo BBQ&Hotpot,Westend,,BBQ|HOTPOT,,,,,yes
+wunderbau,恩典之家,Wunderbau,Wilmersdorf,,,,,,,yes
+wiling,威玲,Wiling,Wilmersdorf,,,,,,,yes
+ting-song-hotpot,随园·听松,Ting Song Hotpot,Wilmersdorf,,HOTPOT,,,,,yes
+tianfu,天府酒家,Tianfu,Wilmersdorf,,,,,,,yes
+shaniu-s-market-bistro,傻妞便利店,Shaniu‘s Market/Bistro,Wilmersdorf,,STREET_FOOD,,,,,yes
+shaniu-s-house-of-noodles-wilmersdorf,傻妞面馆,Shaniu‘s House of Noodles (Wilmersdorf),Wilmersdorf,,NOODLES,,,Shaniu‘s House of Noodles,Wilmersdorf,yes
+noodle-point,想见面,Noodle Point,Wilmersdorf,,NOODLES,,,,,yes
+mr-liu,Mr. Liu,Mr. Liu,Wilmersdorf,,,,,,,yes
+meet-you,宴遇,Meet You,Wilmersdorf,,CANTONESE|BREAKFAST|DIM_SUM,yes,中式早餐｜周末点心｜海鲜粤菜,,,yes
+mandarine-bowl,小桔碗,Mandarine Bowl,Wilmersdorf,,STREET_FOOD,,,,,yes
+lychee,Lychee,Lychee,Wilmersdorf,,,,,,,yes
+lon-min,龙门,Lon-Min,Wilmersdorf,,,,,,,yes
+hou-tang-hotpot,吼堂火锅,Hou Tang Hotpot,Wilmersdorf,,SICHUAN|HOTPOT,yes,成都火锅｜锅底讲究｜适合团体,,,yes
+hot-spot,聚友阁,Hot Spot,Wilmersdorf,,,,,,,yes
+feast,王家一号,Feast,Wilmersdorf,,,,,,,yes
+chen-s-teehaus,陈氏茶缘,Chen‘s Teehaus,Wilmersdorf,,STREET_FOOD|TEA_HOUSE,,,,,yes
+uuu,UUU,UUU,Wedding,,FUSION,yes,现代中餐｜分享套餐｜茶饮配对,,,yes
+szechuan-kueche,椒点私厨,SzeChuan Küche,Wedding,,SICHUAN,,,,,yes
+mr-noodle-chen-wedding,陈香贵,Mr. Noodle Chen (Wedding),Wedding,,MUSLIM|NOODLES,yes,兰州拉面｜现拉现煮｜连锁首店,Mr. Noodle Chen,Wedding,yes
+leis-kueche,蕾小厨湘菜馆,Lei’s Küche,Wedding,,HUNAN,,,,,yes
+han-west-wedding,Han West (Wedding),Han West (Wedding),Wedding,,STREET_FOOD,,,Han West,Wedding,yes
+asia-deli,美食家,Asia Deli,Wedding,,STREET_FOOD,,,,,yes
+shaniu-s-house-of-noodles-tiergarten,傻妞面馆,Shaniu‘s House of Noodles (Tiergarten),Tiergarten,,SICHUAN|NOODLES,yes,手工面条｜川味小馆｜午餐很稳,Shaniu‘s House of Noodles,Tiergarten,yes
+mao-zeit,Mao Zeit,Mao Zeit,Tiergarten,,SICHUAN|MALATANG,,,,,yes
+jian-bing-town,煎饼堂,Jian Bing Town,Tiergarten,,BAKERY|STREET_FOOD,,,,,yes
+chens-noodle-house-tiergarten,陈记牛肉面馆,Chen’s Noodle House (Tiergarten),Tiergarten,,NOODLES,,,Chen’s Noodle House,Tiergarten,yes
+good-aroma,Good Aroma,Good Aroma,Tempelhof,,STREET_FOOD,,,,,yes
+sun-wah,新华,Sun Wah,Tegel,,,,,,,yes
+pongs-china-restaurant,Pong's China Restaurant,Pong's China Restaurant,Tegel,,,,,,,yes
+lucky,福仁,Lucky,Tegel,,,,,,,yes
+yangguofu-steglitz,杨国福,Yangguofu (Steglitz),Steglitz,,SICHUAN|MALATANG,,,Yangguofu,Steglitz,yes
+sichuan,四川饭店,Sichuan,Steglitz,,SICHUAN,,,,,yes
+jing-yang,新景阳,Jing Yang,Steglitz,,,,,,,yes
+hee-lam-mun,喜临门,Hee Lam Mun,Steglitz,,,,,,,yes
+fu-li-lai,福利来,Fu Li Lai,Steglitz,,,,,,,yes
+regent,Regent,Regent,Spandau,,,,,,,yes
+peking-perle,Peking Perle,Peking Perle,Spandau,,NORTHERN,,,,,yes
+man-far,万花酒楼,Man-Far,Spandau,,,,,,,yes
+macao,澳门酒楼,Macao,Spandau,,,,,,,yes
+king-men,King-Men,King-Men,Spandau,,,,,,,yes
+evergreen,长青酒楼,Evergreen,Spandau,,,,,,,yes
+all-seasons,五湖四海,All seasons,Spandau,,,,,,,yes
+tianfuzius,天府子,Tianfuzius,Schöneberg,,VEGETARIAN,,,,,yes
+mankee,文记,Mankee,Schöneberg,,,,,,,yes
+goji,永记,Goji,Schöneberg,,STREET_FOOD,,,,,yes
+chichikan,吃吃看,Chichikan,Schöneberg,,,,,,,yes
+bingery,Bingery,Bingery,Schöneberg,,STREET_FOOD,,,,,yes
+7-dumpling,7 Dumpling,7 Dumpling,Schöneberg,,DUMPLINGS|STREET_FOOD,,,,,yes
+rosengarten,玫瑰苑,Rosengarten,Schmargendorf,,,,,,,yes
+dschunke,帆船酒楼,Dschunke,Schmargendorf,,,,,,,yes
+wan-loi,云涞,Wan-Loi,Rudow,,,,,,,yes
+panda-ii,熊猫酒楼,Panda II,Rudow,,,,,,,yes
+happy-panda,Happy Panda,Happy Panda,Rudow,,,,,,,yes
+hua-li-du,华丽都,Hua Li Du,Pankow,,,,,,,yes
+china-town,China Town,China Town,Pankow,,STREET_FOOD,,,,,yes
+yummy-dumpling,Yummy Dumpling,Yummy Dumpling,Prenzlauer Berg,,DUMPLINGS|STREET_FOOD,,,,,yes
+xi-mian-hand-pulled-noodles-pberg,喜面,Xi Mian Hand-Pulled Noodles (Pberg),Prenzlauer Berg,,NOODLES,,,Xi Mian Hand-Pulled Noodles,Pberg,yes
+wok-show,北方水饺,Wok Show,Prenzlauer Berg,,DUMPLINGS,,,,,yes
+wen-cheng-pberg-2,Wen Cheng (Pberg 2),Wen Cheng (Pberg 2),Prenzlauer Berg,,NOODLES,,,Wen Cheng,Pberg 2,yes
+wen-cheng-pberg-1,Wen Cheng (PBerg 1),Wen Cheng (PBerg 1),Prenzlauer Berg,,NOODLES,,,Wen Cheng,PBerg 1,yes
+wei-dao-jia,味道佳,Wei Dao Jia,Prenzlauer Berg,,,,,,,yes
+the-butterfly-lovers,The Butterfly Lovers,The Butterfly Lovers,Prenzlauer Berg,,VEGETARIAN,,,,,yes
+susu-vegan-food,素素,Susu Vegan Food,Prenzlauer Berg,,VEGETARIAN,,,,,yes
+shanshan,姗姗小屋,Shanshan,Prenzlauer Berg,,,,,,,yes
+phoenix-buffet,凤凰酒楼,Phönix Buffet,Prenzlauer Berg,,,,,,,yes
+mayflower,五月花,Mayflower,Prenzlauer Berg,,,,,,,yes
+marubi,马路边,Marubi,Prenzlauer Berg,,STREET_FOOD,,,,,yes
+lecker-song,Lecker Song,Lecker Song,Prenzlauer Berg,,STREET_FOOD,,,,,yes
+lao-xiang,老乡,Lao Xiang,Prenzlauer Berg,,CANTONESE|DIM_SUM,yes,广式点心｜周末早茶｜北边最强,,,yes
+kongfu-chili,功夫辣椒,Kongfu Chili,Prenzlauer Berg,,SICHUAN|NOODLES,,,,,yes
+kong-chinese-noodle-restaurant,空,Kong Chinese Noodle Restaurant,Prenzlauer Berg,,NOODLES,,,,,yes
+hi-chili,海椒,Hi! Chili,Prenzlauer Berg,,SICHUAN|STREET_FOOD,,,,,yes
+dot-tea-bar,一点茶寮,Dot Tea Bar,Prenzlauer Berg,,STREET_FOOD|TEA_HOUSE,yes,功夫茶｜茶配小食｜白天茶夜酒,,,yes
+donghailou-restaurant,东海楼,Donghailou Restaurant,Prenzlauer Berg,,,,,,,yes
+bao-gao-club-pberg,包饺会,Bao Gao Club (PBerg),Prenzlauer Berg,,DUMPLINGS|STREET_FOOD,,,Bao Gao Club,PBerg,yes
+hanwest-neukoelln,HanWest (Neukölln),HanWest (Neukölln),Neukölln,,STREET_FOOD,,,HanWest,Neukölln,yes
+gaststaette-suedpol,南吉,Gaststätte Südpol,Neukölln,,BBQ,,,,,yes
+fu-long,富隆酒楼,Fu-Long,Neukölln,,,,,,,yes
+chens-noodle-house-neukoelln-2,陈记牛肉面馆,Chen’s Noodle House (Neukölln 2),Neukölln,,NOODLES,,,Chen’s Noodle House,Neukölln 2,yes
+chens-noodle-house-neukoelln-1,陈记牛肉面馆,Chen’s Noodle House (Neukölln 1),Neukölln,,NOODLES,,,Chen’s Noodle House,Neukölln 1,yes
+beef-house,牛稼莊,Beef House,Neukölln,,STREET_FOOD,,,,,yes
+asia-farmhouse,农夫乐,Asia Farmhouse,Neukölln,,STREET_FOOD,,,,,yes
+xin-hui-city,新会城,Xin Hui City,Moabit,,STREET_FOOD,,,,,yes
+panda-meister-moabit,熊猫师傅,Panda Meister (Moabit),Moabit,,STREET_FOOD,,,Panda Meister,Moabit,yes
+jujus-dumplings,JuJu's Dumplings,JuJu's Dumplings,Moabit,,DUMPLINGS|STREET_FOOD,,,,,yes
+neu-wuzhou,新五洲饭店,Neu Wuzhou,Marzahn,,,,,,,yes
+tai-lee,大利,Tai Lee,Marienfelde,,,,,,,yes
+happy-buddha,佛笑楼,Happy Buddha,Marienfelde,,,,,,,yes
+zhou-s-fine,周家,Zhou´s Fine,Reinickendorf,,,,,,,yes
+long-li-house,龙利阁,Long Li House,Reinickendorf,,,,,,,yes
+yumcha-heroes,饮茶英雄,Yumcha Heroes,Mitte,,DIM_SUM|STREET_FOOD,,,,,yes
+yangguofu-mitte,杨国福,Yangguofu (Mitte),Mitte,,SICHUAN|MALATANG,,,Yangguofu,Mitte,yes
+xi-mian-hand-pulled-noodles-mitte,喜面,Xi Mian Hand-Pulled Noodles (Mitte),Mitte,,NOODLES,,,Xi Mian Hand-Pulled Noodles,Mitte,yes
+toca-rouge,Toca Rouge,Toca Rouge,Mitte,,STREET_FOOD,,,,,yes
+the-tree-noodle-house,The Tree Noodle House,The Tree Noodle House,Mitte,,NOODLES,,,,,yes
+the-noodle-town-mitte,The Noodle Town (Mitte),The Noodle Town (Mitte),Mitte,,NOODLES,,,The Noodle Town,Mitte,yes
+shu-wei-ji,蜀味记,Shu Wei Ji,Mitte,,SICHUAN|NOODLES,,,,,yes
+sanku-maotsai-mitte,三顾冒菜,Sanku Maots'ai (Mitte),Mitte,,SICHUAN|MALATANG,yes,单人冒菜｜自选称重｜麻辣上头,Sanku Maots'ai,Mitte,yes
+prince,太子,Prince,Mitte,,,,,,,yes
+peking-ente,太和饭殿,Peking Ente,Mitte,,NORTHERN,,,,,yes
+noodle-plus,宾临城下,Noodle Plus,Mitte,,NOODLES,,,,,yes
+nis-restaurant,倪记,Ni’s Restaurant,Mitte,,SHANGHAINESE,yes,江南菜系｜小笼招牌｜精致家常,,,yes
+ming-dynastie-jannowitzbruecke,大明酒家,Ming Dynastie (Jannowitzbrücke),Mitte,,DIM_SUM,yes,老牌酒家｜点心师傅｜大桌聚餐,Ming Dynastie,Jannowitzbrücke,yes
+mibap,米吧,MIBAP,Mitte,,TAIWANESE|STREET_FOOD,yes,台式便当｜手作健康｜日常首选,,,yes
+lucky-star,全家福,Lucky Star,Mitte,,,,,,,yes
+liu-nudelhaus,Liu成都味道面馆,Liu Nudelhaus,Mitte,,SICHUAN|NOODLES,,,,,yes
+jolly,嘉乐,Jolly,Mitte,,NORTHERN|NOODLES,yes,北京烤鸭｜体面老派｜景点旁边,,,yes
+dump-ling,Dump Ling,Dump Ling,Mitte,,STREET_FOOD,,,,,yes
+chuwoo,初伍,CHUWOO,Mitte,,STREET_FOOD,,,,,yes
+chuan-garden,川园,Chuan Garden,Mitte,,SICHUAN,,,,,yes
+chongqing-nudeln,碗里香重庆小面,Chongqing-Nudeln,Mitte,,SICHUAN|NOODLES|STREET_FOOD,,,,,yes
+china-city,中国城大酒楼,China City,Mitte,,,yes,市中心｜大型酒楼｜圆桌聚餐,,,yes
+bang-bang-noodles-mitte,Bang Bang Noodles (Mitte),Bang Bang Noodles (Mitte),Mitte,,NOODLES,,,Bang Bang Noodles,Mitte,yes
+wens-kueche,文厨房,Wen’s Küche,Mariendorf,,STREET_FOOD,,,,,yes
+royal-garden,帝苑,Royal Garden,Lichterfelde,,,,,,,yes
+lala-noodle-of-sichuan,一面之缘,LaLa Noodle of Sichuan,Lichterfelde,,SICHUAN|NOODLES,,,,,yes
+golden-garden,金色花园,Golden Garden,Lichterfelde,,,,,,,yes
+china-town-lichtenrade,兄弟城,China-Town,Lichtenrade,,,,,,,yes
+zhous-five,Zhou's Five,Zhou's Five,Lichtenberg,,,,,,,yes
+mingtastic,大明见面,MingTastic,Lichtenberg,,HOTPOT|NOODLES,,,,,yes
+hongkong-canteen,旺角花园,Hongkong Canteen,Lankwitz,,CANTONESE,,,,,yes
+feng-yuan,丰源饭店,Feng Yuan,Lankwitz,,,,,,,yes
+zhong-hua,中华饭店,Zhong Hua,Kreuzberg,,,,,,,yes
+zhangliang-mini-hotpot,张亮麻辣烫,Zhangliang mini hotpot,Kreuzberg,,SICHUAN|HOTPOT|MALATANG,,,,,yes
+yila-nudel,遇见易拉面馆,Yila Nudel,Kreuzberg,,MUSLIM|NOODLES,,,,,yes
+yijian,一家小院,Yijian,Kreuzberg,,STREET_FOOD,,,,,yes
+wen-cheng-xberg,Wen Cheng (Xberg),Wen Cheng (Xberg),Kreuzberg,,NOODLES,,,Wen Cheng,Xberg,yes
+the-noodle-town-xberg,The Noodle Town (Xberg),The Noodle Town (Xberg),Kreuzberg,,NOODLES,,,The Noodle Town,Xberg,yes
+tantan-douhua,摊摊豆花,Tantan Douhua,Kreuzberg,,STREET_FOOD,,,,,yes
+tangs-kantine,唐记,Tangs Kantine,Kreuzberg,,,,,,,yes
+shu-wei-fang-szechuan-house,蜀味坊,Shu Wei Fang - Szechuan House,Kreuzberg,,SICHUAN,,,,,yes
+n-noodles-tea,N Noodles & Tea,N Noodles & Tea,Kreuzberg,,NOODLES,,,,,yes
+long-march-canteen,长征餐厅,Long March Canteen,Kreuzberg,,CANTONESE|DIM_SUM,yes,米其林必比登｜粤式点心｜酒吧氛围,,,yes
+dumplings-nian,年三十饺子,Dumplings Nian,Kreuzberg,,DUMPLINGS|STREET_FOOD,,,,,yes
+chungking-noodles,Chungking Noodles,Chungking Noodles,Kreuzberg,,NOODLES,,,,,yes
+chens-noodle-house-xberg,陈记牛肉面馆,Chen’s Noodle House (Xberg),Kreuzberg,,MUSLIM|XINJIANG|NOODLES,yes,清真手拉｜新疆风味｜Kotti地标,Chen’s Noodle House,Xberg,yes
+cha-for-tee,Cha for Tee,Cha for Tee,Kreuzberg,,STREET_FOOD,,,,,yes
+bao-gao-club-xberg,包餃會,Bao Gao Club (Xberg),Kreuzberg,,STREET_FOOD,,,Bao Gao Club,Xberg,yes
+bang-bang-noodles-xberg,Bang Bang Noodles (Xberg),Bang Bang Noodles (Xberg),Kreuzberg,,NOODLES,,,Bang Bang Noodles,Xberg,yes
+kaiser-drachen,Kaiser Drachen,Kaiser Drachen,Johannisthal,,,,,,,yes
+panda-meister-halensee,熊猫师傅,Panda Meister (Halensee),Halensee,,STREET_FOOD,,,Panda Meister,Halensee,yes
+hui-feng,汇丰酒家,Hui Feng,Hellersdorf,,,,,,,yes
+panda-garden,熊猫园,Panda Garden,Hermsdorf,,,,,,,yes
+china-garden,China Garden,China Garden,Hermsdorf,,,,,,,yes
+wen-cheng-fhain,Wen Cheng (Fhain),Wen Cheng (Fhain),Friedrichshain,,NOODLES,,,Wen Cheng,Fhain,yes
+teegebaeck-haus,茶点屋,Teegebäck-Haus,Friedrichshain,,STREET_FOOD|TEA_HOUSE,,,,,yes
+shanxi-nudelhaus,山西面馆,Shanxi Nudelhaus,Friedrichshain,,NOODLES,,,,,yes
+shaniu-s-house-of-noodles-fhain,傻妞面馆,Shaniu‘s House of Noodles (Fhain),Friedrichshain,,NOODLES,,,Shaniu‘s House of Noodles,Fhain,yes
+shanghai,上海饭店,Shanghai,Friedrichshain,,SHANGHAINESE,,,,,yes
+sanku-maotsai-fhain,三顾冒菜,Sanku Maots'ai (Fhain),Friedrichshain,,SICHUAN|MALATANG,,,Sanku Maots'ai,Fhain,yes
+ruyixuan-hotpot,如意轩火锅,Ruyixuan Hotpot,Friedrichshain,,HOTPOT,,,,,yes
+rotbohnen-fhain,红豆中餐馆,Rotbohnen (Fhain),Friedrichshain,,STREET_FOOD,,,Rotbohnen,Fhain,yes
+panda-meister-ostbahnhof,熊猫师傅,Panda Meister (Ostbahnhof),Friedrichshain,,STREET_FOOD,,,Panda Meister,Ostbahnhof,yes
+mr-noodle-chen-fhain,陈香贵,Mr. Noodle Chen (Fhain),Friedrichshain,,NOODLES,,,Mr. Noodle Chen,Fhain,yes
+meet-noodles,见一面,Meet Noodles,Friedrichshain,,NOODLES,,,,,yes
+may-noodles,麦,May Noodles,Friedrichshain,,NOODLES,,,,,yes
+lu-kitchen-fhain,Lu Kitchen (Fhain),Lu Kitchen (Fhain),Friedrichshain,,STREET_FOOD,,,Lu Kitchen,Fhain,yes
+lanzhou-beef-noodles-fhain,兰州拉面,Lanzhou Beef Noodles (Fhain),Friedrichshain,,MUSLIM|NOODLES,,,Lanzhou Beef Noodles,Fhain,yes
+kamala-vegan,莲花阁素食,Kamala Vegan,Friedrichshain,,VEGETARIAN,,,,,yes
+jade-palast-fhain,玉面阁,Jade Palast (Fhain),Friedrichshain,,NOODLES,,,Jade Palast,Fhain,yes
+huating,华亭酒家,HuaTing,Friedrichshain,,,,,,,yes
+hotpot-nudeln,大清面馆,Hotpot & Nudeln,Friedrichshain,,SICHUAN|HOTPOT|MALATANG|NOODLES,,,,,yes
+chuan-house,寻鲜记,Chuan House,Friedrichshain,,,,,,,yes
+aroma-fhain,财神饭店,Aroma (Fhain),Friedrichshain,,,,,Aroma,Fhain,yes
+fu-duo,福多酒家,Fu Duo,Französisch Buchholz,,,,,,,yes
+miss-wu,Miss Wu,Miss Wu,Dahlem,,,,,,,yes
+guoguoxiang,锅锅香,Guoguoxiang,Dahlem,,,,,,,yes
+jia-jia,佳家,Jia Jia,Friedenau,,,,,,,yes
+biang-biang-ming-friedenau,Biang Biang Ming (Friedenau),Biang Biang Ming (Friedenau),Friedenau,,NOODLES,,,Biang Biang Ming,Friedenau,yes
+bambus,竹园酒楼,Bambus,Friedenau,,,,,,,yes
+you-mi,优米,You Mi,Charlottenburg,,,,,,,yes
+you-mi-charlottenburg,You Mi串烧,You Mi串烧,Charlottenburg,,BBQ,,,,,yes
+wen-cheng-charlottenburg,Wen Cheng (Charlottenburg),Wen Cheng (Charlottenburg),Charlottenburg,,NOODLES,,,Wen Cheng,Charlottenburg,yes
+tu-long,土龙,Tu Long,Charlottenburg,,STREET_FOOD,yes,平价老店｜家常快炒｜学生友好,,,yes
+tao-yuan-noodlehouse,桃园面馆,Tao Yuan Noodlehouse,Charlottenburg,,NOODLES,,,,,yes
+tak-kee,德记,Tak Kee,Charlottenburg,,STREET_FOOD,,,,,yes
+sonne,新阳光,Sonne,Charlottenburg,,,,,,,yes
+shooloongkan-hotpot,小龙坎,ShooLoongKan Hotpot,Charlottenburg,,HOTPOT,,,,,yes
+shifang-house,食坊居,Shifang House,Charlottenburg,,,,,,,yes
+rotbohnen-charlottenburg,红豆中餐馆,Rotbohnen (Charlottenburg),Charlottenburg,,STREET_FOOD,,,Rotbohnen,Charlottenburg,yes
+rongs-noodlehouse,Rong’s Noodlehouse,Rong’s Noodlehouse,Charlottenburg,,NOODLES,,,,,yes
+ni-hao,您好饭店,Ni Hao,Charlottenburg,,HOTPOT,,,,,yes
+ming-jia,Ming Jia,Ming Jia,Charlottenburg,,,,,,,yes
+ming-dynastie-west,大明酒家,Ming Dynastie (West),Charlottenburg,,,,,Ming Dynastie,West,yes
+mao-master,帽牌冒菜,Mao Master,Charlottenburg,,SICHUAN|MALATANG,,,,,yes
+mala-house,大碗麻辣烫,Mala House,Charlottenburg,,SICHUAN|MALATANG,,,,,yes
+lulus,璐,Lulu's,Charlottenburg,,,,,,,yes
+lu-kitchen-bikini,Lu Kitchen (Bikini),Lu Kitchen (Bikini),Charlottenburg,,STREET_FOOD,,,Lu Kitchen,Bikini,yes
+lon-mens-noodle-house,龙门牛肉面大王,Lon Men's Noodle House,Charlottenburg,,NOODLES,,,,,yes
+little-little-restaurant,Little Little Restaurant,Little Little Restaurant,Charlottenburg,,NOODLES,,,,,yes
+lanzhou-beef-noodles-charlottenburg,兰州拉面,Lanzhou Beef Noodles (Charlottenburg),Charlottenburg,,MUSLIM|NOODLES,,,Lanzhou Beef Noodles,Charlottenburg,yes
+jade-palast-charlottenburg,玉面阁,Jade Palast (Charlottenburg),Charlottenburg,,NOODLES,,,Jade Palast,Charlottenburg,yes
+holly,好利私房菜,Holly,Charlottenburg,,,,,,,yes
+han-bites-ktv,Han Bites KTV,Han Bites KTV,Charlottenburg,,BBQ,,,,,yes
+green-flavor,绿食膳,Green Flavor,Charlottenburg,,,,,,,yes
+good-friends,老友记,Good Friends,Charlottenburg,,,,,,,yes
+en-lee-cai,恩李菜,En Lee Cai,Charlottenburg,,,,,,,yes
+do-de-li,多得利,Do De Li,Charlottenburg,,,,,,,yes
+chens-wok,老陈一品香,Chen’s Wok,Charlottenburg,,,,,,,yes
+biang-biang-ming-bikini,Biang Biang Ming (Bikini),Biang Biang Ming (Bikini),Charlottenburg,,NOODLES,,,Biang Biang Ming,Bikini,yes
+ban-noodle,伴面,Ban Noodle,Charlottenburg,,NOODLES,,,,,yes
+aroma-chburg,财神饭店,Aroma (Chburg),Charlottenburg,,CANTONESE|DIM_SUM,yes,广式点心｜凌晨营业｜宵夜江湖,财神饭店,,yes
+0086,零零八六,0086,Charlottenburg,,SICHUAN|FUSION,yes,传统川菜｜重口下饭｜新派氛围,,,yes
+royal-gourmet,Royal Gourmet,Royal Gourmet,Britz,,,,,,,yes
+reuter,中国大酒楼,Reuter,Britz,,,,,,,yes

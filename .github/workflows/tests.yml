@@ -1,0 +1,53 @@
+name: Tests
+
+# Runs the mobile test suite on every pull request. Deliberately secret-free
+# (no keystore, no Maps key) so it also runs for fork contributions — the
+# push-triggered Android Build workflow can't, since it signs a release APK.
+# Pushes to branches are already covered by Android Build, which runs this same
+# `testDebugUnitTest` step before assembling.
+on:
+  pull_request:
+    # App test suite only — PRs that touch only docs, data, web apps, or the
+    # data pipeline skip this. Tag-mirror drift is gated by tag-check.yml.
+    paths:
+      - 'composeApp/**'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'scripts/check-string-escapes.sh'
+      - '.github/workflows/tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Same fast-fail guard the build uses: Compose renders \' / \" literally.
+      - name: Lint string resources
+        run: bash scripts/check-string-escapes.sh
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Pure-logic tests (commonTest) + Robolectric Compose UI tests, all on the
+      # JVM — no emulator. See the Testing section in CLAUDE.md.
+      - name: Run unit + UI tests
+        run: ./gradlew :composeApp:testDebugUnitTest
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-report
+          path: composeApp/build/reports/tests/testDebugUnitTest/

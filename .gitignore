@@ -1,0 +1,31 @@
+*.iml
+.gradle
+.kotlin/
+**/build/
+local.properties
+.idea
+.DS_Store
+xcuserdata
+*.jks
+*.keystore
+*.p12
+secrets.properties
+.env
+*.log
+hs_err_pid*.log
+.claude/settings.local.json
+.claude/launch.json
+.claude/worktrees/
+iosApp/Configuration/Config.xcconfig
+node_modules/
+admin/node_modules
+scripts/**/node_modules
+admin/dist
+admin/.env
+.vercel
+
+# Local Firestore dumps + Places API tag suggestion runs (see
+# scripts/sync-to-firestore/{dump-firestore,tag-from-places}.mjs).
+data/firestore-dump/
+data/places-tag-suggestions.csv
+.env*.local

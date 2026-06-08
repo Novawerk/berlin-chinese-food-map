@@ -1,0 +1,17 @@
+name:
+  en: Xi Mian Hand-Pulled Noodles (Pberg)
+  zh: 喜面
+tags:
+  - NOODLES
+address:
+  addressLine1: Danziger Str. 10
+  postalCode: "10435"
+  district: Prenzlauer Berg
+latitude: 52.5406523
+longitude: 13.4140012
+chain:
+  brand: Xi Mian Hand-Pulled Noodles
+  branch: Pberg
+# Hidden 2026-06-07: partner packet summary flags this identity_unresolved
+# (not_ready). Unhide once the venue is confirmed.
+hidden: true

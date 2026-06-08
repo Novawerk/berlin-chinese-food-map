@@ -1,0 +1,189 @@
+name: 餐厅提交 / Restaurant submission
+description: 推荐一家柏林的中餐厅 / Suggest a Chinese restaurant in Berlin
+title: "[Submission] <餐厅名 / Restaurant name>"
+labels: ["submission", "restaurant"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢推荐餐厅！请尽量填写已知的字段，未知的可以留空——我们会基于 Google Maps / 实地走访补全后再合并到数据库。
+        Thanks for the suggestion! Fill in what you know — we'll enrich the rest from Google Maps / a site visit before adding it to the map.
+
+  - type: input
+    id: name-zh
+    attributes:
+      label: 餐厅中文名 / Chinese name
+      placeholder: 例如：川渝人家
+    validations:
+      required: true
+
+  - type: input
+    id: name-en
+    attributes:
+      label: English name
+      placeholder: e.g. Sichuan Folk
+    validations:
+      required: false
+
+  - type: input
+    id: name-de
+    attributes:
+      label: German name (optional)
+      placeholder: e.g. Sichuan Folk
+    validations:
+      required: false
+
+  - type: input
+    id: address
+    attributes:
+      label: 地址 / Street address
+      description: 街名 + 门牌号 / Street name and number
+      placeholder: e.g. Kantstraße 42
+    validations:
+      required: true
+
+  - type: input
+    id: postal-code
+    attributes:
+      label: 邮编 / Postal code
+      placeholder: e.g. 10115
+    validations:
+      required: true
+
+  - type: input
+    id: district
+    attributes:
+      label: 行政区 / 街区 / District / Neighborhood
+      description: 写你熟悉的名字即可，dev 会规范化 / Use whatever name you know — we'll normalize it
+      placeholder: e.g. Mitte, Charlottenburg, Prenzlauer Berg
+    validations:
+      required: true
+
+  - type: input
+    id: maps-link
+    attributes:
+      label: Google Maps 链接 / Google Maps link
+      description: 强烈推荐填——能帮我们一键确认坐标和 Place ID / Strongly recommended — lets us confirm coordinates and Place ID in one click
+      placeholder: https://maps.app.goo.gl/...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: tags-regional
+    attributes:
+      label: 菜系 / Regional cuisine
+      description: 选 0~1 个 / Pick 0 or 1
+      options:
+        - label: 川菜 / Sichuan
+        - label: 粤菜 / Cantonese
+        - label: 北方菜 / Northern
+        - label: 东北菜 / Northeastern
+        - label: 江浙沪 / Shanghainese
+        - label: 湘菜 / Hunan
+        - label: 新疆菜 / Xinjiang
+        - label: 台菜 / Taiwanese
+        - label: 清真 / Halal
+        - label: 蒙古烤肉 / Mongolian Grill
+
+  - type: checkboxes
+    id: tags-format
+    attributes:
+      label: 形式 / Format
+      description: 选 1~2 个 / Pick 1 or 2
+      options:
+        - label: 火锅 / Hotpot
+        - label: 烧烤 / BBQ
+        - label: 面食 / Noodles
+        - label: 饺子 / Dumplings
+        - label: 点心 / Dim Sum
+        - label: 麻辣烫 / Malatang
+        - label: 素食 / Vegetarian
+        - label: 早餐 / Breakfast
+        - label: 茶寮 / Tea House
+        - label: 烘焙 / Bakery
+        - label: 小吃 / Street Food
+        - label: 创新中餐 / Modern Chinese
+
+  - type: input
+    id: phone
+    attributes:
+      label: 电话 / Phone (optional)
+      placeholder: +49 30 12345678
+
+  - type: dropdown
+    id: price
+    attributes:
+      label: 价位 / Price range
+      options:
+        - "Unknown / 不确定"
+        - "€  (cheap eats / 便宜)"
+        - "€€ (mid-range / 中等)"
+        - "€€€ (high-end / 高档)"
+      default: 0
+
+  - type: input
+    id: website
+    attributes:
+      label: 官网 / Website (optional)
+      placeholder: https://...
+
+  - type: textarea
+    id: description-zh
+    attributes:
+      label: 中文简介 / Chinese description (optional)
+      description: 一两句话介绍这家餐厅有什么特别的 / A sentence or two on what makes this place worth visiting
+      placeholder: 例如：地道的成都口味，水煮鱼和钵钵鸡推荐
+    validations:
+      required: false
+
+  - type: textarea
+    id: description-en
+    attributes:
+      label: English description (optional)
+      placeholder: e.g. Authentic Chengdu-style Sichuan, known for boiled fish and bo bo ji
+    validations:
+      required: false
+
+  - type: textarea
+    id: photos
+    attributes:
+      label: 照片链接 / Photo URLs (optional)
+      description: 一行一个 URL（如果有图片想分享，可以直接拖拽到下方"额外信息"框，GitHub 会自动上传）/ One URL per line (or drag images into the "Anything else" box below — GitHub uploads them automatically)
+      placeholder: |
+        https://example.com/photo1.jpg
+        https://example.com/photo2.jpg
+    validations:
+      required: false
+
+  - type: dropdown
+    id: visited
+    attributes:
+      label: 你去过吗？ / Have you been there?
+      options:
+        - "去过 / Yes"
+        - "听别人推荐 / Recommended by someone"
+        - "路过 / Just walked past"
+        - "其他 / Other"
+      default: 0
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 额外信息 / Anything else (optional)
+      description: 营业时间、招牌菜、避雷提示、店主背景……都可以写在这里 / Opening hours, must-try dishes, things to avoid, owner background — anything goes
+      placeholder: |
+        - 营业时间：周二闭店
+        - 招牌：钵钵鸡、跷脚牛肉
+        - 老板是四川人
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 确认 / Confirmation
+      options:
+        - label: 我确认这家餐厅当前在营业（据我所知）/ I confirm this restaurant is currently operating (to the best of my knowledge)
+          required: true
+        - label: 我同意这条提交以 CC0 公共领域形式贡献给项目数据 / I agree to contribute this submission to the project's data under CC0 (public domain)
+          required: true

@@ -1,0 +1,291 @@
+<resources>
+    <string name="app_name">柏林中餐地图</string>
+
+    <!-- Navigation -->
+    <string name="settings">设置</string>
+    <string name="back">返回</string>
+
+    <!-- Settings -->
+    <string name="dark_mode">外观</string>
+    <string name="language">语言</string>
+    <string name="system_default">自动</string>
+    <string name="light">浅色</string>
+    <string name="dark">深色</string>
+    <string name="english">English</string>
+    <string name="chinese">中文</string>
+
+    <!-- Filters -->
+    <string name="filter_name">名称</string>
+    <string name="filter_cuisine">标签</string>
+    <string name="filter_district">街区</string>
+    <string name="filter_distance">距离</string>
+    <string name="filter_title">筛选</string>
+    <string name="filter_reset">重置</string>
+    <string name="filter_favorites_only">只看收藏</string>
+    <string name="filter_favorites_subtitle">只显示你收藏过的餐厅</string>
+    <string name="filter_open_now">仅看营业中</string>
+    <string name="filter_open_now_subtitle">隐藏当前已打烊的餐厅</string>
+    <string name="filter_done">完成</string>
+    <string name="filter_clear">清除</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_selected_count">已选 %1$d 项</string>
+    <string name="filter_apply">应用筛选</string>
+    <string name="filter_apply_count">应用 · 已选 %1$d 项</string>
+
+    <!-- Favorites -->
+    <string name="action_favorite">收藏</string>
+    <string name="action_unfavorite">已收藏</string>
+    <string name="favorites_empty_title">还没有收藏</string>
+    <string name="favorites_empty_subtitle">点击餐厅上的爱心，把它添加到收藏。</string>
+
+    <!-- Detail page -->
+    <string name="open_in_maps">在谷歌地图打开</string>
+    <string name="open_website">官方网站</string>
+    <string name="opening_hours">营业时间</string>
+    <string name="rating_count">%1$d 条评价</string>
+
+    <!-- Detail: open status pill -->
+    <string name="open_now">营业中</string>
+    <string name="closed_now">已打烊</string>
+    <string name="open_24h">24 小时营业</string>
+    <string name="hours_unknown">营业时间未知</string>
+    <string name="closes_at">%1$s 打烊</string>
+    <string name="opens_at">%1$s 开门</string>
+    <string name="closes_in_min">%1$d 分钟后打烊</string>
+    <string name="opens_in_min">%1$d 分钟后开门</string>
+    <string name="tomorrow_at">明天 %1$s</string>
+    <string name="weekday_at">%1$s %2$s</string>
+    <string name="closed_label">休息</string>
+    <string name="closed_today">今日休息</string>
+    <string name="today_hours">今日 %1$s</string>
+    <string name="hours_view_full">查看本周</string>
+    <string name="hours_hide">收起</string>
+
+    <!-- Detail: weekday names -->
+    <string name="weekday_short_mon">周一</string>
+    <string name="weekday_short_tue">周二</string>
+    <string name="weekday_short_wed">周三</string>
+    <string name="weekday_short_thu">周四</string>
+    <string name="weekday_short_fri">周五</string>
+    <string name="weekday_short_sat">周六</string>
+    <string name="weekday_short_sun">周日</string>
+    <string name="weekday_long_mon">星期一</string>
+    <string name="weekday_long_tue">星期二</string>
+    <string name="weekday_long_wed">星期三</string>
+    <string name="weekday_long_thu">星期四</string>
+    <string name="weekday_long_fri">星期五</string>
+    <string name="weekday_long_sat">星期六</string>
+    <string name="weekday_long_sun">星期日</string>
+
+    <!-- Detail: quick actions -->
+    <string name="action_call">电话</string>
+    <string name="action_directions">在地图查看</string>
+    <string name="action_website">官网</string>
+
+    <!-- Detail: Pinwo discount perks card (shown when hasDiscount) -->
+    <string name="discount_card_title">Pinwo 会员优惠</string>
+    <string name="discount_card_body">本店为 Pinwo 合作商家，会员可享专属优惠与免费菜品。</string>
+    <string name="discount_visit_pinwo">前往 pinwo.de 查看优惠</string>
+
+    <!-- Detail: photos -->
+    <string name="photo_count">%1$d / %2$d</string>
+    <string name="photos_label">图片</string>
+    <string name="view_all_photos">查看全部 %1$d 张图片</string>
+    <string name="close_photos">关闭</string>
+
+    <!-- Card status badge -->
+    <string name="status_closed_short">打烊</string>
+    <string name="status_opening_soon">即将开门</string>
+    <string name="status_closing_soon">即将打烊</string>
+
+    <!-- Tag families (filter section headers) -->
+    <string name="tag_family_regional">菜系</string>
+    <string name="tag_family_format">类型</string>
+
+    <!-- Tags: regional cuisines. @gen:tags:names-regional — generated from data/_tags.yaml; run npm run gen:tags -->
+    <string name="tag_sichuan">川菜</string>
+    <string name="tag_cantonese">粤菜</string>
+    <string name="tag_northern">北方菜</string>
+    <string name="tag_northeastern">东北菜</string>
+    <string name="tag_shanghainese">江浙沪</string>
+    <string name="tag_hunan">湘菜</string>
+    <string name="tag_xinjiang">新疆菜</string>
+    <string name="tag_taiwanese">台菜</string>
+    <string name="tag_muslim">清真</string>
+    <string name="tag_mongolian">蒙古烤肉</string>
+    <!-- @gen:tags:end -->
+
+    <!-- Tag descriptions: regional cuisines -->
+    <string name="tag_sichuan_desc">麻辣鲜香，重花椒重豆瓣，西南风味的代表。</string>
+    <string name="tag_cantonese_desc">清淡鲜甜，重原味与海鲜，源自广东与香港。</string>
+    <string name="tag_northern_desc">面食为主，醋香浓郁，北方家常炖菜与面点。</string>
+    <string name="tag_northeastern_desc">大份量酸菜白肉、东北饺子，朴实顶饱。</string>
+    <string name="tag_shanghainese_desc">甜咸兼具，酱油糖色重，江浙沪的精致小菜。</string>
+    <string name="tag_hunan_desc">干香纯辣不麻，烟熏剁椒与湘式腊味。</string>
+    <string name="tag_xinjiang_desc">孜然羊肉与拉条子，西北清真，带中亚口味。</string>
+    <string name="tag_taiwanese_desc">牛肉面、卤肉饭、珍珠奶茶，台味街头与家常。</string>
+    <string name="tag_muslim_desc">清真认证的中餐馆，多为西北菜系。</string>
+    <string name="tag_mongolian_desc">自助烤肉自助餐，柏林本地发明，并非地道蒙餐。</string>
+
+    <!-- Tags: formats. @gen:tags:names-format — generated from data/_tags.yaml; run npm run gen:tags -->
+    <string name="tag_hotpot">火锅</string>
+    <string name="tag_bbq">烧烤</string>
+    <string name="tag_noodles">面食</string>
+    <string name="tag_dumplings">饺子</string>
+    <string name="tag_dim_sum">点心</string>
+    <string name="tag_malatang">麻辣烫</string>
+    <string name="tag_vegetarian">素食</string>
+    <string name="tag_breakfast">早餐</string>
+    <string name="tag_tea_house">茶寮</string>
+    <string name="tag_bakery">烘焙</string>
+    <string name="tag_street_food">小吃</string>
+    <string name="tag_fusion">创新中餐</string>
+    <!-- @gen:tags:end -->
+
+    <!-- Tag descriptions: formats -->
+    <string name="tag_hotpot_desc">桌上自助涮锅，沸汤翻滚，多人聚餐首选。</string>
+    <string name="tag_bbq_desc">桌上或台前的烤串与烤肉。</string>
+    <string name="tag_noodles_desc">以面为主——牛肉面、刀削、biangbiang。</string>
+    <string name="tag_dumplings_desc">饺子专门——水饺、蒸饺、煎饺。</string>
+    <string name="tag_dim_sum_desc">广式茶点，推车点单的小笼蒸食。</string>
+    <string name="tag_malatang_desc">自选食材麻辣汤底现煮，便宜随性。</string>
+    <string name="tag_vegetarian_desc">全素或大量素食选择。</string>
+    <string name="tag_breakfast_desc">豆浆油条、稀饭包子，中式早餐经典。</string>
+    <string name="tag_tea_house_desc">以茶为主——普洱、乌龙，坐下细品。</string>
+    <string name="tag_bakery_desc">菠萝包、蛋挞、奶香面包等中式烘焙。</string>
+    <string name="tag_street_food_desc">快餐小吃，方便外带。</string>
+    <string name="tag_fusion_desc">现代融合，中式底子配当代呈现。</string>
+
+    <!-- District descriptions (Berlin neighbourhoods) -->
+
+    <!-- Search -->
+    <string name="search_hint">今天想吃儿什么？</string>
+    <string name="search_prompt_title">搜索餐厅</string>
+    <string name="search_prompt_subtitle">按名称、菜系或类型搜索——试试「火锅」「川菜」，或输入餐厅名的几个字。</string>
+    <string name="search_and_filter_title">搜索与筛选</string>
+    <string name="search_cancel">取消</string>
+    <string name="filters_active_multi">%1$d 项筛选</string>
+    <string name="nav_search">搜索</string>
+    <string name="nav_locate">我的位置</string>
+    <string name="all">全部</string>
+    <string name="no_results">未找到餐厅</string>
+    <string name="call_phone">拨打电话</string>
+    <string name="version">版本</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="privacy_policy_subtitle">我们如何处理你的数据</string>
+    <string name="icon_credits">图标致谢</string>
+    <string name="icon_credits_value">地图图标由 Freepik 提供 — Flaticon</string>
+
+    <!-- Feedback (in-app form for bug reports / ideas / restaurant tips) -->
+    <string name="feedback_title">意见反馈</string>
+    <string name="feedback_subtitle">Bug、新点子，或推荐一家店</string>
+    <string name="feedback_intro">每一条反馈我们都会读。可以告诉我们 Bug、想要的功能，或者一家值得收录的餐厅。</string>
+    <string name="feedback_category_label">类型</string>
+    <string name="feedback_category_bug">Bug</string>
+    <string name="feedback_category_idea">建议</string>
+    <string name="feedback_category_restaurant">推荐餐厅</string>
+    <string name="feedback_category_other">其他</string>
+    <string name="feedback_message_label">想说的</string>
+    <string name="feedback_message_hint">描述一下遇到的情况、想要的功能，或者哪家餐厅……</string>
+    <string name="feedback_contact_label">联系方式（选填）</string>
+    <string name="feedback_contact_hint">邮箱或微信——希望被回复时再填</string>
+    <string name="feedback_submit">发送</string>
+    <string name="feedback_submitting">发送中…</string>
+    <string name="feedback_success_title">感谢你的反馈！</string>
+    <string name="feedback_success_body">我们已经收到，每一条都会认真看。</string>
+    <string name="feedback_close">关闭</string>
+    <string name="feedback_error">发送失败，请检查网络后重试。</string>
+
+    <!-- About entry (opens merged story / contribute / contributors sheet) -->
+    <string name="about_title">关于这个项目</string>
+    <string name="about_subtitle">项目缘起、如何参与、数据贡献者</string>
+
+    <!-- Project story section -->
+    <string name="story_title">项目故事</string>
+    <string name="story_body">「柏林中餐地图」始于一个很简单的烦恼。每次有朋友来柏林，我们都要在微信里翻出同一份餐厅推荐——照片丢了、地址忘了，还要为「哪家牛肉面最对味」争上几句。\n\n我们试过 Google Maps 收藏夹、共享 Excel、Notion 文档，但没有一个能真正承载我们想说的：在柏林，一个从小吃中餐长大的人，到底该去哪儿吃。\n\n于是有了这个项目。它是开源的、非盈利的，背后只有一个简单的念头——一家店该由真正在那里吃饭的人来描述。所有餐厅数据以 YAML 文件的形式存放在公开的 GitHub 仓库里，谁都可以阅读、Fork 或者改进。App 完全免费、没有广告，也不收集你的任何信息。\n\n说到底它是一封情书——写给那些藏在巷子里的小面馆、家庭经营的川味厨房，以及永远不会出现在 Google 推荐里的深夜饺子店。如果它帮你找到了下一家心头好，那就是这一切的意义。</string>
+
+    <!-- Contributors section -->
+    <string name="contributors_title">数据贡献者</string>
+    <string name="contributors_intro">名单直接来自仓库的 git 历史，每次有人提交餐厅数据的改动都会自动刷新。如果你贡献过却被漏掉了，欢迎提 Issue，我们会补上。</string>
+    <string name="contributors_count">%1$d 位贡献者</string>
+    <string name="contributors_empty">还没有贡献者——欢迎成为第一位！</string>
+
+    <!-- Contribute section -->
+    <string name="contribute_title">如何贡献数据</string>
+    <string name="contribute_intro">柏林中餐地图是一个非盈利的社区项目，全靠在这里吃饭的人一起维护。每个月都有新店开业，也有老馆子搬走或关门，仅靠几个人的力量永远跟不上节奏。如果你发现一家我们还没收录的小店、一处过时的地址，或者一个再也没人接听的电话——欢迎一起把它补上。</string>
+
+    <string name="contribute_what_title">你可以分享什么</string>
+    <string name="contribute_what_1">•  还没收录的新餐厅——店名、地址，以及你记得的任何细节。</string>
+    <string name="contribute_what_2">•  需要更正的信息——已关门、改名、营业时间不对、地图坐标偏差。</string>
+    <string name="contribute_what_3">•  菜系和招牌菜的标签——川菜、粤菜、东北家常……让下一个人更快找到对口味的店。</string>
+    <string name="contribute_what_4">•  照片、一段私人笔记，或者一句可以被引用的推荐语。</string>
+
+    <string name="contribute_how_title">怎么提交</string>
+    <string name="contribute_step_1">1. 最省事——把 CSV、Excel 或 Google Sheets 发给我们，每家餐厅一行，列名随你定，剩下的整理工作我们来做。</string>
+    <string name="contribute_step_2">2. 上手版——直接到 GitHub 提 PR。餐厅数据以 YAML 文件存放在 data/restaurants 目录下，改动一个文件、发起一次变更，CI 流水线会自动同步上线。</string>
+    <string name="contribute_step_3">3. 随手版——在微信社区群里留言，或者在小红书上 @ 我们。所有线索都会被收入审核队列。</string>
+
+    <string name="contribute_after_title">提交之后</string>
+    <string name="contribute_after">每一条投稿都会经过真人审核，再用 Google Places 复核营业时间和坐标，下一次数据同步时正式上线，一般几天内可见。投稿默认匿名；如果希望出现在贡献者名单里，提交时告诉我们就好。</string>
+
+    <string name="contribute_action">前往 GitHub 项目</string>
+
+    <!-- Team section -->
+    <string name="team_title">幕后团队</string>
+    <string name="team_novawerk_name">Novawerk.io</string>
+    <string name="team_novawerk_role">做一些不赚钱、但有意义的事。</string>
+    <string name="team_novawerk_bio">Novawerk 是一个开放、非盈利的社区，成立于 2025 年。我们存在的意义，是降低创造正向改变的门槛——帮助人们通过协作、创造与行动，把有意义的想法落地为真实的项目。\n\n好的想法不该只停留在概念里。当人们选择一起去做、去学、去贡献，真正的改变才会发生。\n\n三条原则指引着我们的工作：「有目的的创新」——为人和社会做出真实的正向改变，而不是追逐短期热点；「一起做、一起学」——不同背景、不同经验的人，都可以在真实的项目里协作、成长；「为正向改变负起责任」——每个人都通过关心、贡献、行动，让世界往好的方向多一点。\n\n柏林中餐地图，就是在这个想法之下做出来的项目之一。</string>
+    <string name="team_novawerk_visit">访问官网</string>
+
+    <string name="team_pinwo_name">Pinwo</string>
+    <string name="team_pinwo_role">用中餐，打开柏林。</string>
+    <string name="team_pinwo_bio">Pinwo 是一个扎根柏林的华人美食项目，连接这座城市里的餐厅、社群与在地发现。\n\n过去两年里，我们走访、记录并梳理了柏林数百家中餐厅。正是这些经历，让我们做出了「柏林中餐地图」——帮助更多人发现这座城市中餐的丰富与多元。\n\n如今，地图的纸质版可以在柏林各处的餐厅和文化空间免费取阅。\n\n我们携手 Novawerk，把这张地图搬上数字端，让柏林中餐对每个人都更触手可及、更易于探索。\n\n除了地图，pinwo.de 还分享精选推荐、在地活动和专属合作优惠——帮助大家更直接地走进柏林不断生长的中餐场景。</string>
+    <string name="team_pinwo_offers">获取优惠，发现更多</string>
+    <string name="team_pinwo_community">加入社群</string>
+
+    <!-- Favorites screen (bottom nav heart + search-grid Favorites card) -->
+    <string name="favorites_title">收藏</string>
+    <string name="favorites_empty_cta">去地图逛逛</string>
+    <string name="nav_favorites">收藏</string>
+
+    <!-- Walking radius (5min/15min isochrone rings, toggled by tapping the locate FAB) -->
+    <string name="map_radius_5min">步行 5 分钟</string>
+    <string name="map_radius_15min">步行 15 分钟</string>
+
+    <!-- Search bar (grid view bottom) -->
+    <string name="search_hint_long">今天想吃点儿什么？</string>
+
+    <!-- Splash screen — brand lockup, English in both locales by design -->
+    <string name="splash_tagline_line1">Chinese Food Map</string>
+    <string name="splash_tagline_line2">Berlin</string>
+    <string name="splash_powered_by">Powered by</string>
+    <string name="splash_brand_lockup">Novawerk</string>
+
+    <!-- Onboarding (first-launch tour) -->
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_get_started">开始使用</string>
+
+    <!-- Onboarding pages 1-3 (Pinwo design tour) -->
+    <string name="onboarding_p1_title">柏林的每一家中餐厅</string>
+    <string name="onboarding_p1_body">味道与更多体验，尽在掌中。</string>
+    <string name="onboarding_p2_title">想找具体的某一家？直接搜就好。</string>
+    <string name="onboarding_p2_body">不用再在地图上一页一页地翻找。</string>
+    <string name="onboarding_p3_title">一键收藏，下次直接来。</string>
+    <string name="onboarding_p3_body">看你收藏的，也看我们精选的口碑餐厅。</string>
+    <string name="onboarding_p4_title">免费菜品 &amp; 折扣 —\n立刻领取！</string>
+    <string name="onboarding_p4_body">Pinwo 合作餐厅为会员提供专属优惠。在地图上看带折扣标的餐厅就能找到。</string>
+
+    <!-- Open-source licenses sheet -->
+    <string name="licenses_title">开源许可</string>
+    <string name="licenses_subtitle">本项目的授权方式</string>
+    <string name="licenses_intro">柏林中餐地图——包括 App 代码与餐厅数据——以开源形式发布在 GitHub。完整许可证全文公开可查；本页列出关键信息以及我们依赖的第三方开源库署名。</string>
+    <string name="licenses_copyright">© 2025–2026 Novawerk 与贡献者</string>
+
+    <string name="licenses_code_title">本项目 — MIT 许可证</string>
+    <string name="licenses_code_body">本仓库内所有内容——Kotlin Multiplatform App、网页、同步脚本以及餐厅数据——均以 MIT 许可证发布。你可以自由使用、复制、修改、再分发本项目，也可用于商业用途，只需在重用任何实质性部分时保留原始的版权声明与本许可声明即可。</string>
+    <string name="licenses_code_view">查看 MIT 全文</string>
+
+    <string name="licenses_thirdparty_title">第三方依赖</string>
+    <string name="licenses_thirdparty_body">本 App 使用了一系列开源库——Compose Multiplatform、Material 3、AndroidX、Coil、Ktor、kotlinx-datetime、kotlin-inject、gitlive Firebase KMP、kmp-maps-compose、Compass，以及 Firebase 与 Google Maps SDK。它们各自以原始的开源协议（Apache-2.0 或 MIT）发布，完整清单与署名见 GitHub 仓库。</string>
+    <string name="licenses_thirdparty_view">在 GitHub 查看完整署名</string>
+</resources>

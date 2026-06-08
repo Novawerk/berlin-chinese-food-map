@@ -1,0 +1,26 @@
+name:
+  en: Meet You
+  zh: 宴遇
+tags:
+  - CANTONESE
+  - BREAKFAST
+  - DIM_SUM
+address:
+  addressLine1: Fasanenstraße 41
+  postalCode: "10719"
+  district: Wilmersdorf
+latitude: 52.4980351
+longitude: 13.3265985
+description:
+  en: 中式早餐｜周末点心｜海鲜粤菜
+  zh: 中式早餐｜周末点心｜海鲜粤菜
+featured: true
+editorialNote:
+  zh: 中式早餐｜周末点心｜海鲜粤菜
+  en: ""
+placeId: ChIJvaQ5_PlQqEcRFcVmJ9C-3PE
+
+hasDiscount: true
+discountInfo:
+  zh: "立减10欧"
+  en: "€10 coupon"

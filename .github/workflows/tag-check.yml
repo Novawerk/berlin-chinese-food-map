@@ -1,0 +1,48 @@
+name: Tag taxonomy
+
+# The 22-tag taxonomy is defined once in data/_tags.yaml and code-generated
+# into the app strings, the admin TS types, and the sync KNOWN_TAGS set. This
+# job verifies those mirrors are current (gen-tags --check), that the
+# hand-written Kotlin enum still matches, and that every restaurant YAML
+# references only known tags. Secret-free, so it also runs on fork PRs.
+#
+# Scoped to the tag-related paths only — it spans data + app + web, so it
+# can't live in the Android Build (app-only) or sync (data/restaurants-only)
+# workflows. Keep this paths list in sync with check-tags.mjs's PATHS.
+on:
+  push:
+    branches: ['*']
+    paths:
+      - 'data/_tags.yaml'
+      - 'data/restaurants/**'
+      - 'composeApp/src/commonMain/composeResources/values/strings.xml'
+      - 'composeApp/src/commonMain/composeResources/values-zh/strings.xml'
+      - 'composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/domain/restaurant/Tag.kt'
+      - 'web-apps/admin/src/types/restaurant.ts'
+      - 'scripts/sync-to-firestore/**'
+      - '.github/workflows/tag-check.yml'
+  pull_request:
+    paths:
+      - 'data/_tags.yaml'
+      - 'data/restaurants/**'
+      - 'composeApp/src/commonMain/composeResources/values/strings.xml'
+      - 'composeApp/src/commonMain/composeResources/values-zh/strings.xml'
+      - 'composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/domain/restaurant/Tag.kt'
+      - 'web-apps/admin/src/types/restaurant.ts'
+      - 'scripts/sync-to-firestore/**'
+      - '.github/workflows/tag-check.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate tag taxonomy
+        working-directory: scripts/sync-to-firestore
+        run: npm ci && npm run check:tags

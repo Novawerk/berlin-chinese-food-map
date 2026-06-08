@@ -1,0 +1,89 @@
+[versions]
+agp = "8.12.3"
+android-compileSdk = "36"
+android-minSdk = "24"
+android-targetSdk = "36"
+androidx-activity = "1.10.1"
+androidx-lifecycle = "2.9.2"
+# App version: source of truth for both Android (manifest) and iOS
+# (Config.xcconfig). `app-versionCode` auto-bumps on every push to main
+# via .github/workflows/bump-version.yml; `app-versionName` is
+# hand-edited for releases. CI builds can override either via the
+# VERSION_CODE / VERSION_NAME environment variables.
+app-versionCode = "70"
+app-versionName = "1.0.5"
+buildkonfig = "0.18.0"
+
+composeMultiplatform = "1.10.3"
+datastore = "1.2.1"
+
+kotlin = "2.3.21"
+kotlin-inject = "0.9.0"
+kotlinx-datetime = "0.7.1"
+ksp = "2.3.7"
+material3 = "1.10.0-alpha05"
+gitlive-firebase = "2.4.0"
+google-services = "4.4.2"
+firebase-crashlytics-gradle = "3.0.7"
+kmp-maps = "0.5.0"
+kotlinx-coroutines = "1.9.0"
+coil = "3.0.4"
+ktor = "3.0.3"
+compass = "1.2.2"
+
+# Testing
+junit = "4.13.2"
+robolectric = "4.14.1"
+# AndroidX Compose version that Compose Multiplatform 1.10.3 builds on (per the
+# JetBrains compatibility table). Only the code-free ui-test-manifest artifact —
+# which JetBrains doesn't republish — is pulled from AndroidX at this version.
+androidx-compose-ui = "1.10.5"
+
+[libraries]
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+kotlin-inject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlin-inject" }
+kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime-kmp", version.ref = "kotlin-inject" }
+
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-datetime-names = { module = "io.github.adrcotfas:kotlinx-datetime-names", version = "0.1.1" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+
+kmp-maps-compose = { module = "eu.buney.maps:kmp-maps-compose", version.ref = "kmp-maps" }
+
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+
+gitlive-firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "gitlive-firebase" }
+gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive-firebase" }
+gitlive-firebase-analytics = { module = "dev.gitlive:firebase-analytics", version.ref = "gitlive-firebase" }
+gitlive-firebase-crashlytics = { module = "dev.gitlive:firebase-crashlytics", version.ref = "gitlive-firebase" }
+
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+
+# Testing — UI tests run on the JVM via Robolectric (no emulator). The
+# compose ui-test artifacts are pinned to the Compose Multiplatform version
+# so they line up with the Compose runtime the app is built against.
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+junit = { module = "junit:junit", version.ref = "junit" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+compose-ui-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-ui" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

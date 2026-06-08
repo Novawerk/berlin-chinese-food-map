@@ -1,0 +1,15 @@
+name:
+  en: The Noodle Town (Mitte)
+  zh: The Noodle Town (Mitte)
+tags:
+  - NOODLES
+address:
+  addressLine1: Große Hamburger Str. 24
+  postalCode: "10115"
+  district: Mitte
+latitude: 52.5239906
+longitude: 13.3996782
+chain:
+  brand: The Noodle Town
+  branch: Mitte
+placeId: ChIJE2xdqoxRqEcR8FiyjZjgXfA

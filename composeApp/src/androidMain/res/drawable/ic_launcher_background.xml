@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark-red backdrop for the adaptive icon. Solid #840100 — the exact
+     brand red from the designer's Icon Composer source (display-p3
+     0.4744,0.0854,0.0489 → sRGB #840100). The white "Pinwo / Chinese Food
+     Berlin Map" badge sits on this via the transparent foreground layer,
+     scaled into the safe zone so no launcher mask shape clips it. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#840100" />
+</shape>

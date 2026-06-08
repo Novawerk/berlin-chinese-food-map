@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 数据格式说明 / Data format reference
+    url: https://github.com/Novawerk/berlin-chinese-food-map/blob/main/data/README.md
+    about: 想直接发 PR 加餐厅？看这里。/ Want to send a PR directly? Read this first.

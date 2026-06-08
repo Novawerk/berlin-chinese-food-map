@@ -1,0 +1,17 @@
+name:
+  en: Shaniu‘s Market/Bistro
+  zh: 傻妞便利店
+tags:
+  - STREET_FOOD
+address:
+  addressLine1: Uhlandstr. 42
+  postalCode: "10719"
+  district: Wilmersdorf
+latitude: 52.4988507
+longitude: 13.3243442
+placeId: ChIJx-50lhZRqEcR7CDLhl5-R54
+
+hasDiscount: true
+discountInfo:
+  zh: "甜点+小菜双福利"
+  en: "Dessert + Side dish"

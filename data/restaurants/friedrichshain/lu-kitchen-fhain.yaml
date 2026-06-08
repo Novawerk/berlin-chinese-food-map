@@ -1,0 +1,15 @@
+name:
+  en: Lu Kitchen (Fhain)
+  zh: Lu Kitchen (Fhain)
+tags:
+  - STREET_FOOD
+address:
+  addressLine1: Simon-Dach-Straße 30
+  postalCode: "10245"
+  district: Friedrichshain
+latitude: 52.5088599
+longitude: 13.4558791
+chain:
+  brand: Lu Kitchen
+  branch: Fhain
+placeId: ChIJqdMeJrFPqEcRKfih3E1gFBA

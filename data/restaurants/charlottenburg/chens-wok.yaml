@@ -1,0 +1,20 @@
+name:
+  en: Chen’s Wok
+  zh: 老陈一品香
+tags:
+  - NOODLES
+  - CANTONESE
+  - DIM_SUM
+  - HOTPOT
+address:
+  addressLine1: Otto-Suhr-Allee 11-13
+  postalCode: "10585"
+  district: Charlottenburg
+latitude: 52.5133371
+longitude: 13.3185871
+placeId: ChIJy8iRIxxRqEcRejbS1qLH2tM
+
+hasDiscount: true
+discountInfo:
+  zh: "月月半价"
+  en: "Monthly 50% Off"

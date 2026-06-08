@@ -1,0 +1,15 @@
+name:
+  en: Chungking Noodles
+  zh: Chungking Noodles
+tags:
+  - NOODLES
+address:
+  addressLine1: Reichenberger Str. 35
+  postalCode: "10999"
+  district: Kreuzberg
+latitude: 52.4972686
+longitude: 13.4232581
+placeId: ChIJZwzCX8tPqEcR5t6GQJy5epU
+# Hidden 2026-06-07: confirmed permanently closed (shut end of April 2026 after
+# 6.5 years; Instagram @chungkingnoodles marked "Permanently closed").
+hidden: true

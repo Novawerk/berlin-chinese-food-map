@@ -1,0 +1,802 @@
+{
+  "Ansbacher Str. 29, 10789 Berlin, Germany": {
+    "lat": 52.5008242,
+    "lon": 13.3417692
+  },
+  "Breite Str. 37, 13597 Berlin, Germany": {
+    "lat": 52.5383362,
+    "lon": 13.2072197
+  },
+  "Kantstraße 62, 10627 Berlin, Germany": {
+    "lat": 52.5070857,
+    "lon": 13.3043306
+  },
+  "Eisenbahnstraße 42-43, 10997 Berlin, Germany": {
+    "lat": 52.5021661,
+    "lon": 13.4314886
+  },
+  "Schönhauser Allee 103, 10439 Berlin, Germany": {
+    "lat": 52.5529498,
+    "lon": 13.4139291
+  },
+  "Greifenhagener Str. 31, 10437 Berlin, Germany": {
+    "lat": 52.5519591,
+    "lon": 13.4192116
+  },
+  "Hannah-Arendt-Straße 1, 10117 Berlin, Germany": {
+    "lat": 52.5136262,
+    "lon": 13.3813749
+  },
+  "Rosenthaler Str. 69, 10119 Berlin, Germany": {
+    "lat": 52.5288957,
+    "lon": 13.4020773
+  },
+  "Mehringdamm 51, 10961 Berlin, Germany": {
+    "lat": 52.4916312,
+    "lon": 13.387538
+  },
+  "Budapester Str. 38-50, 10787 Berlin, Germany": {
+    "lat": 52.5054041,
+    "lon": 13.3373148
+  },
+  "Walther-Schreiber-Platz 1, 12161 Berlin, Germany": {
+    "lat": 52.4654624,
+    "lon": 13.3276653
+  },
+  "Akazienstraße 27, 10823 Berlin, Germany": {
+    "lat": 52.4868352,
+    "lon": 13.354937
+  },
+  "Kantstraße 35, 10625 Berlin, Germany": {
+    "lat": 52.5063437,
+    "lon": 13.3155769
+  },
+  "Waldeyerstraße 12, 10247 Berlin, Germany": {
+    "lat": 52.5146347,
+    "lon": 13.4710918
+  },
+  "Friesenstraße 18, 10965 Berlin, Germany": {
+    "lat": 52.4869029,
+    "lon": 13.3946515
+  },
+  "Magistratsweg 31, 13593 Berlin, Germany": {
+    "lat": 52.5233629,
+    "lon": 13.1614738
+  },
+  "Wrangelstraße 20, 10997 Berlin, Germany": {
+    "lat": 52.502969,
+    "lon": 13.4309782
+  },
+  "Karl-Marx-Straße 78, 12043 Berlin, Germany": {
+    "lat": 52.4815003,
+    "lon": 13.4340353
+  },
+  "Karl-Marx-Straße 101, 12043 Berlin, Germany": {
+    "lat": 52.4795713,
+    "lon": 13.437379
+  },
+  "Alte Potsdamer Str. 7, 10785 Berlin, Germany": {
+    "lat": 52.5074122,
+    "lon": 13.3741147
+  },
+  "Adalbertstraße 7, 10999 Berlin, Germany": {
+    "lat": 52.5005116,
+    "lon": 13.4189483
+  },
+  "Uhlandstraße 150, 10719 Berlin, Germany": {
+    "lat": 52.4971948,
+    "lon": 13.3245015
+  },
+  "Niederbarnimstraße 4, 10247 Berlin, Germany": {
+    "lat": 52.5144407,
+    "lon": 13.4590749
+  },
+  "Willdenowstraße 12, 13353 Berlin, Germany": {
+    "lat": 52.5440752,
+    "lon": 13.3603957
+  },
+  "Goltzstraße 52, 10781 Berlin, Germany": {
+    "lat": 52.4899829,
+    "lon": 13.3529653
+  },
+  "Hermsdorfer Damm 134, 13467 Berlin, Germany": {
+    "lat": 52.6147326,
+    "lon": 13.2998131
+  },
+  "Mühlenstraße 46, 13187 Berlin, Germany": {
+    "lat": 52.5596402,
+    "lon": 13.4124566
+  },
+  "Inselstraße 8a, 10179 Berlin, Germany": {
+    "lat": 52.5124865,
+    "lon": 13.4116763
+  },
+  "Torstraße 189, 10115 Berlin, Germany": {
+    "lat": 52.5284483,
+    "lon": 13.3926767
+  },
+  "Reichenberger Str. 35, 10999 Berlin, Germany": {
+    "lat": 52.4972686,
+    "lon": 13.4232581
+  },
+  "Hildburghauser Str. 29, 12279 Berlin, Germany": {
+    "lat": 52.4126905,
+    "lon": 13.3547205
+  },
+  "Frankfurter Allee 113, 10365 Berlin, Germany": {
+    "lat": 52.5144505,
+    "lon": 13.4773778
+  },
+  "Brückenstraße 6, 10179 Berlin, Germany": {
+    "lat": 52.513708,
+    "lon": 13.4180811
+  },
+  "Tauentzienstraße 9-12, 10789 Berlin, Germany": {
+    "lat": 52.5039078,
+    "lon": 13.3385657
+  },
+  "Revaler Str. 17, 10245 Berlin, Germany": {
+    "lat": 52.5071676,
+    "lon": 13.4574607
+  },
+  "Wilmersdorfer Str. 15, 10585 Berlin, Germany": {
+    "lat": 52.5159318,
+    "lon": 13.3044707
+  },
+  "Wilmersdorfer Str. 79, 10629 Berlin, Germany": {
+    "lat": 52.5024206,
+    "lon": 13.3077065
+  },
+  "Osdorfer Str. 26, 12207 Berlin, Germany": {
+    "lat": 52.416193,
+    "lon": 13.3152407
+  },
+  "Ostseestraße 79, 10409 Berlin, Germany": {
+    "lat": 52.5480965,
+    "lon": 13.4389385
+  },
+  "Alte Schönhauser Str. 44, 10119 Berlin, Germany": {
+    "lat": 52.5265091,
+    "lon": 13.4078278
+  },
+  "Kantstraße 120, 10625 Berlin, Germany": {
+    "lat": 52.5063428,
+    "lon": 13.3100409
+  },
+  "Bernhardstraße 12, 10715 Berlin, Germany": {
+    "lat": 52.4783439,
+    "lon": 13.3301547
+  },
+  "Kurfürstendamm 218, 10719 Berlin, Germany": {
+    "lat": 52.5027787,
+    "lon": 13.32812
+  },
+  "Breite Str. 15, 14199 Berlin, Germany": {
+    "lat": 52.4746439,
+    "lon": 13.2936273
+  },
+  "Greifswalder Str. 90, 10409 Berlin, Germany": {
+    "lat": 52.5434771,
+    "lon": 13.4425543
+  },
+  "Kaiser-Wilhelm-Straße 8, 12247 Berlin, Germany": {
+    "lat": 52.4304432,
+    "lon": 13.3344393
+  },
+  "Marienfelder Allee 145, 12279 Berlin, Germany": {
+    "lat": 52.4137071,
+    "lon": 13.3637958
+  },
+  "Triftstraße 33, 13127 Berlin, Germany": {
+    "lat": 52.6127499,
+    "lon": 13.4306594
+  },
+  "Erlenstraße 19, 12167 Berlin, Germany": {
+    "lat": 52.4505702,
+    "lon": 13.3215021
+  },
+  "Britzer Damm 18, 12347 Berlin, Germany": {
+    "lat": 52.4614966,
+    "lon": 13.4346352
+  },
+  "Alt-Tegel 29, 13507 Berlin, Germany": {
+    "lat": 52.5882734,
+    "lon": 13.2785483
+  },
+  "Schliemannstraße 31, 10437 Berlin, Germany": {
+    "lat": 52.54405,
+    "lon": 13.41987
+  },
+  "Tempelhofer Damm 220, 12099 Berlin, Germany": {
+    "lat": 52.4563698,
+    "lon": 13.383603
+  },
+  "Breitenbachpl. 8, 14195 Berlin, Germany": {
+    "lat": 52.4673234,
+    "lon": 13.3083345
+  },
+  "Fehrbelliner Str. 5, 10119 Berlin, Germany": {
+    "lat": 52.5310471,
+    "lon": 13.4101305
+  },
+  "Burgsdorfstraße 7, 13353 Berlin, Germany": {
+    "lat": 52.5420499,
+    "lon": 13.3612815
+  },
+  "Selchower Str. 20, 12049 Berlin, Germany": {
+    "lat": 52.4784488,
+    "lon": 13.4200553
+  },
+  "Oranienburger Str. 168, 13437 Berlin, Germany": {
+    "lat": 52.6009151,
+    "lon": 13.3305922
+  },
+  "Schustehrusstraße 3, 10585 Berlin, Germany": {
+    "lat": 52.517248,
+    "lon": 13.3054159
+  },
+  "Johannisthaler Ch 261, 12351 Berlin, Germany": {
+    "lat": 52.4322129,
+    "lon": 13.4615989
+  },
+  "Wilmersdorfer Str. 17, 10585 Berlin, Germany": {
+    "lat": 52.515736,
+    "lon": 13.3044918
+  },
+  "Boxhagener Str. 55, 10245 Berlin, Germany": {
+    "lat": 52.5075241,
+    "lon": 13.4675199
+  },
+  "Kurfürstendamm 175, 10707 Berlin, Germany": {
+    "lat": 52.500016,
+    "lon": 13.3100384
+  },
+  "Dietzgenstraße 11A, 13156 Berlin, Germany": {
+    "lat": 52.5807745,
+    "lon": 13.4036592
+  },
+  "Strausberger Pl. 13, 10243 Berlin, Germany": {
+    "lat": 52.5177617,
+    "lon": 13.4287324
+  },
+  "Hellersdorfer Promenade 24, 12627 Berlin, Germany": {
+    "lat": 52.5414869,
+    "lon": 13.6067014
+  },
+  "Lefèvrestraße 1, 12161 Berlin, Germany": {
+    "lat": 52.4664074,
+    "lon": 13.3276587
+  },
+  "Am Kupfergraben 4, 10117 Berlin, Germany": {
+    "lat": 52.5206176,
+    "lon": 13.3947047
+  },
+  "Potsdamer Str. 4, 10785 Berlin, Germany": {
+    "lat": 52.5097141,
+    "lon": 13.3725831
+  },
+  "Boxhagener Str. 104, 10245 Berlin, Germany": {
+    "lat": 52.5126429,
+    "lon": 13.4592514
+  },
+  "Seestraße 101, 13353 Berlin, Germany": {
+    "lat": 52.5496318,
+    "lon": 13.3489126
+  },
+  "Heinersdorfer Str. 19A, 12209 Berlin, Germany": {
+    "lat": 52.4171906,
+    "lon": 13.324489
+  },
+  "Eisenzahnstraße 66, 10709 Berlin, Germany": {
+    "lat": 52.4992174,
+    "lon": 13.3056796
+  },
+  "Arminiusstraße 2-4, 10551 Berlin, Germany": {
+    "lat": 52.5278334,
+    "lon": 13.3386209
+  },
+  "Stubenrauchstraße 78, 12487 Berlin, Germany": {
+    "lat": 52.4353789,
+    "lon": 13.501754
+  },
+  "Falkenseer Chaussee 217, 13583 Berlin, Germany": {
+    "lat": 52.5498369,
+    "lon": 13.1706083
+  },
+  "Prenzlauer Allee 27A, 10405 Berlin, Germany": {
+    "lat": 52.5328867,
+    "lon": 13.4209191
+  },
+  "Kantstraße 56, 10627 Berlin, Germany": {
+    "lat": 52.5068419,
+    "lon": 13.3075018
+  },
+  "Krossener Str. 12, 10245 Berlin, Germany": {
+    "lat": 52.5107534,
+    "lon": 13.4578148
+  },
+  "Otto-Suhr-Allee 11-13, 10585 Berlin, Germany": {
+    "lat": 52.5133371,
+    "lon": 13.3185871
+  },
+  "Wichertstraße 43, 10439 Berlin, Germany": {
+    "lat": 52.5461374,
+    "lon": 13.4271408
+  },
+  "Kantstraße 30, 10623 Berlin, Germany": {
+    "lat": 52.5062361,
+    "lon": 13.3178317
+  },
+  "Schliemannstraße 19, 10437 Berlin, Germany": {
+    "lat": 52.5441097,
+    "lon": 13.4203317
+  },
+  "Seestraße 41, 13353 Berlin, Germany": {
+    "lat": 52.5496636,
+    "lon": 13.3512456
+  },
+  "Boxhagener Str. 85, 10245 Berlin, Germany": {
+    "lat": 52.5092826,
+    "lon": 13.4656222
+  },
+  "Bleibtreustraße 7, 10623 Berlin, Germany": {
+    "lat": 52.5052737,
+    "lon": 13.3192386
+  },
+  "Stuttgarter Pl. 16, 10627 Berlin, Germany": {
+    "lat": 52.5057531,
+    "lon": 13.3007054
+  },
+  "Kronenstraße 72, 10117 Berlin, Germany": {
+    "lat": 52.5111972,
+    "lon": 13.38759
+  },
+  "Residenzstraße 130, 13409 Berlin, Germany": {
+    "lat": 52.5688295,
+    "lon": 13.3620268
+  },
+  "Bamberger Str. 30, 10779 Berlin, Germany": {
+    "lat": 52.4884172,
+    "lon": 13.3366971
+  },
+  "Kantstraße 33, 10625 Berlin, Germany": {
+    "lat": 52.5065118,
+    "lon": 13.3166806
+  },
+  "Knesebeckstraße 18-19, 10623 Berlin, Germany": {
+    "lat": 52.5077772,
+    "lon": 13.3223994
+  },
+  "Simon-Dach-Straße 30, 10245 Berlin, Germany": {
+    "lat": 52.5088599,
+    "lon": 13.4558791
+  },
+  "Kantstraße 22, 10623 Berlin, Germany": {
+    "lat": 52.5060354,
+    "lon": 13.321091
+  },
+  "Bayerische Str. 9, 10707 Berlin, Germany": {
+    "lat": 52.4969271,
+    "lon": 13.3135486
+  },
+  "Schönhauser Allee 187, 10119 Berlin, Germany": {
+    "lat": 52.529259,
+    "lon": 13.4095178
+  },
+  "Boxhagener Str. 50, 10245 Berlin, Germany": {
+    "lat": 52.5082687,
+    "lon": 13.4664944
+  },
+  "Kantstr. 50, 10625 Berlin, Germany": {
+    "lat": 52.5066733,
+    "lon": 13.3100697
+  },
+  "Hohenzollerndamm 110A, 14199 Berlin, Germany": {
+    "lat": 52.4774348,
+    "lon": 13.2824743
+  },
+  "Torstraße 22, 10119 Berlin, Germany": {
+    "lat": 52.5277665,
+    "lon": 13.4130668
+  },
+  "Schloßstraße 32, 14059 Berlin, Germany": {
+    "lat": 52.5119975,
+    "lon": 13.2974723
+  },
+  "Königin-Luise-Straße 71, 14195 Berlin, Germany": {
+    "lat": 52.4590597,
+    "lon": 13.2831459
+  },
+  "Bundesallee 45, 10715 Berlin, Germany": {
+    "lat": 52.4858713,
+    "lon": 13.330572
+  },
+  "Gneisenaustraße 24, 10961 Berlin, Germany": {
+    "lat": 52.4911319,
+    "lon": 13.3948825
+  },
+  "Dieselstraße 20, 12057 Berlin, Germany": {
+    "lat": 52.4773112,
+    "lon": 13.4649213
+  },
+  "Kleine Präsidentenstraße 3, 10178 Berlin, Germany": {
+    "lat": 52.5227272,
+    "lon": 13.400342
+  },
+  "Eisenbahnstraße 4, 10997 Berlin, Germany": {
+    "lat": 52.5018079,
+    "lon": 13.4321975
+  },
+  "Bismarckstraße 24, 10625 Berlin, Germany": {
+    "lat": 52.5121973,
+    "lon": 13.3121352
+  },
+  "Kottbusser Damm 94, 10967 Berlin, Germany": {
+    "lat": 52.4937948,
+    "lon": 13.421879
+  },
+  "Pannierstraße 54, 12047 Berlin, Germany": {
+    "lat": 52.4877026,
+    "lon": 13.4315386
+  },
+  "Falkenseer Damm 17, 13585 Berlin, Germany": {
+    "lat": 52.5428833,
+    "lon": 13.1978458
+  },
+  "Jörsstr. 14, 13505 Berlin, Germany": {
+    "lat": 52.5730102,
+    "lon": 13.2267982
+  },
+  "Friedrichstraße 127, 10117 Berlin, Germany": {
+    "lat": 52.5255474,
+    "lon": 13.38715
+  },
+  "Imchenallee 44, 14089 Berlin, Germany": {
+    "lat": 52.4515702,
+    "lon": 13.1473763
+  },
+  "Leibnizstraße 101, 10625 Berlin, Germany": {
+    "lat": 52.5129503,
+    "lon": 13.3145796
+  },
+  "Mohriner Allee 50, 12347 Berlin, Germany": {
+    "lat": 52.4431244,
+    "lon": 13.4268013
+  },
+  "Frankfurter Allee 73C, 10247 Berlin, Germany": {
+    "lat": 52.5150881,
+    "lon": 13.4688356
+  },
+  "Warschauer Str. 81a, 10241 Berlin, Germany": {
+    "lat": 52.5138835,
+    "lon": 13.4536171
+  },
+  "Friedrichstraße 121, 10117 Berlin, Germany": {
+    "lat": 52.5264159,
+    "lon": 13.3869841
+  },
+  "Niederbarnimstraße 12, 10247 Berlin, Germany": {
+    "lat": 52.5133845,
+    "lon": 13.4576435
+  },
+  "Kurfürstenstraße 79, 10787 Berlin, Germany": {
+    "lat": 52.5042285,
+    "lon": 13.3464998
+  },
+  "Pariser Str. 58, 10719 Berlin, Germany": {
+    "lat": 52.4961228,
+    "lon": 13.3279326
+  },
+  "Gleimstraße 24, 10437 Berlin, Germany": {
+    "lat": 52.5473373,
+    "lon": 13.4111965
+  },
+  "Samariterstraße 28, 10247 Berlin, Germany": {
+    "lat": 52.5184477,
+    "lon": 13.4659424
+  },
+  "Frankfurter Allee 90, 10247 Berlin, Germany": {
+    "lat": 52.5137829,
+    "lon": 13.4712037
+  },
+  "Paul-Lincke-Ufer 45, 10999 Berlin, Germany": {
+    "lat": 52.4964684,
+    "lon": 13.4205041
+  },
+  "Albrechtstr. 92, 12167 Berlin, Germany": {
+    "lat": 52.4522392,
+    "lon": 13.333892
+  },
+  "Eberswalder Str. 29, 10437 Berlin, Germany": {
+    "lat": 52.5413294,
+    "lon": 13.4104464
+  },
+  "Eisenzahnstraße 14, 10709 Berlin, Germany": {
+    "lat": 52.4952282,
+    "lon": 13.304781
+  },
+  "Voßstraße 1, 10117 Berlin, Germany": {
+    "lat": 52.5114571,
+    "lon": 13.3827152
+  },
+  "Kommandantenstraße 75, 10117 Berlin, Germany": {
+    "lat": 52.5090237,
+    "lon": 13.4020769
+  },
+  "Dieffenbachstraße 18, 10967 Berlin, Germany": {
+    "lat": 52.4924683,
+    "lon": 13.4163888
+  },
+  "Wilmersdorfer Str. 26, 10585 Berlin, Germany": {
+    "lat": 52.5139777,
+    "lon": 13.3047276
+  },
+  "Veteranenstraße 10, 10119 Berlin, Germany": {
+    "lat": 52.5326648,
+    "lon": 13.4018243
+  },
+  "Große Hamburger Str. 24, 10115 Berlin, Germany": {
+    "lat": 52.5239906,
+    "lon": 13.3996782
+  },
+  "Bergmannstraße 5, 10965 Berlin, Germany": {
+    "lat": 52.4896657,
+    "lon": 13.3889289
+  },
+  "Brunnenstraße 167, 10119 Berlin, Germany": {
+    "lat": 52.533803,
+    "lon": 13.398157
+  },
+  "Uhlandstraße 142, 10719 Berlin, Germany": {
+    "lat": 52.4949548,
+    "lon": 13.3240588
+  },
+  "Regensburger Str. 1, 10777 Berlin, Germany": {
+    "lat": 52.4959209,
+    "lon": 13.3404775
+  },
+  "Torstraße 195, 10115 Berlin, Germany": {
+    "lat": 52.528315,
+    "lon": 13.3920711
+  },
+  "Otto-Suhr-Allee 25, 10585 Berlin, Germany": {
+    "lat": 52.5139803,
+    "lon": 13.3163265
+  },
+  "Sprengelstraße 15, 13353 Berlin, Germany": {
+    "lat": 52.5418757,
+    "lon": 13.3548877
+  },
+  "Brunsbütteler Damm 260, 13581 Berlin, Germany": {
+    "lat": 52.5333397,
+    "lon": 13.1581957
+  },
+  "Meierottostraße 1, 10719 Berlin, Germany": {
+    "lat": 52.4978784,
+    "lon": 13.3276609
+  },
+  "Leonorenstraße 60, 12247 Berlin, Germany": {
+    "lat": 52.4400068,
+    "lon": 13.3426792
+  },
+  "Oderberger Str. 27, 10435 Berlin, Germany": {
+    "lat": 52.5402877,
+    "lon": 13.4063041
+  },
+  "Bundespl. 12, 10715 Berlin, Germany": {
+    "lat": 52.4783285,
+    "lon": 13.3289401
+  },
+  "Joachimsthaler Str. 10, 10719 Berlin, Germany": {
+    "lat": 52.503445,
+    "lon": 13.3308958
+  },
+  "Simon-Dach-Straße 22, 10245 Berlin, Germany": {
+    "lat": 52.5084046,
+    "lon": 13.4552056
+  },
+  "Schönhauser Allee 65, 10437 Berlin, Germany": {
+    "lat": 52.5462139,
+    "lon": 13.4134258
+  },
+  "Schönhauser Allee 10, 10119 Berlin, Germany": {
+    "lat": 52.5303329,
+    "lon": 13.4115551
+  },
+  "Spreewaldpl. 5, 10999 Berlin, Germany": {
+    "lat": 52.4986531,
+    "lon": 13.4316113
+  },
+  "Mariendorfer Damm 175, 12107 Berlin, Germany": {
+    "lat": 52.4361437,
+    "lon": 13.3893681
+  },
+  "Grunewaldstraße 60, 10825 Berlin, Germany": {
+    "lat": 52.488578,
+    "lon": 13.3419955
+  },
+  "Am Juliusturm 53, 13599 Berlin, Germany": {
+    "lat": 52.5377678,
+    "lon": 13.2162691
+  },
+  "Greifenhagener Str. 27, 10437 Berlin, Germany": {
+    "lat": 52.5509382,
+    "lon": 13.4183144
+  },
+  "Grunewaldstraße 23, 12165 Berlin, Germany": {
+    "lat": 52.4600362,
+    "lon": 13.3122763
+  },
+  "Invalidenstraße 159, 10115 Berlin, Germany": {
+    "lat": 52.5323713,
+    "lon": 13.3973941
+  },
+  "Danziger Str. 10, 10435 Berlin, Germany": {
+    "lat": 52.5406523,
+    "lon": 13.4140012
+  },
+  "Meinekestraße 22, 10719 Berlin, Germany": {
+    "lat": 52.5015419,
+    "lon": 13.3292051
+  },
+  "Alt-Tegel 4, 13507 Berlin, Germany": {
+    "lat": 52.5897935,
+    "lon": 13.2820416
+  },
+  "Alt-Moabit 86B, 10555 Berlin, Germany": {
+    "lat": 52.52532,
+    "lon": 13.3421606
+  },
+  "Albrechtstr. 125, 12165 Berlin, Germany": {
+    "lat": 52.4560347,
+    "lon": 13.3246883
+  },
+  "Marzahner Promenade 13, 12679 Berlin, Germany": {
+    "lat": 52.5433124,
+    "lon": 13.5498638
+  },
+  "Neue Kantstraße 16, 14057 Berlin, Germany": {
+    "lat": 52.5067028,
+    "lon": 13.283591
+  },
+  "Mariendorfer Damm 442, 12107 Berlin, Germany": {
+    "lat": 52.415203,
+    "lon": 13.4003474
+  },
+  "Rudower Str. 173, 12351 Berlin, Germany": {
+    "lat": 52.4322183,
+    "lon": 13.4745632
+  },
+  "Westfälische Str. 46, 10711 Berlin, Germany": {
+    "lat": 52.4968375,
+    "lon": 13.2924774
+  },
+  "Alt-Moabit 73A, 10555 Berlin, Germany": {
+    "lat": 52.5236239,
+    "lon": 13.3326428
+  },
+  "Hermann-Stöhr-Platz 9-11, 10243 Berlin, Germany": {
+    "lat": 52.5119357,
+    "lon": 13.4338503
+  },
+  "Heinsestraße 42, 13467 Berlin, Germany": {
+    "lat": 52.6182133,
+    "lon": 13.3066273
+  },
+  "Landsberger Allee 6, 10249 Berlin, Germany": {
+    "lat": 52.5231148,
+    "lon": 13.4348443
+  },
+  "Kaiserdamm 89, 14057 Berlin, Germany": {
+    "lat": 52.509738,
+    "lon": 13.2812349
+  },
+  "Fasanenstraße 41, 10719 Berlin, Germany": {
+    "lat": 52.4980351,
+    "lon": 13.3265985
+  },
+  "Weinbergsweg 5, 10119 Berlin, Germany": {
+    "lat": 52.5307573,
+    "lon": 13.4023981
+  },
+  "Albrechtstr. 131, 12165 Berlin, Germany": {
+    "lat": 52.4571479,
+    "lon": 13.3219336
+  },
+  "Gleimstraße 27, 10437 Berlin, Germany": {
+    "lat": 52.5474186,
+    "lon": 13.4119349
+  },
+  "Oberbaumstraße 5, 10997 Berlin, Germany": {
+    "lat": 52.5011458,
+    "lon": 13.4432839
+  },
+  "Enzianstraße 2, 12203 Berlin, Germany": {
+    "lat": 52.4485225,
+    "lon": 13.3051809
+  },
+  "Weinbergsweg 8, 10119 Berlin, Germany": {
+    "lat": 52.5311012,
+    "lon": 13.4026797
+  },
+  "Motzstraße 58, 10777 Berlin, Germany": {
+    "lat": 52.4952654,
+    "lon": 13.3399405
+  },
+  "Nürnberger Str. 28, 10789 Berlin, Germany": {
+    "lat": 52.5003203,
+    "lon": 13.3360328
+  },
+  "Liegnitzer Str. 30, 10999 Berlin, Germany": {
+    "lat": 52.4937149,
+    "lon": 13.4351986
+  },
+  "Kantstraße 117A, 10627 Berlin, Germany": {
+    "lat": 52.5063869,
+    "lon": 13.3089077
+  },
+  "Wühlischstraße 30, 10245 Berlin, Germany": {
+    "lat": 52.5096443,
+    "lon": 13.4577523
+  },
+  "Schönhauser Allee 122, 10437 Berlin, Germany": {
+    "lat": 52.5481127,
+    "lon": 13.4130983
+  },
+  "Neuköllner Str. 302, 12357 Berlin, Germany": {
+    "lat": 52.4217708,
+    "lon": 13.4872342
+  },
+  "Friedrichstraße 217, 10969 Berlin, Germany": {
+    "lat": 52.5054395,
+    "lon": 13.3900111
+  },
+  "Leipziger Str. 46, 10117 Berlin, Germany": {
+    "lat": 52.5105336,
+    "lon": 13.3974598
+  },
+  "Buschkrugallee 226, 12359 Berlin, Germany": {
+    "lat": 52.4449235,
+    "lon": 13.4547284
+  },
+  "Lindenstraße 29A, 10969 Berlin, Germany": {
+    "lat": 52.5048782,
+    "lon": 13.3970187
+  },
+  "Eichborndamm 215, 13437 Berlin, Germany": {
+    "lat": 52.5886238,
+    "lon": 13.3247817
+  },
+  "Rheinstraße 43, 12161 Berlin, Germany": {
+    "lat": 52.4657624,
+    "lon": 13.3296578
+  },
+  "Marktstraße 6, 10317 Berlin, Germany": {
+    "lat": 52.5038653,
+    "lon": 13.4735381
+  },
+  "Uhlandstr. 161, 10719 Berlin, Germany": {
+    "lat": 52.4992866,
+    "lon": 13.3250038
+  },
+  "Uhlandstr. 42, 10719 Berlin, Germany": {
+    "lat": 52.4988507,
+    "lon": 13.3243442
+  },
+  "Leipziger Pl. 12, 10117 Berlin, Germany": {
+    "lat": 52.510563,
+    "lon": 13.3809599
+  },
+  "Rankestr. 32, 10789 Berlin, Germany": {
+    "lat": 52.5032224,
+    "lon": 13.3348572
+  },
+  "Anton-Wilhelm-Amo-Str. 50, 10117 Berlin, Germany": {
+    "lat": 52.5123998,
+    "lon": 13.3908216
+  },
+  "Warschauer Str. 62, 10243 Berlin, Germany": {
+    "lat": 52.5100462,
+    "lon": 13.4518627
+  }
+}

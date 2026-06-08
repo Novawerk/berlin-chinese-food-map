@@ -1,0 +1,28 @@
+name:
+  en: Shaniu‘s House of Noodles (Tiergarten)
+  zh: 傻妞面馆
+tags:
+  - SICHUAN
+  - NOODLES
+address:
+  addressLine1: Kurfürstenstraße 79
+  postalCode: "10787"
+  district: Tiergarten
+latitude: 52.5042285
+longitude: 13.3464998
+description:
+  en: 手工面条｜川味小馆｜午餐很稳
+  zh: 手工面条｜川味小馆｜午餐很稳
+featured: true
+editorialNote:
+  zh: 手工面条｜川味小馆｜午餐很稳
+  en: ""
+chain:
+  brand: Shaniu‘s House of Noodles
+  branch: Tiergarten
+placeId: ChIJf2yQenpRqEcRx3Fz34jYMXc
+
+hasDiscount: true
+discountInfo:
+  zh: "甜点+小菜双福利"
+  en: "Dessert + Side dish"

@@ -1,0 +1,68 @@
+name: Bump Version Code
+
+# Increments app-versionCode in gradle/libs.versions.toml on every push to
+# main, and mirrors the result into iosApp/Configuration/Config.xcconfig
+# if the file is committed to the repo. The bump runs as a separate
+# commit with [skip ci] in the message so it doesn't loop.
+#
+# Why versionCode (not versionName) auto-bumps:
+#   - versionCode must increase for every Play Store / App Store upload,
+#     so it has to track every push to main automatically.
+#   - versionName is human-meaningful (1.2.0) and reserved for releases,
+#     so it stays hand-edited in libs.versions.toml.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    # Don't loop on our own bump commits, and don't run on release commits
+    # (release tooling lives elsewhere when we add it).
+    if: >-
+      !contains(github.event.head_commit.message, '[skip ci]')
+      && !startsWith(github.event.head_commit.message, 'Release ')
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump versionCode
+        run: |
+          TOML="gradle/libs.versions.toml"
+          CURRENT=$(grep '^app-versionCode' "$TOML" | sed 's/.*= *"\(.*\)"/\1/')
+          NEW=$((CURRENT + 1))
+          sed -i "s/^app-versionCode = \"$CURRENT\"/app-versionCode = \"$NEW\"/" "$TOML"
+          echo "Bumped versionCode: $CURRENT -> $NEW"
+
+      - name: Sync iOS xcconfig
+        run: |
+          TOML="gradle/libs.versions.toml"
+          XCCONFIG="iosApp/Configuration/Config.xcconfig"
+          # No-op if the iOS xcconfig isn't committed (first-time iOS contributors
+          # copy the template; CI shouldn't fail if it isn't there yet).
+          if [ ! -f "$XCCONFIG" ]; then
+            echo "Skipped: $XCCONFIG not committed."
+            exit 0
+          fi
+          VERSION_CODE=$(grep '^app-versionCode' "$TOML" | sed 's/.*= *"\(.*\)"/\1/')
+          VERSION_NAME=$(grep '^app-versionName' "$TOML" | sed 's/.*= *"\(.*\)"/\1/')
+          sed -i "s/CURRENT_PROJECT_VERSION=.*/CURRENT_PROJECT_VERSION=$VERSION_CODE/" "$XCCONFIG"
+          sed -i "s/MARKETING_VERSION=.*/MARKETING_VERSION=$VERSION_NAME/" "$XCCONFIG"
+          echo "Synced iOS: $VERSION_NAME ($VERSION_CODE)"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Stage both files; sed may have been a no-op on the xcconfig, in
+          # which case `git add` of an unchanged path is harmless.
+          git add gradle/libs.versions.toml
+          [ -f iosApp/Configuration/Config.xcconfig ] && git add iosApp/Configuration/Config.xcconfig || true
+          git commit -m "Bump version code [skip ci]"
+          git push

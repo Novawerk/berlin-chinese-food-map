@@ -1,0 +1,291 @@
+<resources>
+    <string name="app_name">Berlin Chinese Food</string>
+
+    <!-- Navigation -->
+    <string name="settings">Settings</string>
+    <string name="back">Back</string>
+
+    <!-- Settings -->
+    <string name="dark_mode">Appearance</string>
+    <string name="language">Language</string>
+    <string name="system_default">Auto</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="english">English</string>
+    <string name="chinese">中文</string>
+
+    <!-- Filters -->
+    <string name="filter_name">Name</string>
+    <string name="filter_cuisine">Tags</string>
+    <string name="filter_district">District</string>
+    <string name="filter_distance">Distance</string>
+    <string name="filter_title">Filters</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_favorites_only">Favorites only</string>
+    <string name="filter_favorites_subtitle">Show only the places you saved</string>
+    <string name="filter_open_now">Open now</string>
+    <string name="filter_open_now_subtitle">Hide places that are currently closed</string>
+    <string name="filter_done">Done</string>
+    <string name="filter_clear">Clear</string>
+    <string name="filter_all">All</string>
+    <string name="filter_selected_count">%1$d selected</string>
+    <string name="filter_apply">Apply filters</string>
+    <string name="filter_apply_count">Apply · %1$d active</string>
+
+    <!-- Favorites -->
+    <string name="action_favorite">Save</string>
+    <string name="action_unfavorite">Saved</string>
+    <string name="favorites_empty_title">No favorites yet</string>
+    <string name="favorites_empty_subtitle">Tap the heart on any restaurant to save it here.</string>
+
+    <!-- Detail page -->
+    <string name="open_in_maps">Open in Google Maps</string>
+    <string name="open_website">Website</string>
+    <string name="opening_hours">Opening hours</string>
+    <string name="rating_count">%1$d reviews</string>
+
+    <!-- Detail: open status pill -->
+    <string name="open_now">Open</string>
+    <string name="closed_now">Closed</string>
+    <string name="open_24h">Open 24 hours</string>
+    <string name="hours_unknown">Hours unavailable</string>
+    <string name="closes_at">Closes %1$s</string>
+    <string name="opens_at">Opens %1$s</string>
+    <string name="closes_in_min">Closes in %1$d min</string>
+    <string name="opens_in_min">Opens in %1$d min</string>
+    <string name="tomorrow_at">tomorrow %1$s</string>
+    <string name="weekday_at">%1$s %2$s</string>
+    <string name="closed_label">Closed</string>
+    <string name="closed_today">Closed today</string>
+    <string name="today_hours">Today %1$s</string>
+    <string name="hours_view_full">View full week</string>
+    <string name="hours_hide">Hide</string>
+
+    <!-- Detail: weekday names -->
+    <string name="weekday_short_mon">Mon</string>
+    <string name="weekday_short_tue">Tue</string>
+    <string name="weekday_short_wed">Wed</string>
+    <string name="weekday_short_thu">Thu</string>
+    <string name="weekday_short_fri">Fri</string>
+    <string name="weekday_short_sat">Sat</string>
+    <string name="weekday_short_sun">Sun</string>
+    <string name="weekday_long_mon">Monday</string>
+    <string name="weekday_long_tue">Tuesday</string>
+    <string name="weekday_long_wed">Wednesday</string>
+    <string name="weekday_long_thu">Thursday</string>
+    <string name="weekday_long_fri">Friday</string>
+    <string name="weekday_long_sat">Saturday</string>
+    <string name="weekday_long_sun">Sunday</string>
+
+    <!-- Detail: quick actions -->
+    <string name="action_call">Call</string>
+    <string name="action_directions">View on Map</string>
+    <string name="action_website">Website</string>
+
+    <!-- Detail: Pinwo discount perks card (shown when hasDiscount) -->
+    <string name="discount_card_title">Pinwo member perks</string>
+    <string name="discount_card_body">A Pinwo partner restaurant — members enjoy exclusive discounts and free dishes here.</string>
+    <string name="discount_visit_pinwo">See the offer on pinwo.de</string>
+
+    <!-- Detail: photos -->
+    <string name="photo_count">%1$d / %2$d</string>
+    <string name="photos_label">Photos</string>
+    <string name="view_all_photos">View all %1$d photos</string>
+    <string name="close_photos">Close</string>
+
+    <!-- Card status badge -->
+    <string name="status_closed_short">Closed</string>
+    <string name="status_opening_soon">Opening soon</string>
+    <string name="status_closing_soon">Closing soon</string>
+
+    <!-- Tag families (filter section headers) -->
+    <string name="tag_family_regional">Regional</string>
+    <string name="tag_family_format">Format</string>
+
+    <!-- Tags: regional cuisines. @gen:tags:names-regional — generated from data/_tags.yaml; run npm run gen:tags -->
+    <string name="tag_sichuan">Sichuan</string>
+    <string name="tag_cantonese">Cantonese</string>
+    <string name="tag_northern">Northern</string>
+    <string name="tag_northeastern">Northeastern</string>
+    <string name="tag_shanghainese">Shanghainese</string>
+    <string name="tag_hunan">Hunan</string>
+    <string name="tag_xinjiang">Xinjiang</string>
+    <string name="tag_taiwanese">Taiwanese</string>
+    <string name="tag_muslim">Halal</string>
+    <string name="tag_mongolian">Mongolian Grill</string>
+    <!-- @gen:tags:end -->
+
+    <!-- Tag descriptions: regional cuisines -->
+    <string name="tag_sichuan_desc">Bold, numbing, fiery — Sichuan peppercorn at the centre.</string>
+    <string name="tag_cantonese_desc">Light, fresh, seafood-forward — Hong Kong &amp; Guangdong roots.</string>
+    <string name="tag_northern_desc">Wheat-driven home cooking — vinegar, scallion, hearty stews.</string>
+    <string name="tag_northeastern_desc">Big portions, sour cabbage, pork &amp; dumplings — Dongbei comfort food.</string>
+    <string name="tag_shanghainese_desc">Sweet-savoury, soy-and-sugar braises from the Yangtze delta.</string>
+    <string name="tag_hunan_desc">Pure heat, no numbness — smoky chili and fermented bean.</string>
+    <string name="tag_xinjiang_desc">Lamb, cumin, hand-pulled noodles — Northwest halal cooking.</string>
+    <string name="tag_taiwanese_desc">Beef noodle soup, lu rou fan, bubble tea — Taiwanese street &amp; home.</string>
+    <string name="tag_muslim_desc">Halal-certified Chinese kitchens, mostly Northwestern.</string>
+    <string name="tag_mongolian_desc">All-you-can-grill buffet — a Berlin invention, not authentic Mongolian.</string>
+
+    <!-- Tags: formats. @gen:tags:names-format — generated from data/_tags.yaml; run npm run gen:tags -->
+    <string name="tag_hotpot">Hotpot</string>
+    <string name="tag_bbq">BBQ</string>
+    <string name="tag_noodles">Noodles</string>
+    <string name="tag_dumplings">Dumplings</string>
+    <string name="tag_dim_sum">Dim Sum</string>
+    <string name="tag_malatang">Malatang</string>
+    <string name="tag_vegetarian">Vegetarian</string>
+    <string name="tag_breakfast">Breakfast</string>
+    <string name="tag_tea_house">Tea House</string>
+    <string name="tag_bakery">Bakery</string>
+    <string name="tag_street_food">Street Food</string>
+    <string name="tag_fusion">Modern Chinese</string>
+    <!-- @gen:tags:end -->
+
+    <!-- Tag descriptions: formats -->
+    <string name="tag_hotpot_desc">Cook your own at the table — bubbling broth, social meal.</string>
+    <string name="tag_bbq_desc">Grill skewers and meat at the table or counter.</string>
+    <string name="tag_noodles_desc">Noodle-led — beef noodle soup, knife-cut, biang biang.</string>
+    <string name="tag_dumplings_desc">Dumpling specialists — boiled, steamed, pan-fried.</string>
+    <string name="tag_dim_sum_desc">Cantonese small plates, brunch on carts and steamer baskets.</string>
+    <string name="tag_malatang_desc">Pick-your-own skewers in a numbing-spicy broth, cooked to order.</string>
+    <string name="tag_vegetarian_desc">Fully vegetarian or with strong vegetarian options.</string>
+    <string name="tag_breakfast_desc">Soy milk, fried dough, congee — Chinese breakfast classics.</string>
+    <string name="tag_tea_house_desc">Tea-led — pu'er, oolong, slow brewing.</string>
+    <string name="tag_bakery_desc">Pineapple buns, egg tarts, milk bread — Chinese-style baking.</string>
+    <string name="tag_street_food_desc">Quick bites, snacks, takeaway-friendly.</string>
+    <string name="tag_fusion_desc">Modern, cross-style cooking — Chinese roots, contemporary plates.</string>
+
+    <!-- District descriptions (Berlin neighbourhoods) -->
+
+    <!-- Search -->
+    <string name="search_hint">Search restaurants...</string>
+    <string name="search_prompt_title">Find a restaurant</string>
+    <string name="search_prompt_subtitle">Search by name, cuisine, or category — try “Hotpot”, “Sichuan”, or part of a restaurant name.</string>
+    <string name="search_and_filter_title">Search &amp; filter</string>
+    <string name="search_cancel">Cancel</string>
+    <string name="filters_active_multi">%1$d filters</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_locate">My location</string>
+    <string name="all">All</string>
+    <string name="no_results">No restaurants found</string>
+    <string name="call_phone">Call</string>
+    <string name="version">Version</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_subtitle">How we handle your data</string>
+    <string name="icon_credits">Icon credits</string>
+    <string name="icon_credits_value">Map icons by Freepik — Flaticon</string>
+
+    <!-- Feedback (in-app form for bug reports / ideas / restaurant tips) -->
+    <string name="feedback_title">Send feedback</string>
+    <string name="feedback_subtitle">Bugs, ideas, or a place we should add</string>
+    <string name="feedback_intro">We read every message. Tell us what's broken, suggest a feature, or recommend a restaurant we should add.</string>
+    <string name="feedback_category_label">Topic</string>
+    <string name="feedback_category_bug">Bug</string>
+    <string name="feedback_category_idea">Idea</string>
+    <string name="feedback_category_restaurant">Add a place</string>
+    <string name="feedback_category_other">Other</string>
+    <string name="feedback_message_label">Your message</string>
+    <string name="feedback_message_hint">Describe what happened, what you'd like, or which restaurant…</string>
+    <string name="feedback_contact_label">Contact (optional)</string>
+    <string name="feedback_contact_hint">Email or WeChat — only if you'd like a reply</string>
+    <string name="feedback_submit">Send</string>
+    <string name="feedback_submitting">Sending…</string>
+    <string name="feedback_success_title">Thanks!</string>
+    <string name="feedback_success_body">Your feedback is in. We read everything that comes through.</string>
+    <string name="feedback_close">Close</string>
+    <string name="feedback_error">Couldn't send. Check your connection and try again.</string>
+
+    <!-- About entry (opens merged story / contribute / contributors sheet) -->
+    <string name="about_title">About this project</string>
+    <string name="about_subtitle">The story, how to help, and who built the data</string>
+
+    <!-- Project story section -->
+    <string name="story_title">The story behind this project</string>
+    <string name="story_body">Berlin Food Map started from a simple frustration. Every time a friend visited, we'd end up sending the same handful of restaurant recommendations over WeChat — losing photos, forgetting addresses, and disagreeing about which place really had the best beef noodles.\n\nWe tried a Google Maps list, then a shared spreadsheet, then a Notion doc. None of them captured what mattered: where to actually eat in Berlin if you grew up with Chinese food.\n\nSo we started this project. It's open-source, non-profit, and built around a simple idea — the people who eat at a place should be the ones describing it. The restaurant data lives as plain YAML files in a public GitHub repository, easy for anyone to read, fork, or improve. The app is free, ad-free, and stores nothing about you.\n\nIt's a love letter, really — to the small noodle shops, the family-run Sichuan kitchens, the late-night dumpling spots that don't show up in Google's top picks. If we've helped you find your next favourite, that's the whole point.</string>
+
+    <!-- Contributors section -->
+    <string name="contributors_title">Data contributors</string>
+    <string name="contributors_intro">Pulled live from the project's git history — every commit that touches the restaurant data files. If you've contributed and we missed you, open an issue and we'll fix it.</string>
+    <string name="contributors_count">%1$d contributors</string>
+    <string name="contributors_empty">No contributors yet — be the first!</string>
+
+    <!-- Contribute section -->
+    <string name="contribute_title">How to contribute data</string>
+    <string name="contribute_intro">Berlin Food Map is a non-profit project, kept alive by the people who eat here. New places open every month, old favourites move or close, and no single team can keep up alone. If you've spotted a noodle shop we're missing, an address that has gone stale, or a phone number nobody picks up — we'd love a hand.</string>
+
+    <string name="contribute_what_title">What you can share</string>
+    <string name="contribute_what_1">•  A restaurant we don't have yet — the name, address, and anything you remember.</string>
+    <string name="contribute_what_2">•  Corrections — closed places, renamed shops, wrong opening hours, bad coordinates.</string>
+    <string name="contribute_what_3">•  Cuisine and dish tags — Sichuan, Cantonese, Northeastern home-style; whatever helps the next person find their match.</string>
+    <string name="contribute_what_4">•  Photos, a personal note, or a one-line recommendation we can quote.</string>
+
+    <string name="contribute_how_title">How to send it</string>
+    <string name="contribute_step_1">1. The easy way — send a CSV, Excel, or Google Sheet to our team. One row per restaurant, columns however you like; we'll clean it up on our side.</string>
+    <string name="contribute_step_2">2. The hands-on way — open a pull request on GitHub. Restaurant data lives as YAML files in data/restaurants. Edit one, propose a change, and the CI pipeline syncs it live.</string>
+    <string name="contribute_step_3">3. The casual way — drop a message in the WeChat community group or tag us on Xiaohongshu. We'll add the tip to the review queue.</string>
+
+    <string name="contribute_after_title">What happens next</string>
+    <string name="contribute_after">Every submission is reviewed by a real person, cross-checked with Google Places for hours and coordinates, and goes live on the next data sync — usually within a few days. Contributions are anonymous by default; if you'd like a credit on the contributors list, just say so.</string>
+
+    <string name="contribute_action">Open the GitHub repository</string>
+
+    <!-- Team section -->
+    <string name="team_title">The team behind</string>
+    <string name="team_novawerk_name">Novawerk.io</string>
+    <string name="team_novawerk_role">Not profitable, but meaningful.</string>
+    <string name="team_novawerk_bio">Novawerk is an open, non-profit community hub, established in 2025. We exist to lower the barriers to creating positive change — helping people turn meaningful ideas into real projects through collaboration, creativity, and action.\n\nGreat ideas shouldn't stay as concepts. Real change happens when people choose to build, learn, and contribute together.\n\nThree principles guide our work. Purposeful innovation: we build for real positive change, not short-term trends. Build, learn, together: people of any background can grow through practical work on real projects. Responsibility for positive change: each of us takes part in caring, contributing, and acting.\n\nBerlin Food Map is one of the projects built under that idea.</string>
+    <string name="team_novawerk_visit">Visit website</string>
+
+    <string name="team_pinwo_name">Pinwo</string>
+    <string name="team_pinwo_role">Open Berlin with Chinese food.</string>
+    <string name="team_pinwo_bio">Pinwo is a Berlin-based Chinese food project connecting restaurants, communities, and local discoveries across the city.\n\nOver the past two years, we've visited, documented, and navigated hundreds of Chinese restaurants across Berlin. From these experiences, we created the Berlin Chinese Food Map — helping more people discover the richness and diversity of Chinese food in the city.\n\nToday, printed versions of the map can be freely picked up in restaurants and cultural spaces across Berlin.\n\nTogether with Novawerk, we are bringing the map into a digital format, making Berlin Chinese food more accessible and easier to navigate for everyone.\n\nBeyond the map, pinwo.de shares curated recommendations, local events, and exclusive partner offers — helping people connect more directly with Berlin's evolving Chinese food scene.</string>
+    <string name="team_pinwo_offers">Get Offers &amp; Discover More</string>
+    <string name="team_pinwo_community">Join Community</string>
+
+    <!-- Favorites screen (bottom nav heart + search-grid Favorites card) -->
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty_cta">Browse the map</string>
+    <string name="nav_favorites">Favorites</string>
+
+    <!-- Walking radius (5min/15min isochrone rings, toggled by tapping the locate FAB) -->
+    <string name="map_radius_5min">5 min walk</string>
+    <string name="map_radius_15min">15 min walk</string>
+
+    <!-- Search bar (grid view bottom) -->
+    <string name="search_hint_long">What do you want to eat today?</string>
+
+    <!-- Splash screen -->
+    <string name="splash_tagline_line1">Chinese Food Map</string>
+    <string name="splash_tagline_line2">Berlin</string>
+    <string name="splash_powered_by">Powered by</string>
+    <string name="splash_brand_lockup">Novawerk</string>
+
+    <!-- Onboarding (first-launch tour) -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_get_started">Get started</string>
+
+    <!-- Onboarding pages 1-3 (Pinwo design tour) -->
+    <string name="onboarding_p1_title">Every Chinese restaurant in Berlin</string>
+    <string name="onboarding_p1_body">Taste — and a lot more — in your hand.</string>
+    <string name="onboarding_p2_title">Looking for something specific? Just search.</string>
+    <string name="onboarding_p2_body">No more scrolling through the map page by page.</string>
+    <string name="onboarding_p3_title">One tap to save a place for next time.</string>
+    <string name="onboarding_p3_body">Browse your saved spots, plus our hand-curated picks.</string>
+    <string name="onboarding_p4_title">Free dishes &amp; discount —\nClaim instantly!</string>
+    <string name="onboarding_p4_body">Pinwo partner restaurants offer exclusive perks for members. Spot them on the map by the discount badge.</string>
+
+    <!-- Open-source licenses sheet -->
+    <string name="licenses_title">Open-source licenses</string>
+    <string name="licenses_subtitle">How this project is licensed</string>
+    <string name="licenses_intro">Berlin Chinese Food Map — including the app code and the restaurant data — is open-source on GitHub. The full licence text is public; this screen lists the essentials and the attributions for the third-party libraries we depend on.</string>
+    <string name="licenses_copyright">© 2025–2026 Novawerk and contributors</string>
+
+    <string name="licenses_code_title">This project — MIT License</string>
+    <string name="licenses_code_body">Everything in this repository — the Kotlin Multiplatform app, the web apps, the pipeline scripts, and the restaurant data — is licensed under the MIT License. You may use, copy, modify, and redistribute the project freely, including for commercial use, as long as you keep the original copyright notice and this permission notice with any substantial portions you reuse.</string>
+    <string name="licenses_code_view">View MIT License text</string>
+
+    <string name="licenses_thirdparty_title">Third-party libraries</string>
+    <string name="licenses_thirdparty_body">This app is built on open-source libraries — Compose Multiplatform, Material 3, AndroidX, Coil, Ktor, kotlinx-datetime, kotlin-inject, gitlive Firebase KMP, kmp-maps-compose, Compass, and the Firebase + Google Maps SDKs. Each is distributed under its own licence (Apache-2.0 or MIT). The full list, with attributions, lives in the GitHub repository.</string>
+    <string name="licenses_thirdparty_view">View attributions on GitHub</string>
+</resources>
