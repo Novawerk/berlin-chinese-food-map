@@ -264,6 +264,13 @@ private fun MainShell(
             onDismissRequest = { settingsSheetOpen = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
+            // Only consume the top inset. The default contentWindowInsets pads
+            // the content's *bottom* by the nav-bar inset, which — when the
+            // settings list is almost exactly screen-height — flip-flops the
+            // sheet between "content fits" and "content scrolls" every frame,
+            // so the whole sheet visibly bounces up and down. Excluding the
+            // bottom inset (same as SearchAndFilterSheet) stops the jitter.
+            contentWindowInsets = { WindowInsets.safeDrawing.only(WindowInsetsSides.Top) },
         ) {
             SettingsScreen(
                 currentDarkMode = darkMode,

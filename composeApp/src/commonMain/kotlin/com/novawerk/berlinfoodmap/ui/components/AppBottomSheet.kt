@@ -1,7 +1,11 @@
 package com.novawerk.berlinfoodmap.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +48,11 @@ internal fun AppBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        // Only consume the top inset — see App.kt's settings sheet. The
+        // default bottom (nav-bar) inset can make a near-screen-height list
+        // flip-flop between fitting and scrolling each frame, bouncing the
+        // sheet. Content supplies its own bottom padding via [contentPadding].
+        contentWindowInsets = { WindowInsets.safeDrawing.only(WindowInsetsSides.Top) },
     ) {
         LazyColumn(
             modifier = modifier.fillMaxWidth(),

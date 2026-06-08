@@ -158,6 +158,11 @@ fun MapScreen(
     // Worst-case centre-to-centre overlap distance: two MARKER_MAX_WIDTH
     // pills + padding. Used as the spatial-grid cell size.
     val maxOverlapPx = markerMaxWidthPx + markerPaddingPx
+    // Uniform inset (px) kept around the filtered set when auto-fitting the
+    // camera, so pins don't sit flush against the screen edge or hide behind
+    // the top filter chip / bottom cards row. The library's newLatLngBounds
+    // only takes a single uniform padding, so this is a compromise value.
+    val boundsPaddingPx = with(density) { 72.dp.roundToPx() }
     // Locale-resolved so the overlap estimate matches the name actually drawn
     // on each pill (English in English mode). key(language) above re-creates
     // this whole screen on a language switch, but capturing the locale in the
@@ -213,6 +218,43 @@ fun MapScreen(
                     )
                 }
             }
+    }
+
+    // Auto-fit the camera to the filtered restaurants whenever the active
+    // filter set changes. Without this, a filter could leave every match off
+    // the current viewport (e.g. filtering to a cuisine clustered in one
+    // district while the camera sits over another). Keyed on the filter
+    // selections — not on `restaurantsFiltered` — so the camera moves only on
+    // a deliberate filter change, never on a pan/zoom or a background data
+    // refresh. Clearing all filters (activeFilterCount == 0) deliberately
+    // leaves the camera put rather than yanking back to the city-wide view.
+    LaunchedEffect(
+        viewModel.selectedCuisines,
+        viewModel.selectedFormats,
+        viewModel.favoritesOnly,
+        viewModel.openNow,
+    ) {
+        if (!mapLoaded) return@LaunchedEffect
+        if (viewModel.activeFilterCount == 0) return@LaunchedEffect
+        val matches = viewModel.restaurantsFiltered
+        when {
+            matches.isEmpty() -> Unit // nothing to frame; leave the camera be
+            // A single match has no meaningful bounds — newLatLngBounds would
+            // zoom to the max level. Centre on it at a comfortable zoom instead.
+            matches.size == 1 -> matches.first().let { r ->
+                cameraPositionState.animate(
+                    CameraUpdateFactory.newLatLngZoom(LatLng(r.latitude, r.longitude), 15f),
+                )
+            }
+            else -> {
+                val bounds = LatLngBounds.Builder().apply {
+                    matches.forEach { include(LatLng(it.latitude, it.longitude)) }
+                }.build()
+                cameraPositionState.animate(
+                    CameraUpdateFactory.newLatLngBounds(bounds, boundsPaddingPx),
+                )
+            }
+        }
     }
 
     // ── Command bus ────────────────────────────────────────────────────
