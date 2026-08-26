@@ -8,8 +8,9 @@ address:
   addressLine1: Anton-Wilhelm-Amo-Str. 50
   postalCode: "10117"
   district: Mitte
-latitude: 52.5118
-longitude: 13.3894
+latitude: 52.5123262
+longitude: 13.3910083
+placeId: ChIJxwChCixRqEcR2YUMKwPO1_0
 
 hasDiscount: true
 discountInfo:
