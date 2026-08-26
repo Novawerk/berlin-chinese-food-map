@@ -15,11 +15,16 @@ through the web panel goes straight to Firestore but will be overwritten
 on the next CI sync — see *Editing via the admin panel* below for the
 round-trip.
 
+External data partners submit changes as pull requests — the rules they
+(and their AI assistants) must follow live in
+[`PARTNER_GUIDE.md`](PARTNER_GUIDE.md).
+
 ## Layout
 
 ```
 data/
 ├── README.md                 ← this file
+├── PARTNER_GUIDE.md          ← submission rules for external data partners
 ├── _tags.yaml                ← canonical tag taxonomy (single source of truth)
 ├── _schema.yaml              ← restaurant YAML schema reference
 ├── _archive/                 ← historical CSVs (community handover, migration report)
