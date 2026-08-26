@@ -14,3 +14,6 @@ chain:
   brand: Bao Gao Club
   branch: PBerg
 placeId: ChIJHWKT-W9TqEcRqrSlJ5zyWbQ
+# Hidden 2026-08-26: official Bao Gao Club announcement dated 2026-07-28
+# confirms that both locations have closed.
+hidden: true

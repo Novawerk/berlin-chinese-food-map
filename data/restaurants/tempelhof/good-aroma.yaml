@@ -10,3 +10,6 @@ address:
 latitude: 52.4563698
 longitude: 13.383603
 placeId: ChIJvegxcABFqEcRWQKKCJ4K62c
+# Hidden 2026-08-26: Google Places reported permanently closed on 2026-08-17;
+# Happy Panda is now operating at the same address under a different Place ID.
+hidden: true

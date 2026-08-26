@@ -10,3 +10,6 @@ address:
 latitude: 52.4614966
 longitude: 13.4346352
 placeId: ChIJB_h2BINPqEcROh-C_vTpdY4
+# Hidden 2026-08-26: official website confirms the final service day was
+# 2025-02-22; Google Places also reports permanently closed.
+hidden: true

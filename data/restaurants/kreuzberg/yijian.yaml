@@ -10,3 +10,6 @@ address:
 latitude: 52.5011458
 longitude: 13.4432839
 placeId: ChIJmfqFTjlPqEcRygwJdWLiR-8
+# Hidden 2026-08-26: Google Places reported permanently closed on 2026-08-17,
+# independently rechecked on Google Maps on 2026-08-26.
+hidden: true
