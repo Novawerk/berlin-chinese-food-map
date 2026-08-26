@@ -16,8 +16,8 @@ name:
 # tags: 1~3 entries. First entry is the "primary" tag (used as the default
 # selection on the home filter). Two families, all flat in the same array:
 #   Regional (cuisine)  — 0~1 expected
-#     SICHUAN | CANTONESE | NORTHERN | NORTHEASTERN |
-#     SHANGHAINESE | HUNAN | XINJIANG | TAIWANESE | MUSLIM
+#     SICHUAN | CANTONESE | NORTHERN | NORTHEASTERN | SHANGHAINESE |
+#     HUNAN | XINJIANG | TAIWANESE | MUSLIM | MONGOLIAN
 #   Format (what they serve / how it's eaten) — 1~2 expected
 #     HOTPOT | BBQ | NOODLES | DUMPLINGS | DIM_SUM | MALATANG |
 #     VEGETARIAN | BREAKFAST | TEA_HOUSE | BAKERY | STREET_FOOD | FUSION
