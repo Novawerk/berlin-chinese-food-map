@@ -10,3 +10,8 @@ address:
 latitude: 52.5139777
 longitude: 13.3047276
 placeId: ChIJ-T1kbY9RqEcRhVBmB_3gq9M
+
+hasDiscount: true
+discountInfo:
+  zh: "买一送一｜点心8折｜饮品1.9欧"
+  en: "2 for 1 · 20% off dim sum · €1.9 drinks"
