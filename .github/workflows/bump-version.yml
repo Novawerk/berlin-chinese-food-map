@@ -31,6 +31,10 @@ jobs:
       - uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Full history — a shallow (depth-1) checkout pushed back to main
+          # truncates the branch to a single root commit and destroys the
+          # history on the remote. This happened on 2026-06-08.
+          fetch-depth: 0
 
       - name: Bump versionCode
         run: |
