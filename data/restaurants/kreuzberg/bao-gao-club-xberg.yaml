@@ -14,3 +14,6 @@ chain:
   brand: Bao Gao Club
   branch: Xberg
 placeId: ChIJ48q_ZAJPqEcRby0CmtI8nVQ
+# Hidden 2026-08-26: official Bao Gao Club announcement dated 2026-07-28
+# confirms that both locations have closed.
+hidden: true
