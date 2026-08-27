@@ -11,3 +11,8 @@ address:
 latitude: 52.5159318
 longitude: 13.3044707
 placeId: ChIJZZpCpTVRqEcRZRFRhxFIXCk
+
+hasDiscount: true
+discountInfo:
+  zh: "赠前菜/甜品或周年帆布包"
+  en: "Free starter, dessert or anniversary tote"

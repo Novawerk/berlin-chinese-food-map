@@ -13,7 +13,4 @@ latitude: 52.4969271
 longitude: 13.3135486
 placeId: ChIJM3DeBu9QqEcRInP3c7Ey6TE
 
-hasDiscount: true
-discountInfo:
-  zh: "周周半价"
-  en: "Weekly 50% off"
+hasDiscount: false
