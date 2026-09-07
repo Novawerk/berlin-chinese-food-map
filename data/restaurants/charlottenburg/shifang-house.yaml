@@ -10,3 +10,8 @@ address:
 latitude: 52.5032224
 longitude: 13.3348572
 placeId: ChIJtdQqzXdRqEcRc477ZHzXdZE
+
+hasDiscount: true
+discountInfo:
+  zh: "现金支付菜品8折，不含酒水"
+  en: "20% off food with cash payment; drinks excluded"
