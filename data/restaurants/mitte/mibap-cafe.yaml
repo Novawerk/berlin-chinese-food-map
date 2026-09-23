@@ -1,0 +1,13 @@
+name:
+  en: "MIBAP Cafe"
+  zh: "MIBAP Cafe"
+tags:
+  - TEA_HOUSE
+address:
+  addressLine1: "Torstraße 24"
+  postalCode: "10119"
+  district: Mitte
+latitude: 52.5277379
+longitude: 13.4130695
+phone: "+49 176 36263396"
+placeId: ChIJeUoSFQBRqEcRr8wIGwtGW9w
