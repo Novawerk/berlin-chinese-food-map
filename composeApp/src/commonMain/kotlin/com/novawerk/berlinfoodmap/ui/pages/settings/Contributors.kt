@@ -10,4 +10,6 @@ internal data class Contributor(
 
 internal val DATA_CONTRIBUTORS: List<Contributor> = listOf(
     Contributor(name = "Haodong Ju", github = "juhaodong"),
+    Contributor(name = "zhouzq1975"),
+    Contributor(name = "Ziqiang"),
 )
