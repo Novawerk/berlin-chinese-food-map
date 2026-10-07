@@ -281,6 +281,10 @@ file under `ui/pages/map/`.** A handful of non-obvious things to know:
   - `composeApp/src/commonMain/kotlin/com/novawerk/berlinfoodmap/ui/components/TagChips.kt` (`tagDisplayName`)
 - CI fails the workflow if anything drifts (`npm run check:tags` =
   `gen-tags --check` + `check-tags.mjs`).
+- Restaurant YAML content is validated separately by `npm run check:data`
+  (`check-data.mjs`) on every PR and before each sync — the app has no
+  per-document error handling when parsing Firestore docs, so one malformed
+  YAML can break the whole list.
 - See `data/README.md` for the full pipeline reference (add a restaurant,
   add a tag, audit Firestore, etc.).
 

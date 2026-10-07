@@ -21,7 +21,6 @@ round-trip.
 data/
 ├── README.md                 ← this file
 ├── _tags.yaml                ← canonical tag taxonomy (single source of truth)
-├── _schema.yaml              ← restaurant YAML schema reference
 ├── _archive/                 ← historical CSVs (community handover, migration report)
 ├── restaurants/              ← one YAML per restaurant, grouped by district
 │   ├── britz/
@@ -60,14 +59,17 @@ the validator will fail the workflow if the generated files or the enum drift.
 ### Add a restaurant
 
 1. Pick the right district folder (see above).
-2. Create `{slug-id}.yaml` matching `_schema.yaml`. The id becomes the
-   Firestore document id and must be unique across all districts.
+2. Create `{slug-id}.yaml` (lowercase kebab-case) — copying a neighbouring
+   file is the easiest template. The id becomes the Firestore document id
+   and must be unique across all districts. `name.zh` is required: it's the
+   headline in the app, so use the Latin name if there's no Chinese one.
 3. `tags`: 1–3 from `_tags.yaml`. Pick the regional tag first, then format(s).
 4. `placeId` is optional but strongly recommended — Google Places fills
    in cover photos / hours / rating / phone on the next CI run. If you
    don't have one, run the resolver: `node scripts/sync-to-firestore/index.js
    --resolve-place-ids` (writes the matched id back to the YAML).
-5. Push to `main`. CI validates tags and syncs to Firestore.
+5. Run `npm run check:data` (in `scripts/sync-to-firestore`), then push to
+   `main` or open a PR. CI validates tags and data, then syncs to Firestore.
 
 ### Mark a restaurant as a Pinwo discount partner
 
@@ -147,6 +149,7 @@ restaurants too.
 |------|-------------|
 | `scripts/sync-to-firestore/index.js` | Auto-runs in CI on push to `data/restaurants/**`. Manual: `workflow_dispatch` from GitHub Actions. |
 | `scripts/sync-to-firestore/check-tags.mjs` | Pre-sync in CI. Run locally before pushing tag-touching changes. |
+| `scripts/sync-to-firestore/check-data.mjs` | `npm run check:data`. On every PR and pre-sync in CI: required fields, types, Berlin coordinates, unique ids / placeIds. Run locally before pushing data changes. |
 | `scripts/sync-to-firestore/dump-firestore.mjs` | Ad-hoc; dumps Firestore to local JSON for inspection. |
 | `scripts/sync-to-firestore/tag-from-places.mjs` | Ad-hoc; suggests tags for untagged restaurants from Places API enrichment. |
 | `scripts/sync-to-firestore/_archive/` | One-shot migration scripts from the May 2026 schema change — not on any execution path. |
