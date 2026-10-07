@@ -12,6 +12,14 @@ on:
         type: boolean
         default: false
 
+# One sync at a time. Each run is a full, idempotent upsert of every YAML, so
+# when merges land back to back the queued run (newer commit) supersedes any
+# older pending one, and it starts after the previous run has refreshed the
+# 14-day Places cache instead of re-fetching every place in parallel with it.
+concurrency:
+  group: sync-restaurants
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -27,12 +35,17 @@ jobs:
         run: npm ci
 
       # Fail fast before we burn API quota: reject restaurant YAMLs that
-      # reference an unknown tag. Mirror/codegen drift is gated separately on
-      # every push/PR (Android Build + Tests), since those files live outside
-      # this workflow's data/restaurants/** trigger.
+      # reference an unknown tag or would break the app (check-data.mjs).
+      # Mirror/codegen drift is gated separately on every push/PR by
+      # tag-check.yml, since those files live outside this workflow's
+      # data/restaurants/** trigger.
       - name: Validate restaurant tags
         working-directory: scripts/sync-to-firestore
         run: node check-tags.mjs
+
+      - name: Validate restaurant data
+        working-directory: scripts/sync-to-firestore
+        run: node check-data.mjs
 
       - name: Sync to Firestore
         working-directory: scripts/sync-to-firestore
