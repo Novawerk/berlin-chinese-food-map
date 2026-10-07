@@ -12,7 +12,4 @@ latitude: 52.4783285
 longitude: 13.3289401
 placeId: ChIJJz7oCGNQqEcROFSnbDQkkec
 
-hasDiscount: true
-discountInfo:
-  zh: "消费满5次赠一份地锅鸡"
-  en: "Dine 5 times and receive one free Di Guo Ji chicken stew"
+hasDiscount: false

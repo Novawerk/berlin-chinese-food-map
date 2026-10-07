@@ -11,3 +11,8 @@ address:
 latitude: 52.4664074
 longitude: 13.3276587
 placeId: ChIJvZw1-tFRqEcRNZ_rGkeP934
+
+hasDiscount: true
+discountInfo:
+  zh: "满50欧减10欧含酒水，限现金不叠加"
+  en: "€10 off orders of €50 or more, including drinks; cash only, cannot be combined with other in-store offers"
