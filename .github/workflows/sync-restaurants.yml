@@ -12,6 +12,14 @@ on:
         type: boolean
         default: false
 
+# One sync at a time. Each run is a full, idempotent upsert of every YAML, so
+# when merges land back to back the queued run (newer commit) supersedes any
+# older pending one, and it starts after the previous run has refreshed the
+# 14-day Places cache instead of re-fetching every place in parallel with it.
+concurrency:
+  group: sync-restaurants
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
