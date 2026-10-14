@@ -10,3 +10,7 @@ address:
 latitude: 52.4868352
 longitude: 13.354937
 placeId: ChIJAdoVEwBRqEcR7ENhJ11Zw0Y
+hasDiscount: true
+discountInfo:
+  zh: "工作日14–17点买煎饼送豆浆（儿童款除外）"
+  en: "Free soy milk with a jianbing, Mon–Fri 14:00–17:00 (excluding Little Bing)"
