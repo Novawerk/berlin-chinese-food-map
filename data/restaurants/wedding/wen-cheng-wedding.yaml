@@ -13,3 +13,6 @@ chain:
   brand: Wen Cheng
   branch: Burgsdorfer
 placeId: ChIJx_cjnYBRqEcR9_4i33Z_thc
+# Hidden 2026-10-14: Google Places confirms CLOSED_TEMPORARILY for this branch.
+# Closure start and reopening dates are unknown; preserve the record for reopening.
+hidden: true
