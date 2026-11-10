@@ -382,6 +382,11 @@ const RestaurantForm = () => (
       multiline
     />
     <TextInput source="discountInfo.en" label="Offer text (English)" multiline />
+    <TextInput
+      source="discountUrl"
+      label="Coupon link (pinwo.de 优惠券链接)"
+      helperText="The coupon's own page on pinwo.de. The app adds utm_source=berlinfoodmap itself — paste the plain link. Empty → app opens the pinwo.de homepage."
+    />
     <TextInput source="editorialNote.zh" label="Editorial note (中文)" multiline />
     <TextInput source="editorialNote.en" label="Editorial note (English)" multiline />
 
@@ -665,6 +670,7 @@ export const RestaurantShow = () => (
       <BooleanField source="hasDiscount" label="Discount partner (优惠)" />
       <TextField source="discountInfo.zh" label="Offer text (中文)" />
       <TextField source="discountInfo.en" label="Offer text (English)" />
+      <TextField source="discountUrl" label="Coupon link" />
       <TextField source="editorialNote.zh" label="Editorial note (中文)" />
       <TextField source="editorialNote.en" label="Editorial note (English)" />
       <TextField source="chain.brand" label="Chain brand" />

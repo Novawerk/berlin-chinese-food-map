@@ -163,6 +163,13 @@ async function loadRestaurants() {
       }
     }
 
+    if (data.discountUrl != null && !/^https:\/\/([a-z0-9-]+\.)*pinwo\.de(\/|\?|#|$)/i.test(String(data.discountUrl).trim())) {
+      console.warn(`  ⚠ ${id}: discountUrl is not a pinwo.de https link — dropped`);
+      delete data.discountUrl;
+    } else if (data.discountUrl != null) {
+      data.discountUrl = String(data.discountUrl).trim();
+    }
+
     // Apply defaults
     const restaurant = {
       ...data,
@@ -561,6 +568,9 @@ async function syncToFirestore(restaurants) {
     }
     if (existingData?.discountInfo && !data.discountInfo) {
       doc.discountInfo = FieldValue.delete();
+    }
+    if (existingData?.discountUrl && !data.discountUrl) {
+      doc.discountUrl = FieldValue.delete();
     }
     if (existingData?.chain && !data.chain) {
       doc.chain = FieldValue.delete();

@@ -92,6 +92,10 @@ function toYaml(r: Restaurant & { id: string }): string {
     if (r.discountInfo.en) lines.push(`  en: "${esc(r.discountInfo.en)}"`);
   }
 
+  if (r.discountUrl) {
+    lines.push(`discountUrl: "${esc(r.discountUrl)}"`);
+  }
+
   if (r.editorialNote && (r.editorialNote.zh || r.editorialNote.en)) {
     lines.push("");
     lines.push("editorialNote:");
