@@ -168,6 +168,8 @@ private fun dev.gitlive.firebase.firestore.DocumentSnapshot.toRestaurant(): Rest
                 de = it["de"],
             )
         },
+        discountUrl = try { get<String?>("discountUrl") } catch (_: Exception) { null }
+            ?.trim()?.takeIf { it.isNotEmpty() },
         editorialNote = editorialMap?.takeIf { it["zh"]?.isNotBlank() == true || it["en"]?.isNotBlank() == true }?.let {
             Localizable(
                 en = it["en"] ?: "",

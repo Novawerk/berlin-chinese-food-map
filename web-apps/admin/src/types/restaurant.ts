@@ -107,6 +107,7 @@ export interface Restaurant {
   featured?: boolean;
   hasDiscount?: boolean;
   discountInfo?: Localizable;
+  discountUrl?: string;
   editorialNote?: Localizable;
   chain?: Chain;
   createdAt?: Timestamp;

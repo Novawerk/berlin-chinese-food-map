@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.novawerk.berlinfoodmap.ui.components.AppBottomSheet
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
+import com.novawerk.berlinfoodmap.domain.restaurant.pinwoAppLink
 import org.jetbrains.compose.resources.stringResource
 import berlinfoodmap.composeapp.generated.resources.Res
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_name
@@ -22,7 +23,6 @@ import berlinfoodmap.composeapp.generated.resources.team_pinwo_bio
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_offers
 import berlinfoodmap.composeapp.generated.resources.team_pinwo_community
 
-private const val PINWO_SITE_URL = "https://pinwo.de"
 private const val PINWO_COMMUNITY_URL =
     "https://chat.whatsapp.com/BShah69krZo3HUnjPkPZvg?mode=gi_t"
 
@@ -51,7 +51,7 @@ fun PinwoBottomSheet(onDismiss: () -> Unit) {
 
                 Spacer(Modifier.height(20.dp))
                 Button(
-                    onClick = { urlLauncher.open(PINWO_SITE_URL) },
+                    onClick = { urlLauncher.open(pinwoAppLink(null)) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(stringResource(Res.string.team_pinwo_offers))

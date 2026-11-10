@@ -69,6 +69,12 @@ discountInfo:
   zh: "会员到店赠送一道招牌小菜"
   en: ""                        # optional, leave empty until translated
 
+# Optional link to this restaurant's own coupon page on pinwo.de (https only).
+# The perks card's button opens it; without it the button opens the pinwo.de
+# homepage. Paste the plain link — the app appends
+# utm_source=berlinfoodmap&utm_medium=app&utm_campaign=coupon itself.
+discountUrl: "https://pinwo.de/..."
+
 editorialNote:
   zh: "广式点心｜凌晨营业｜宵夜江湖"
   en: ""                        # optional, leave empty until translated

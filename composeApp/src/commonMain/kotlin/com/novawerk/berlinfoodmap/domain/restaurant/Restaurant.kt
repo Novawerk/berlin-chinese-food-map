@@ -23,6 +23,10 @@ data class Restaurant(
     // [hasDiscount] is true (e.g. "会员到店赠送一道小菜"). Optional — without it
     // the card falls back to generic copy plus the pinwo.de link.
     val discountInfo: Localizable? = null,
+    // Direct link to this restaurant's coupon page on pinwo.de. Optional —
+    // without it the perks card opens the pinwo.de homepage. Always opened
+    // through [pinwoAppLink] so pinwo.de can tell the visit came from the app.
+    val discountUrl: String? = null,
     val editorialNote: Localizable? = null,
     val chain: Chain? = null,
     val googleData: GooglePlaceData? = null,

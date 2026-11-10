@@ -84,11 +84,16 @@ hasDiscount: true
 discountInfo:
   zh: "会员到店赠送一道招牌小菜"
   en: ""        # optional
+discountUrl: "https://pinwo.de/..."   # optional, this coupon's own page
 ```
 
 When `hasDiscount` is on, the detail sheet shows a perks card with this text
 (falling back to generic copy if `discountInfo` is empty) plus a button that
-opens **pinwo.de** so users can see the full offer.
+opens `discountUrl` — or the **pinwo.de** homepage when it's missing — so users
+can see the full offer. The app appends
+`utm_source=berlinfoodmap&utm_medium=app&utm_campaign=coupon` to every pinwo.de
+link it opens, so Pinwo can see the traffic came from the app; don't add it to
+the YAML yourself. Non-pinwo.de or non-https links are dropped by the sync.
 
 ### Add a new tag
 

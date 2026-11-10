@@ -90,11 +90,9 @@ import org.jetbrains.compose.resources.stringResource
 import com.novawerk.berlinfoodmap.ui.components.MIDDOT_SEP
 import com.novawerk.berlinfoodmap.ui.components.tagDisplayName
 import com.novawerk.berlinfoodmap.ui.rememberUrlLauncher
+import com.novawerk.berlinfoodmap.domain.restaurant.pinwoAppLink
 
 private val SECTION_SHAPE = RoundedCornerShape(28.dp)
-
-/** Pinwo offers landing page, opened from the discount perks card. */
-private const val PINWO_OFFER_URL = "https://pinwo.de"
 
 /**
  * Sheet-friendly detail content. Hosted inside a [ModalBottomSheet] at the
@@ -170,7 +168,7 @@ fun DetailScreen(
                     DiscountCard(
                         offer = r.discountInfo?.preferred(LocalAppLocale.current)
                             ?.takeIf { it.isNotBlank() },
-                        onVisitPinwo = { urlLauncher.open(PINWO_OFFER_URL) },
+                        onVisitPinwo = { urlLauncher.open(pinwoAppLink(r.discountUrl)) },
                     )
                 }
 
@@ -1034,7 +1032,7 @@ private fun DescriptionCard(text: String) {
  * Pinwo partner perks card, shown when [Restaurant.hasDiscount]. Leads with the
  * discount marker symbol so it reads as the same identity users see on the map,
  * states the offer ([offer], falling back to generic copy), and links out to
- * pinwo.de for the full details.
+ * the restaurant's coupon page on pinwo.de (or the homepage) for full details.
  */
 @Composable
 private fun DiscountCard(offer: String?, onVisitPinwo: () -> Unit) {
