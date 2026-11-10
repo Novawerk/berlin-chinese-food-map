@@ -11,3 +11,8 @@ latitude: 52.4674203
 longitude: 13.3085507
 phone: "0163 6145565"
 placeId: ChIJC6uLcMxbqEcRdaC-wKrJYvs
+
+hasDiscount: true
+discountInfo:
+  zh: "Google五星评价享菜品8折，限现金"
+  en: "20% off food with a 5-star Google review; cash only, drinks excluded"

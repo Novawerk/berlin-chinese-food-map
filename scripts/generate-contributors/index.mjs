@@ -56,6 +56,15 @@ function loadAliases() {
   }
 }
 
+// aliases.json maps a lowercase commit email to the contributor's GitHub
+// handle, or to `{ "github": ..., "name": ... }` to also pin the display name
+// when the same person has committed under several author names.
+function resolveAlias(aliases, email) {
+  const alias = aliases[email.toLowerCase()];
+  if (typeof alias === 'string') return { github: alias };
+  return alias ?? {};
+}
+
 function escapeKotlinString(str) {
   return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$');
 }
@@ -67,7 +76,7 @@ function collectContributors() {
   ).toString();
 
   const aliases = loadAliases();
-  const seen = new Map(); // key: name|github → entry
+  const seen = new Map(); // key: GitHub handle, else email → entry
 
   for (const line of log.split('\n')) {
     if (!line.trim()) continue;
@@ -75,10 +84,14 @@ function collectContributors() {
     if (!name || !email) continue;
     if (isBot(name, email)) continue;
 
-    const github = extractGithubFromEmail(email) || aliases[email.toLowerCase()] || null;
-    const key = `${name}|${github ?? ''}`;
+    const alias = resolveAlias(aliases, email);
+    const github = extractGithubFromEmail(email) || alias.github || null;
+    // One entry per person, not per author name: a contributor whose git
+    // name changed would otherwise be listed twice. The log is newest first,
+    // so the most recent author name wins unless aliases.json pins one.
+    const key = github ? `github:${github.toLowerCase()}` : `email:${email.toLowerCase()}`;
     if (!seen.has(key)) {
-      seen.set(key, { name, github });
+      seen.set(key, { name: alias.name ?? name, github });
     }
   }
 

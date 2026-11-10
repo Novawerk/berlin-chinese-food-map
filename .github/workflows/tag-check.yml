@@ -1,10 +1,12 @@
-name: Tag taxonomy
+name: Data checks
 
 # The 22-tag taxonomy is defined once in data/_tags.yaml and code-generated
 # into the app strings, the admin TS types, and the sync KNOWN_TAGS set. This
 # job verifies those mirrors are current (gen-tags --check), that the
 # hand-written Kotlin enum still matches, and that every restaurant YAML
-# references only known tags. Secret-free, so it also runs on fork PRs.
+# references only known tags. It also validates restaurant YAML content
+# (check-data.mjs: required fields, types, Berlin coordinates, unique ids and
+# placeIds). Secret-free, so it also runs on fork PRs from data partners.
 #
 # Scoped to the tag-related paths only — it spans data + app + web, so it
 # can't live in the Android Build (app-only) or sync (data/restaurants-only)
@@ -43,6 +45,16 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install dependencies
+        working-directory: scripts/sync-to-firestore
+        run: npm ci
+
       - name: Validate tag taxonomy
         working-directory: scripts/sync-to-firestore
-        run: npm ci && npm run check:tags
+        run: npm run check:tags
+
+      - name: Validate restaurant data
+        # Run even if the tag check failed, so a PR sees every problem at once.
+        if: ${{ !cancelled() }}
+        working-directory: scripts/sync-to-firestore
+        run: npm run check:data
